@@ -1,16 +1,6 @@
 import fastifySwagger, { SwaggerOptions } from "@fastify/swagger";
-//import { FastifyInstance } from "fastify";
 import fastifySwaggerUi, { FastifySwaggerUiOptions } from "@fastify/swagger-ui";
 import fp from "fastify-plugin";
-
-// async function swagger(fastify: FastifyInstance) {
-	
-
-	
-
-// 	await fastify.register(fastifySwagger, swaggerOpt);
-// 	await fastify.register(fastifySwaggerUi, swaggerUIOpt);
-// }
 
 export default fp<SwaggerOptions>(async (fastify) => {
 	const swaggerOpt: SwaggerOptions = {
