@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/app/data
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
