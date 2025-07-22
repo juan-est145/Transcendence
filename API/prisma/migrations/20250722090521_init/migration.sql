@@ -1,0 +1,4 @@
+-- CreateTable
+CREATE TABLE "Ping" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+);
