@@ -17,23 +17,34 @@ model Ping {
 // This table represents the basic login data of an user. At the application level, we must make sure
 // that for every user created, a profile table is created
 model Users {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
+  id       Int       @id @default(autoincrement())
+  username String    @unique
   password String
-  email    String   @unique
+  email    String    @unique
   profile  Profile?
 }
 
 // TO DO: Need to think about storing information like 2FA, stats and avatar.
 model Profile {
-  id          Int                  @id
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt()
+  id        Int      @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
   // This value stores the route to the avatar's location, so that later the MVC or an nginx instance can send it to the user.
-  avatar      String               @default("/usr/share/avatar/default.jpg")
-  user        Users                @relation(fields: [id], references: [id])
+  avatar    String   @default("/usr/share/avatar/default.jpg")
+  online    Boolean  @default(false)
+  user      Users    @relation(fields: [id], references: [id])
+  friend1   Friends[] @relation("Friend1")
+  friend2   Friends[] @relation("Friend2")
   // This field will not be added until work starts on the tournaments. For now is not valid.
   //tournaments Tournament_Players[]
+}
+
+model Friends {
+  id      String @id @default(ulid())
+  user1Id Int
+  user2Id Int
+  user1   Profile  @relation("Friend1", fields: [user1Id], references: [id])
+  user2   Profile  @relation("Friend2", fields: [user2Id], references: [id])
 }
 
 // model Tournament {
@@ -44,7 +55,7 @@ model Profile {
 // }
 
 // model Tournament_Players {
-//   id           Int        @id
+//   id           String               @id @default(ulid())
 //   playerAlias  string
 //   rank         Int
 //   playerId     Int
