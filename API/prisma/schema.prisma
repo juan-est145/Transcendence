@@ -11,5 +11,23 @@ datasource db {
 }
 
 model Ping {
-  id        Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+}
+
+// This table represents the basic login data of an user. At the application level, we must make sure
+// that for every user created, a profile table is created
+model Users {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  email     String    @unique
+  profile   Profile?
+}
+
+// TO DO: Need to think about storing information like 2FA, stats and avatar.
+model Profile {
+  id   Int    @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  user Users  @relation(fields: [id], references: [id])
 }
