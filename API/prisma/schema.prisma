@@ -26,10 +26,29 @@ model Users {
 
 // TO DO: Need to think about storing information like 2FA, stats and avatar.
 model Profile {
-  id        Int      @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  id          Int                  @id
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt()
   // This value stores the route to the avatar's location, so that later the MVC or an nginx instance can send it to the user.
-  avatar    String   @default("/usr/share/avatar/default.jpg")
-  user      Users    @relation(fields: [id], references: [id])
+  avatar      String               @default("/usr/share/avatar/default.jpg")
+  user        Users                @relation(fields: [id], references: [id])
+  // This field will not be added until work starts on the tournaments. For now is not valid.
+  //tournaments Tournament_Players[]
 }
+
+// model Tournament {
+//   id         String               @id @default(ulid())
+//   startedAt  DateTime             @default(now())
+//   finishedAt DateTime?
+//   players    Tournament_Players[]
+// }
+
+// model Tournament_Players {
+//   id           Int        @id
+//   playerAlias  string
+//   rank         Int
+//   playerId     Int
+//   tournamentId String
+//   players      Profile    @relation(fields: [playerId], references: [id])
+//   tournaments  Tournament @relation(fields: [tournamentId], references: [id])
+// }
