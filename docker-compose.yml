@@ -3,22 +3,12 @@ services:
     build:
       context: ./API
       dockerfile: Dockerfile
-    volumes:
-      - ./data:/app/data
+    # volumes:
+    #   - ./data:/app/data
     ports:
       - '3000:3000'
     env_file:
       - .env
-    # depends_on:
-    #   - db
-
-  # db:
-  #   container_name: db
-  #   image: keinos/sqlite3:3.50.3
-  #   restart: always
-  #   shm_size: 128mb
-  #   env_file:
-  #     - .env
 
 networks:
   lan:
