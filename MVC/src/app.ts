@@ -17,11 +17,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
 
   // Do not touch the following lines
 
-  await fastify.register(require('@fastify/static'), {
-    root: join(__dirname, '..', 'dist'),
-    prefix: '/dist/' // optional: default '/'
-  })
-
   // This loads all plugins defined in plugins
   // those should be support plugins that are reused
   // through your application
