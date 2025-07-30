@@ -10,10 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Ping {
-  id Int @id @default(autoincrement())
-}
-
 // This table represents the basic login data of an user. At the application level, we must make sure
 // that for every user created, a profile table is created
 model Users {

@@ -34,15 +34,6 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		return { msg: `The number you entered was ${req.body.number}`}
 	});
 
-	fastify.get("/db-test", async (req, res) => {
-		try {
-			const pings = await fastify.prisma.ping.findMany();
-			return { db: "connected", entries: pings };
-		} catch (error) {
-			return res.status(500).send({ db: "error", message: (error as Error).message });
-		}
-	});
-
 	fastify.register(prueba, { prefix: "nested" })
 }
 

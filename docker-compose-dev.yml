@@ -13,8 +13,8 @@ services:
       context: ./API
       dockerfile: Dockerfile
       target: dev
-    # volumes:
-    #   - ./data:/app/data
+    volumes:
+      - ./API:/app
     ports:
       - '3000:3000'
     env_file:
@@ -24,6 +24,9 @@ services:
     build:
       context: ./MVC
       dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./MVC:/app
     env_file:
       - .env
     hostname: ponggame
