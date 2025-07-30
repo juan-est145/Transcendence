@@ -1,0 +1,25 @@
+services:
+  api:
+    build: 
+      context: ./API
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+
+  mvc:
+    build:
+      context: ./MVC
+      dockerfile: Dockerfile
+      #target: prod
+    ports:
+      - '8080:3000'
+    env_file:
+      - .env
+    hostname: ponggame
+
+networks:
+  lan:
+    driver: bridge
