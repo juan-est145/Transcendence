@@ -1,12 +1,22 @@
 services:
   api:
-    build:
+    build: 
       context: ./API
       dockerfile: Dockerfile
+      target: dev
     # volumes:
     #   - ./data:/app/data
     ports:
       - '3000:3000'
+    env_file:
+      - .env
+
+  mvc:
+    build:
+      context: ./MVC
+      dockerfile: Dockerfile
+    ports:
+      - '8080:3000'
     env_file:
       - .env
 
