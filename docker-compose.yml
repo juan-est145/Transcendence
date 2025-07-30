@@ -1,4 +1,12 @@
 services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - mvc
   api:
     build: 
       context: ./API
@@ -19,6 +27,8 @@ services:
     env_file:
       - .env
     hostname: ponggame
+    depends_on:
+      - api
 
 networks:
   lan:
