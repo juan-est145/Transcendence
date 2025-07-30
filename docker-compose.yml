@@ -13,7 +13,7 @@ services:
     build:
       context: ./MVC
       dockerfile: Dockerfile
-      #target: prod
+      target: prod
     ports:
       - '8080:3000'
     env_file:
