@@ -1,5 +1,4 @@
 import { FastifyInstance, RouteShorthandOptions } from "fastify"
-import { prueba } from "./nested/nested";
 import { Req, Res } from "./root.dto";
 import { type Static } from '@sinclair/typebox';
 import { auth } from "./auth/auth";

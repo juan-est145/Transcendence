@@ -10,7 +10,11 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 			data: {
 				username: body.username,
 				password: body.password,
-				email: body.password
+				email: body.email
+			},
+			select: {
+				username: true,
+				email: true,
 			}
 		});
 	} catch (error) {
