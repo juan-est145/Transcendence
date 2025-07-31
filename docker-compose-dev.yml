@@ -16,7 +16,7 @@ services:
     volumes:
       - ./API:/app
     ports:
-      - '3000:3000'
+      - '4343:4343'
     env_file:
       - .env
 

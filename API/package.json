@@ -9,11 +9,11 @@
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
     "prisma": "prisma migrate dev --name dev && prisma generate",
-    "start": "npm run prisma && npm run build:ts && fastify start -l info dist/app.js",
+    "start": "npm run prisma && npm run build:ts && fastify start -l info -p 4343 dist/app.js --options",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run prisma && npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
+    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -p 4343 -P dist/app.js --options"
   },
   "repository": {
     "type": "git",
