@@ -2,6 +2,7 @@ import { FastifyInstance, RouteShorthandOptions } from "fastify"
 import { prueba } from "./nested/nested";
 import { Req, Res } from "./root.dto";
 import { type Static } from '@sinclair/typebox';
+import { auth } from "./auth/auth";
 
 
 const rootSchema: RouteShorthandOptions = {
@@ -34,7 +35,8 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		return { msg: `The number you entered was ${req.body.number}`}
 	});
 
-	fastify.register(prueba, { prefix: "nested" })
+	//fastify.register(prueba, { prefix: "nested" })
+	fastify.register(auth, { prefix: "auth" });
 }
 
 export { root }
