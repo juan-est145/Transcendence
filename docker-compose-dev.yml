@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       target: dev
     ports:
-      - '80:80'
+      - '443:4343'
     depends_on:
       - mvc
   api:
