@@ -2,12 +2,8 @@ FROM node:24-alpine3.21 AS dev
 
 WORKDIR /app
 
-COPY package*.json ./
-
 RUN apk update && apk upgrade && apk add --no-cache openssl && openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
--keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=ponggame.com" && npm install
-
-COPY . .
+-keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=ponggame.com"
 
 EXPOSE 4343
 
