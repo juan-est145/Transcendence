@@ -32,8 +32,6 @@ services:
     hostname: ponggame
     depends_on:
       - api
-    ports:
-      - '4343:4343'
 
 networks:
   lan:

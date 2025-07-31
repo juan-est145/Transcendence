@@ -10,7 +10,7 @@
     "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
     "tailwind": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css",
     "tailwind:dev": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css --watch=always",
-    "start": "npm run tailwind && npm run build:ts && fastify start -l info -p 4343 dist/app.js --options=dist/app.js",
+    "start": "npm run tailwind && npm run build:ts && fastify start -l info -p 4343 dist/app.js --options",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run tailwind:dev & npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
