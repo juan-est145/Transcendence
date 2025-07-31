@@ -1,12 +1,21 @@
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { FastifyHttpsOptions, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { Server } from 'node:https'
+import fs from 'node:fs'
 
-export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
 
+export interface AppOptions extends FastifyServerOptions<Server>, Partial<AutoloadPluginOptions> {
+  server?: FastifyHttpsOptions<Server>
 }
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {
+  server: {
+    https: {
+      key: fs.readFileSync("/etc/ssl/private/cert.key"),
+      cert: fs.readFileSync("/etc/ssl/certs/selfsigned.crt"),
+    }
+  },
 }
 
 const app: FastifyPluginAsync<AppOptions> = async (
