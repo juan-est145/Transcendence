@@ -9,4 +9,4 @@ export const signInBody = Type.Object({
 export const singInRes = Type.Object({
 	username: Type.String({ minLength: 3, maxLength: 20 }),
 	email: Type.String({ format: "email" })
-})
+});
