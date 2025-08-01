@@ -18,8 +18,12 @@ const signInSchema: RouteShorthandOptions = {
 export async function auth(fastify: FastifyInstance) {
 	fastify.post<{ Body: Static<typeof signInBody> }>("/sign-in", signInSchema, async (req, res) => {
 		// TO DO: Need to enforce proper error handling
-		req.body.password = await bcrypt.hash(req.body.password, 10);
-		const response = await createUser(fastify, req.body);
-		return res.code(201).send(response);
+		try {
+			req.body.password = await bcrypt.hash(req.body.password, 10);
+			const response = await createUser(fastify, req.body);
+			return res.code(201).send(response);
+		} catch (error) {
+			console.error(error);
+		}
 	});
 }

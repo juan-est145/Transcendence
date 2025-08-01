@@ -6,7 +6,7 @@ type SignInBody = Static<typeof signInBody>
 
 export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 	try {
-		return fastify.prisma.users.create({
+		const result = await fastify.prisma.users.create({
 			data: {
 				username: body.username,
 				password: body.password,
@@ -20,7 +20,9 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 				email: true,
 			}
 		});
+		return (result);
 	} catch (error) {
 		console.error("Something went wrong");
+		throw error;
 	}
 }

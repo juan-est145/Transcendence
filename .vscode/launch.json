@@ -1,0 +1,17 @@
+{
+	"configurations": [
+		{
+			"address": "localhost",
+			"localRoot": "${workspaceFolder}/API",
+			"name": "Attach to API",
+			"port": 9320,
+			"remoteRoot": "/app",
+			"request": "attach",
+			"skipFiles": [
+				"<node_internals>/**",
+				"${workspaceFolder}/API/node_modules/**"
+			],
+			"type": "node"
+		}
+	]
+}

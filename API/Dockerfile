@@ -7,6 +7,7 @@ openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
 -keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=api"
 
 EXPOSE 4343
+EXPOSE 9320
 
 ENTRYPOINT [ "npm" ]
 

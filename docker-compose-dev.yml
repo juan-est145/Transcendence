@@ -17,6 +17,7 @@ services:
       - ./API:/app
     ports:
       - '4343:4343'
+      - '9320:9320'
     env_file:
       - .env
 
