@@ -16,6 +16,12 @@ const signInSchema: RouteShorthandOptions = {
 }
 
 export async function auth(fastify: FastifyInstance) {
+	// This is the error catcher, we must work with it to handle appropiately. Must distinguish between
+	// validation errors, 500 internal errors with the db and constraints errors.
+	fastify.setErrorHandler((error, request, reply) => {
+		console.error(error);
+	});
+
 	fastify.post<{ Body: Static<typeof signInBody> }>("/sign-in", signInSchema, async (req, res) => {
 		// TO DO: Need to enforce proper error handling
 		try {
@@ -23,7 +29,7 @@ export async function auth(fastify: FastifyInstance) {
 			const response = await createUser(fastify, req.body);
 			return res.code(201).send(response);
 		} catch (error) {
-			console.error(error);
+			throw error;
 		}
 	});
 }
