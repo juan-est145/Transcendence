@@ -1,18 +1,22 @@
 import { Type } from '@sinclair/typebox';
 import { baseHttpError } from '../../v1.dto';
 
+const username = Type.String({ minLength: 3, maxLength: 20 });
+const email = Type.String({ format: "email" });
+const password = Type.String({ minLength: 3, maxLength: 20 });
+
 export const signInBody = Type.Object({
-	username: Type.String({ minLength: 3, maxLength: 20 }),
-	password: Type.String({ minLength: 3, maxLength: 20 }),
-	email: Type.String({ format: "email" })
+	username,
+	password,
+	email,
 });
 
 export const singInRes = Type.Object({
-	username: Type.String({ minLength: 3, maxLength: 20 }),
-	email: Type.String({ format: "email" })
+	username,
+	email,
 });
 
-export const signInError = Type.Intersect([
+export const authError = Type.Intersect([
 	baseHttpError,
 	Type.Object({
 		details: Type.Optional(
@@ -26,3 +30,8 @@ export const signInError = Type.Intersect([
 	}
 	)
 ]);
+
+export const logInBody = Type.Object({
+	email,
+	password,
+});

@@ -29,3 +29,22 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 		throw (error);
 	}
 }
+
+export async function getUser(fastify: FastifyInstance, email: string) {
+	try {
+		const result = await fastify.prisma.users.findUniqueOrThrow({
+			where: {
+				email
+			},
+			include: {
+				profile: true
+			},
+		});
+		return result;
+	} catch (error) {
+		if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
+			throw fastify.httpErrors.unauthorized("Invalid username or password");
+		}
+		throw error;
+	}
+}
