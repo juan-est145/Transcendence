@@ -1,6 +1,8 @@
 import { signInBody, singInRes, signInError } from "./auth.dto";
 import { RouteShorthandOptions } from "fastify";
 
+const authTag = "Auth"
+
 export const signInSchema: RouteShorthandOptions = {
 	schema: {
 		body: signInBody,
@@ -38,7 +40,14 @@ export const signInSchema: RouteShorthandOptions = {
 				}
 			},
 		},
-		tags: ["Auth"],
+		tags: [authTag],
 		summary: "This endpoint allows for the creation of a user"
 	}
+}
+
+export const logInSchema: RouteShorthandOptions = {
+	schema: {
+		tags: [authTag],
+		summary: "This endpoint allows an user to log in",
+	},
 }

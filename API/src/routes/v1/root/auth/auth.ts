@@ -1,6 +1,6 @@
-import { FastifyInstance,  } from "fastify";
+import { FastifyInstance, } from "fastify";
 import { createUser } from "./auth.service";
-import { signInSchema } from "./auth.swagger";
+import { logInSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { SignInBody, type SignInError } from "./auth.type";
 import { HttpError, HttpMap } from "../../v1.dto";
@@ -34,5 +34,9 @@ export async function auth(fastify: FastifyInstance) {
 		} catch (error) {
 			throw error;
 		}
+	});
+
+	fastify.post("/log-in", logInSchema, async (req, res) => {
+
 	});
 }
