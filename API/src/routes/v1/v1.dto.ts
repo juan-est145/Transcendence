@@ -1,28 +1,30 @@
-export interface IBaseError extends Error {
-	statusCode: number,
-	httpError: HttpError,
-};
+import { Type } from "@sinclair/typebox";
 
-enum HttpError {
-	BAD_REQUEST = 400,
-	UNAUTHORIZED = 401,
-	FORBIDDEN = 403,
-	NOT_FOUND = 404,
-	METHOD_NOT_ALLOWED = 405,
-	NOT_ACCEPTABLE = 406,
-	REQUEST_TIMEOUT = 408,
-	CONFLICT = 409,
-	GONE = 410,
-	PRECONDITION_FAILED = 412,
-	PAYLOAD_TOO_LARGE = 413,
-	UNSUPPORTED_MEDIA_TYPE = 415,
-	I_AM_A_TEAPOT = 418,
-	UNPROCESSABLE_ENTITY = 422,
-	INTERNAL_SERVER_ERROR = 500,
-	NOT_IMPLEMENTED = 501,
-	BAD_GATEWAY = 502,
-	SERVICE_UNAVAILABLE = 503,
-	GATEWAY_TIMEOUT = 504,
-	HTTP_VERSION_NOT_SUPPORTED = 505,
+export enum HttpError {
+	BAD_REQUEST = "Bad request",
+	UNAUTHORIZED = "Unauthorized",
+	FORBIDDEN = "Forbidden",
+	NOT_FOUND = "Not found",
+	METHOD_NOT_ALLOWED = "Method not allowed",
+	NOT_ACCEPTABLE = "Not acceptable",
+	REQUEST_TIMEOUT = "Request timeout",
+	CONFLICT = "Conflict",
+	GONE = "Gone",
+	PRECONDITION_FAILED = "Precondition failed",
+	PAYLOAD_TOO_LARGE = "Payload too large",
+	UNSUPPORTED_MEDIA_TYPE = "Unsupported media type",
+	I_AM_A_TEAPOT = "I'm a teapot",
+	UNPROCESSABLE_ENTITY = "Unprocessable entity",
+	INTERNAL_SERVER_ERROR = "Internal server error",
+	NOT_IMPLEMENTED = "Not implemented",
+	BAD_GATEWAY = "Bad gateway",
+	SERVICE_UNAVAILABLE = "Service unavailable",
+	GATEWAY_TIMEOUT = "Gateway timeout",
+	HTTP_VERSION_NOT_SUPPORTED = "HTTP version not supported",
 }
+
+export const baseHttpError = Type.Object({
+	statusCode: Type.Number({ minimum: 400, exclusiveMaximum: 600 }),
+	httpError: Type.Enum(HttpError),
+});
 
