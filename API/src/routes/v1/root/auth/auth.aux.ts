@@ -1,7 +1,7 @@
-import { SignInError } from "./auth.type";
 import { HttpError, HttpMap } from "../../v1.dto";
+import { AuthError } from "./auth.type";
 
-export function getErrorHttpValues(error: SignInError, number: number) {
+export function getErrorHttpValues(error: AuthError, number: number) {
 	if (!HttpMap.get(number)) {
 		error.statusCode = 500;
 		error.httpError = HttpError.INTERNAL_SERVER_ERROR;
