@@ -15,22 +15,14 @@ export const singInRes = Type.Object({
 export const signInError = Type.Intersect([
 	baseHttpError,
 	Type.Object({
-		details: Type.Array(
-			Type.Object({
-				field: Type.Optional(Type.String()),
-				msg: Type.Optional(Type.Array(Type.String())),
-			}),
+		details: Type.Optional(
+			Type.Array(
+				Type.Object({
+					field: Type.Optional(Type.String()),
+					msg: Type.Optional(Type.Array(Type.String())),
+				}),
+			)
 		)
 	}
 	)
 ]);
-
-// export const signInError = Type.Intersect([
-// 	baseHttpError,
-// 	Type.Optional(
-// 		Type.Object({
-// 			field: Type.String(),
-// 			details: Type.Array(Type.String())
-// 		}),
-// 	),
-// ]);

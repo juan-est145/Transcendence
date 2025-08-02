@@ -12,6 +12,7 @@ const signInSchema: RouteShorthandOptions = {
 		response: {
 			201: singInRes,
 			400: signInError,
+			500: signInError
 		},
 		tags: ["Auth"],
 		summary: "This endpoint allows for the creation of a user"
@@ -25,13 +26,12 @@ export async function auth(fastify: FastifyInstance) {
 		const response: SignInError = {
 			statusCode: 500,
 			httpError: HttpError.INTERNAL_SERVER_ERROR,
-			details: [],
 		};
 		if (error.validation) {
 			response.details = [{
 				field: error.validation[0].params.missingProperty as string,
 				msg: [error.message]
-			}]
+			}];
 			return res.code(400).send(response)
 		}
 		return res.code(500).send(response);
