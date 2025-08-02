@@ -28,3 +28,27 @@ export const baseHttpError = Type.Object({
 	httpError: Type.Enum(HttpError),
 });
 
+const baseHttpmap = new Map<number, HttpError>([
+	[400, HttpError.BAD_REQUEST],
+	[401, HttpError.UNAUTHORIZED],
+	[403, HttpError.FORBIDDEN],
+	[404, HttpError.NOT_FOUND],
+	[405, HttpError.METHOD_NOT_ALLOWED],
+	[406, HttpError.NOT_ACCEPTABLE],
+	[408, HttpError.REQUEST_TIMEOUT],
+	[409, HttpError.CONFLICT],
+	[410, HttpError.GONE],
+	[412, HttpError.PRECONDITION_FAILED],
+	[413, HttpError.PAYLOAD_TOO_LARGE],
+	[415, HttpError.UNSUPPORTED_MEDIA_TYPE],
+	[418, HttpError.I_AM_A_TEAPOT],
+	[422, HttpError.UNPROCESSABLE_ENTITY],
+	[500, HttpError.INTERNAL_SERVER_ERROR],
+	[501, HttpError.NOT_IMPLEMENTED],
+	[503, HttpError.SERVICE_UNAVAILABLE],
+	[504, HttpError.GATEWAY_TIMEOUT],
+	[505, HttpError.HTTP_VERSION_NOT_SUPPORTED],
+]);
+
+export const HttpMap: ReadonlyMap<number, HttpError> = baseHttpmap
+
