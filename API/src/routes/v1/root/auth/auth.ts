@@ -43,7 +43,7 @@ export async function auth(fastify: FastifyInstance) {
 			const user = await getUser(fastify, req.body.email);
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid username or password");
-			return res.send(user);
+			return res.code(201).send(user);
 		} catch (error) {
 			throw error;
 		}
