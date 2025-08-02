@@ -1,9 +1,8 @@
 import { FastifyInstance, RouteShorthandOptions } from "fastify";
 import { createUser } from "./auth.service";
 import { signInBody, singInRes, signInError } from "./auth.dto";
-import { type Static } from '@sinclair/typebox';
 import bcrypt from "bcrypt";
-import { type SignInError } from "./auth.type";
+import { SignInBody, type SignInError } from "./auth.type";
 import { HttpError } from "../../v1.dto";
 
 const signInSchema: RouteShorthandOptions = {
@@ -37,7 +36,7 @@ export async function auth(fastify: FastifyInstance) {
 		return res.code(500).send(response);
 	});
 
-	fastify.post<{ Body: Static<typeof signInBody> }>("/sign-in", signInSchema, async (req, res) => {
+	fastify.post<{ Body: SignInBody }>("/sign-in", signInSchema, async (req, res) => {
 		// TO DO: Need to enforce proper error handling
 		try {
 			req.body.password = await bcrypt.hash(req.body.password, 10);
