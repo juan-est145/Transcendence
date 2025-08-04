@@ -49,4 +49,19 @@ export async function auth(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
+
+	fastify.post<{ Body: { jwt: string } }>("/jwt-test", {
+		schema: {
+			security: [{ bearerAuth: [] }],
+			tags: ["Auth"],
+			summary: "A temporary endpoint to test the validity of the jwt. Will be deleted"
+		}
+	}, async (req, res) => {
+		try {
+			await req.jwtVerify();
+			return res.code(201).send({ msg: "Everything went okay" });
+		} catch (error) {
+			throw error;
+		} 
+	});
 }

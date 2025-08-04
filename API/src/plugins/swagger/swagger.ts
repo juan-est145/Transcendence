@@ -10,7 +10,16 @@ export default fp<SwaggerOptions>(async (fastify) => {
 				title: "Transcendence API",
 				description: "This is a REST API to perform CRUD operations and account managament",
 				version: "1.0.0",
-			}
+			},
+			components: {
+				securitySchemes: {
+					bearerAuth: {
+						type: "http",
+						scheme: "bearer",
+						bearerFormat: "JWT"
+					},
+				},
+			},
 		},
 		mode: "dynamic",
 	};
