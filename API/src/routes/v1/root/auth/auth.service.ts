@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { signInBody } from "./auth.dto";
 import { type Static } from '@sinclair/typebox'
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { JwtPayload } from "./auth.type";
 
 type SignInBody = Static<typeof signInBody>
 
@@ -47,4 +48,13 @@ export async function getUser(fastify: FastifyInstance, email: string) {
 		}
 		throw error;
 	}
+}
+
+export function signJwt(fastify: FastifyInstance, payload: JwtPayload) {
+	const jwt = fastify.jwt.sign(payload, {
+		expiresIn: "1h",
+		iss: "https://api:4343"
+	});
+
+	return jwt;
 }

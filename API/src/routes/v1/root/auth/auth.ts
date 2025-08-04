@@ -1,5 +1,5 @@
 import { FastifyInstance, } from "fastify";
-import { createUser, getUser } from "./auth.service";
+import { createUser, getUser, signJwt } from "./auth.service";
 import { logInSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody, type AuthError } from "./auth.type";
@@ -43,7 +43,8 @@ export async function auth(fastify: FastifyInstance) {
 			const user = await getUser(fastify, req.body.email);
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid username or password");
-			return res.code(201).send(user);
+			const jwt = signJwt(fastify, { username: user.username, email: user.email });
+			return res.code(201).send({ jwt });
 		} catch (error) {
 			throw error;
 		}

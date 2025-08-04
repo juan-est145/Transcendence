@@ -1,3 +1,7 @@
+# Keys
+private.key
+public.key
+
 # Logs
 logs
 *.log
