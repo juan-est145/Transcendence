@@ -39,4 +39,8 @@ export const logInBody = Type.Object({
 export const jwtPayload = Type.Object({
 	username,
 	email,
-})
+});
+
+export const jwt = Type.Object({
+	jwt: Type.String(),
+});

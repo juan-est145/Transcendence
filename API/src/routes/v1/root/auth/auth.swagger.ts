@@ -1,4 +1,4 @@
-import { signInBody, singInRes, authError, logInBody } from "./auth.dto";
+import { signInBody, singInRes, authError, logInBody, jwt } from "./auth.dto";
 import { RouteShorthandOptions } from "fastify";
 
 const authTag = "Auth"
@@ -51,6 +51,22 @@ export const logInSchema: RouteShorthandOptions = {
 		tags: [authTag],
 		summary: "This endpoint allows an user to log in",
 		response: {
+			201: {
+				description: "It returns an object with a jwt field",
+				content: {
+					"application/json": {
+						schema: jwt,
+					}
+				}
+			},
+			400: {
+				description: "If a field is invalid or missing, it will return a message with the field that is invalid",
+				content: {
+					"application/json": {
+						schema: authError,
+					}
+				}
+			},
 			401: {
 				description: "It returns an error message if the credentials are not correct",
 				content: {
@@ -58,7 +74,15 @@ export const logInSchema: RouteShorthandOptions = {
 						schema: authError,
 					}
 				}
-			}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response",
+				content: {
+					"application/json": {
+						schema: authError,
+					}
+				}
+			},
 		}
 	},
 }
