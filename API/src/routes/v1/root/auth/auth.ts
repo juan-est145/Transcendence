@@ -61,6 +61,10 @@ export async function auth(fastify: FastifyInstance) {
 	 * @param res - The fastify response instance.
 	 * @returns In case of success, it returns a 201 json response including the email and username of the new user.
 	 * In case of error, an error is thrown and catched by the route's error handler.
+	 * @remarks
+	 * The password field must ALWAYS be hashed using bcrypt before passing it to the createUser
+	 * function. 
+	 * 
 	 */
 	fastify.post<{ Body: SignInBody }>("/sign-in", signInSchema, async (req, res) => {
 		try {
@@ -83,7 +87,7 @@ export async function auth(fastify: FastifyInstance) {
 		try {
 			const user = await getUser(fastify, req.body.email);
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
-				throw fastify.httpErrors.unauthorized("Invalid username or password");
+				throw fastify.httpErrors.unauthorized("Invalid email or password");
 			const jwt = signJwt(fastify, { username: user.username, email: user.email });
 			return res.code(201).send({ jwt });
 		} catch (error) {
