@@ -11,3 +11,11 @@ export function getErrorHttpValues(error: AuthError, number: number) {
 		error.httpError = HttpMap.get(number)!;
 	}
 }
+
+export function getErrorDetails(error: AuthError) {
+	let message = "";
+	error.details?.forEach((value) => {
+		message += `- Error in field ${value.field}: ${value.msg}\n`
+	});
+	return message;
+}

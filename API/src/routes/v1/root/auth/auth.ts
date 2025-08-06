@@ -4,7 +4,7 @@ import { logInSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody, type AuthError } from "./auth.type";
 import { HttpError, HttpMap } from "../../v1.dto";
-import { getErrorHttpValues } from "./auth.aux";
+import { getErrorDetails, getErrorHttpValues } from "./auth.aux";
 
 /**
  * All auth endpoints are processed here. The route also has a default error handler that will catch all
@@ -49,11 +49,11 @@ export async function auth(fastify: FastifyInstance) {
 				msg: [error.message]
 			}];
 		}
+		console.error(`- An error of type ${errorMsg.statusCode} occurred. The details are as follow:\n ${getErrorDetails(errorMsg)}`);
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
-	// TO DO: Implement testing for both routes and do proper documentation. Also add jwt to logging
-	// and do an console.error of the error type for both routes.
+	// TO DO: Implement testing for both routes and do a console.error of the error type for both routes.
 
 	/**
 	 * This route allows for the creation of new users
