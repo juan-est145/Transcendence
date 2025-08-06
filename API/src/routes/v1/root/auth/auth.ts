@@ -54,6 +54,14 @@ export async function auth(fastify: FastifyInstance) {
 
 	// TO DO: Implement testing for both routes and do proper documentation. Also add jwt to logging
 	// and do an console.error of the error type for both routes.
+
+	/**
+	 * This route allows for the creation of new users
+	 * @param req - The fastify request instance. It must have a body property according to the SignInBody type
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 json response including the email and username of the new user.
+	 * In case of error, an error is thrown and catched by the route's error handler.
+	 */
 	fastify.post<{ Body: SignInBody }>("/sign-in", signInSchema, async (req, res) => {
 		try {
 			req.body.password = await bcrypt.hash(req.body.password, 10);
@@ -64,6 +72,13 @@ export async function auth(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows for users to log in.
+	 * @param req - The fastify request instance. It must have a body property according to the LogInBody type
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 json response including a JWT. In case of error, an error is thrown
+	 * and catched by the route's error handler.
+	 */
 	fastify.post<{ Body: LogInBody }>("/log-in", logInSchema, async (req, res) => {
 		try {
 			const user = await getUser(fastify, req.body.email);
