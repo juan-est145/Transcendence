@@ -53,8 +53,6 @@ export async function auth(fastify: FastifyInstance) {
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
-	// TO DO: Implement testing for both routes
-
 	/**
 	 * This route allows for the creation of new users
 	 * @param req - The fastify request instance. It must have a body property according to the SignInBody type
