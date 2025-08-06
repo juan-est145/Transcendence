@@ -53,7 +53,7 @@ export async function auth(fastify: FastifyInstance) {
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
-	// TO DO: Implement testing for both routes and do a console.error of the error type for both routes.
+	// TO DO: Implement testing for both routes
 
 	/**
 	 * This route allows for the creation of new users
