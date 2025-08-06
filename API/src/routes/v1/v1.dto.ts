@@ -1,5 +1,20 @@
 import { Type } from "@sinclair/typebox";
 
+/**
+ * This file contains the base Http exception for all other exceptions to inherit from.
+ * 
+ * @remarks
+ * The baseHttpError object uses typebox for validating and creating typescript types of new http errors and provide a consistent
+ * interface.
+ * 
+ * ```ts
+ * const baseHttpError = Type.Object({
+	statusCode: Type.Number({ minimum: 400, exclusiveMaximum: 600 }),
+	httpError: Type.Enum(HttpError),
+});
+ * ```
+ */
+
 export enum HttpError {
 	BAD_REQUEST = "Bad request",
 	UNAUTHORIZED = "Unauthorized",

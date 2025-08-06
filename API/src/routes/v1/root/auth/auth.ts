@@ -6,7 +6,33 @@ import { LogInBody, SignInBody, type AuthError } from "./auth.type";
 import { HttpError, HttpMap } from "../../v1.dto";
 import { getErrorHttpValues } from "./auth.aux";
 
+/**
+ * All auth endpoints are processed here. The route also has a default error handler that will catch all
+ * the different http errors and send the appropiate response.
+ */
 export async function auth(fastify: FastifyInstance) {
+	/**
+	 * The /auth route error catcher.
+	 * 
+	 * @remarks
+	 * This function assigns the appropiate error code and message (500 internal server error if none are provided).
+	 * @param error - The fastify error instance.
+	 * @param req - The fastify request instance. This request object does not have any custom properties.
+	 * @param res- The fastify response instance.
+	 * @returns Returns a json response in the format of the type AuthError. If the error is of type 400,
+	 * in the details object there will be a field value indicating which property is not valid.
+	 * ```ts
+	 * type AuthError = {
+	 *	statusCode: number;
+	 * 	httpError: HttpError;
+	 *	} & {
+	 *	details?: {
+	 *		field?: string | undefined;
+	 *		msg?: string[] | undefined;
+	 *	}[] | undefined;
+	 *	}
+	 * ```
+	 */
 	fastify.setErrorHandler((error, req, res) => {
 		const statusCode = error.statusCode ?? 500;
 		const httpError = HttpMap.get(statusCode) ?? HttpError.INTERNAL_SERVER_ERROR;
