@@ -7,10 +7,7 @@ canvas.height = 400;
 //Variables to keep track of the score and top and bottom margins of the paddles
 let scoreOne = 0;
 let scoreTwo = 0;
-const paddleMargin = 10;
-
-//Event listener for keypresses to move the paddles up and down
-window.addEventListener("keypress", doKeyDown, false);
+const paddleMargin = 2;
 
 //Main movement class for all elements in the game
 class Element {
@@ -22,23 +19,6 @@ class Element {
 		this.color = options.color;
 		this.speed = options.speed || 3;
 		this.gravity = options.gravity;
-	}
-}
-
-//Main movement function of the paddles
-function doKeyDown(event) {
-	const key = event.key;
-
-	if (key == "w" && playerOne.y - playerOne.gravity > paddleMargin) {
-		playerOne.y -= playerOne.gravity * 6;	
-	} else if (key == "s" && playerOne.y + playerOne.height + playerOne.gravity < canvas.height - paddleMargin) {
-		playerOne.y += playerOne.gravity * 6;
-	}
-
-	if (key == "i" && playerTwo.y - playerTwo.gravity > paddleMargin) {
-		playerTwo.y -= playerTwo.gravity * 6;	
-	} else if (key == "k" && playerTwo.y + playerTwo.height + playerTwo.gravity < canvas.height - paddleMargin) {
-		playerTwo.y += playerTwo.gravity * 6;
 	}
 }
 
@@ -107,6 +87,34 @@ function drawMiddleLine() {
     context.restore();
 }
 
+//Handles keypresses to move the paddles up and down
+const keysPressed = {};
+
+window.addEventListener("keydown", (event) => {
+	const key = event.key;
+	keysPressed[key] = true;
+});
+
+window.addEventListener("keyup", (event) => {
+	const key = event.key;
+	keysPressed[key] = false;
+});
+
+function movePaddles() {
+	if (keysPressed["w"] && playerOne.y - playerOne.gravity * 8 > paddleMargin) {
+        playerOne.y -= playerOne.gravity * 4;
+    }
+    if (keysPressed["s"] && playerOne.y + playerOne.height + playerOne.gravity * 8 < canvas.height - paddleMargin) {
+        playerOne.y += playerOne.gravity * 4;
+    }
+	if (keysPressed["i"] && playerTwo.y - playerTwo.gravity * 8 > paddleMargin) {
+        playerTwo.y -= playerTwo.gravity * 4;
+    }
+    if (keysPressed["k"] && playerTwo.y + playerTwo.height + playerTwo.gravity * 8 < canvas.height - paddleMargin) {
+        playerTwo.y += playerTwo.gravity * 4;
+    }
+}
+
 //Ball bounce function when colliding with the top or bottom of the canvas
 function ballBounce()
 {
@@ -173,6 +181,7 @@ function drawElements()
 //Main loop of pong that will draw the elements every frame
 function mainLoop()
 {
+	movePaddles();
 	ballBounce();
 	drawElements();
 	window.requestAnimationFrame(mainLoop);
