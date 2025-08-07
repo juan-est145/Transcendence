@@ -150,7 +150,7 @@ engine.runRenderLoop(function () {
 	paddleTwo.position.y = Math.max(0.4, Math.min(2.6, paddleTwo.position.y + paddleSpeed * paddleTwoDir));
 
 	ball.position.addInPlace(ballVelocity);
-	if (ball.position.y < 0.2 || ball.position.y > 2.8)
+	if (ball.position.y < 0.2 || ball.position.y > 2.8) 
 		ballVelocity.y *= -1;
 	
 	if ((ball.position.x < paddleOne.position.x + 0.2 && ball.position.x > paddleOne.position.x - 0.2
