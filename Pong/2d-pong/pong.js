@@ -17,7 +17,7 @@ class Element {
 		this.width = options.width;
 		this.height = options.height;
 		this.color = options.color;
-		this.speed = options.speed || 3;
+		this.speed = options.speed || 4;
 		this.gravity = options.gravity;
 	}
 }
@@ -107,10 +107,10 @@ function movePaddles() {
     if (keysPressed["s"] && playerOne.y + playerOne.height + playerOne.gravity * 8 < canvas.height - paddleMargin) {
         playerOne.y += playerOne.gravity * 4;
     }
-	if (keysPressed["i"] && playerTwo.y - playerTwo.gravity * 8 > paddleMargin) {
+	if (keysPressed["ArrowUp"] && playerTwo.y - playerTwo.gravity * 8 > paddleMargin) {
         playerTwo.y -= playerTwo.gravity * 4;
     }
-    if (keysPressed["k"] && playerTwo.y + playerTwo.height + playerTwo.gravity * 8 < canvas.height - paddleMargin) {
+    if (keysPressed["ArrowDown"] && playerTwo.y + playerTwo.height + playerTwo.gravity * 8 < canvas.height - paddleMargin) {
         playerTwo.y += playerTwo.gravity * 4;
     }
 }
@@ -139,26 +139,26 @@ function ballWallCollision()
         ball.y + ball.gravity + ball.height > playerTwo.y &&
         ball.y + ball.gravity < playerTwo.y + playerTwo.height
 	) {
-        ball.speed = ball.speed * -1;
+        ball.speed = ball.speed * -1 * 1.1;
     } else if (
         ball.x + ball.speed <= playerOne.x + playerOne.width &&
         ball.x + ball.speed > playerOne.x &&
         ball.y + ball.gravity + ball.height > playerOne.y &&
         ball.y + ball.gravity < playerOne.y + playerOne.height
     ) {
-        ball.speed = ball.speed * -1;
+        ball.speed = ball.speed * -1 * 1.1;
     } else if (ball.x + ball.speed < 0) {
         scoreTwo += 1;
         ball.x = canvas.width / 2 - ball.width / 2;
         ball.y = canvas.height / 2 - ball.height / 2;
-        ball.speed = Math.abs(ball.speed);
+        ball.speed = 3;
         ball.gravity = (Math.random() > 0.5 ? 1 : -1);
         return;
     } else if (ball.x + ball.speed > canvas.width) {
         scoreOne += 1;
         ball.x = canvas.width / 2 - ball.width / 2;
         ball.y = canvas.height / 2 - ball.height / 2;
-        ball.speed = -Math.abs(ball.speed);
+        ball.speed = 4;
         ball.gravity = (Math.random() > 0.5 ? 1 : -1);
         return;
     }

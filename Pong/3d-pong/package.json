@@ -11,5 +11,9 @@
   "devDependencies": {
     "@babylonjs/core": "^8.22.0",
     "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "@babylonjs/gui": "^8.22.0",
+    "earcut": "^3.0.2"
   }
 }
