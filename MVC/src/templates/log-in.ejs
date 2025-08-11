@@ -8,19 +8,25 @@
 	<link rel="stylesheet" href="/styles/dist/output.css">
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen flex justify-center items-center">
-	<form class="bg-gray-800 min-w-lg min-h-[200px] rounded-xl"
-		action="/auth/login" method="post">
-		<h1 class="text-4xl text-center">Log in</h1>
-		<fieldset class="flex flex-col justify-center items-center gap-2">
-			<input class="bg-blue-600 text-white rounded font-semibold text-center" type="text" id="email"
-				placeholder="Email" required>
-			<input class="bg-blue-600 text-white rounded font-semibold text-center" type="text" id="password"
-				placeholder="Password" required>
-		</fieldset>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+	<%- include('components/navbar.ejs') %>
+		<main class="flex-grow flex flex-col justify-center">
+			<form
+				class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12"
+				action="/auth/login" method="post">
+				<h1 class="text-4xl text-center m-3 font-bold">Log in</h1>
+				<fieldset class="flex flex-col justify-center items-center gap-2">
+					<input class="bg-gray-900 text-white rounded font-semibold text-center" type="email" id="email"
+						placeholder="Email" required>
+					<input class="bg-gray-900 text-white rounded font-semibold text-center" type="password"
+						id="password" placeholder="Password" required>
+				</fieldset>
+				<button
+					class="bg-blue-800 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition">Submit</button>
+				<a href="#">Forgot password?</a>
+			</form>
+		</main>
 
-		<!-- <label for="email">Email</label> -->
-	</form>
 </body>
 
 </html>
