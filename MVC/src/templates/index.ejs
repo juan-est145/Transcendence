@@ -1,51 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pong Game</title>
-    <link rel="stylesheet" href="/styles/dist/output.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pong Game</title>
+  <link rel="stylesheet" href="/styles/dist/output.css">
+  <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <%- include('components/navbar.ejs') %>
 
-  <!-- Contenido principal -->
-  <main class="flex flex-col items-center justify-center flex-grow px-4 py-12 max-w-3xl mx-auto text-center">
+    <!-- Contenido principal -->
+    <main class="flex flex-col items-center justify-center flex-grow px-4 py-12 max-w-3xl mx-auto text-center">
 
-    <header class="mb-10">
-      <h1 class="text-5xl font-extrabold mb-4">Pong</h1>
-      <p class="text-gray-400 max-w-lg mx-auto">
-        Disfruta del clásico juego Pong y compite para ser el mejor!
-      </p>
-    </header>
+      <header class="mb-10">
+        <h1 class="text-5xl font-extrabold mb-4">Pong</h1>
+        <p class="text-gray-400 max-w-lg mx-auto">
+          Disfruta del clásico juego Pong y compite para ser el mejor!
+        </p>
+      </header>
 
-    <% if (user) { %>
-      <a href="/pong/game" class="bg-blue-600 hover:bg-blue-700 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg mb-10 inline-block">
-        Empezar a jugar
-      </a>
-    <% } else { %>
-      <p class="text-red-400 mb-10">Debes <a href="/login" class="underline hover:text-red-600">iniciar sesión</a> para jugar.</p>
-    <% } %>
+      <% if (user) { %>
+        <a href="/pong/game"
+          class="bg-blue-600 hover:bg-blue-700 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg mb-10 inline-block">
+          Empezar a jugar
+        </a>
+        <% } else { %>
+          <p class="text-red-400 mb-10">Debes <a href="/login" class="underline hover:text-red-600">iniciar sesión</a>
+            para jugar.</p>
+          <% } %>
 
-    <!-- Ranking -->
-    <section class="w-full bg-gray-800 rounded-lg p-6 shadow-md">
-      <h2 class="text-2xl font-bold mb-4">Ranking Top 5</h2>
-      <ol class="list-decimal list-inside space-y-2 text-gray-300">
-        <li>Jugador1 — 150 puntos</li>
-        <li>Jugador2 — 130 puntos</li>
-        <li>Jugador3 — 120 puntos</li>
-        <li>Jugador4 — 110 puntos</li>
-        <li>Jugador5 — 100 puntos</li>
-      </ol>
-    </section>
+            <!-- Ranking -->
+            <section class="w-full bg-gray-800 rounded-lg p-6 shadow-md">
+              <h2 class="text-2xl font-bold mb-4">Ranking Top 5</h2>
+              <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                <li>Jugador1 — 150 puntos</li>
+                <li>Jugador2 — 130 puntos</li>
+                <li>Jugador3 — 120 puntos</li>
+                <li>Jugador4 — 110 puntos</li>
+                <li>Jugador5 — 100 puntos</li>
+              </ol>
+            </section>
 
-  </main>
+    </main>
 
-  <footer class="bg-gray-800 text-gray-600 text-center py-4 mt-auto">
-    &copy; 2025 ft_transcendence - Proyecto 42
-  </footer>
+    <footer class="bg-gray-800 text-gray-600 text-center py-4 mt-auto">
+      &copy; 2025 ft_transcendence - Proyecto 42
+    </footer>
 
 </body>
+
 </html>
