@@ -15,16 +15,16 @@
 				class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3"
 				action="/auth/login" method="post">
 				<h1 class="text-4xl text-center m-3 font-bold">Log in</h1>
-				<fieldset class="flex flex-col justify-center items-center gap-2">
+				<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
 					<input
-						class="bg-gray-900 text-white rounded font-semibold text-center text-xl min-w-90 outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
-						type="email" id="email" placeholder="Email" required>
+						class="bg-gray-900 text-white rounded font-semibold text-center m-2 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
+						type="email" id="email" placeholder="Email" required autocomplete="email">
 					<input
-						class="bg-gray-900 text-white rounded font-semibold text-center text-xl min-w-90 outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
+						class="bg-gray-900 text-white rounded font-semibold text-center m-2 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
 						type="password" id="password" placeholder="Password" required>
 				</fieldset>
 				<button
-					class="bg-blue-800 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition">Submit</button>
+					class="bg-blue-800 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition text-xl w-full">Submit</button>
 				<a class="underline" href="#">Forgot password?</a>
 			</form>
 		</main>
