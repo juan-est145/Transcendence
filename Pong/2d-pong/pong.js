@@ -100,18 +100,29 @@ window.addEventListener("keyup", (event) => {
 	keysPressed[key] = false;
 });
 
+let playerOneVelocity = 0;
+let playerTwoVelocity = 0;
+
+//Moves the paddles based on keypresses and applies gravity to them
 function movePaddles() {
-	if (keysPressed["w"] && playerOne.y - playerOne.gravity * 8 > paddleMargin) {
+    playerOneVelocity = 0;
+    playerTwoVelocity = 0;
+
+    if (keysPressed["w"] && playerOne.y - playerOne.gravity * 8 > paddleMargin) {
         playerOne.y -= playerOne.gravity * 4;
+        playerOneVelocity = -playerOne.gravity * 4;
     }
     if (keysPressed["s"] && playerOne.y + playerOne.height + playerOne.gravity * 8 < canvas.height - paddleMargin) {
         playerOne.y += playerOne.gravity * 4;
+        playerOneVelocity = playerOne.gravity * 4;
     }
-	if (keysPressed["ArrowUp"] && playerTwo.y - playerTwo.gravity * 8 > paddleMargin) {
+    if (keysPressed["ArrowUp"] && playerTwo.y - playerTwo.gravity * 8 > paddleMargin) {
         playerTwo.y -= playerTwo.gravity * 4;
+        playerTwoVelocity = -playerTwo.gravity * 4;
     }
     if (keysPressed["ArrowDown"] && playerTwo.y + playerTwo.height + playerTwo.gravity * 8 < canvas.height - paddleMargin) {
         playerTwo.y += playerTwo.gravity * 4;
+        playerTwoVelocity = playerTwo.gravity * 4;
     }
 }
 
@@ -130,39 +141,47 @@ function ballBounce()
 	ballWallCollision();
 }
 
-//Detects collision between the ball and the paddles, and updates the score if the ball goes out of bounds on either side
-function ballWallCollision()
-{
-    if (
-        ball.x + ball.width + ball.speed >= playerTwo.x &&
-        ball.x + ball.speed < playerTwo.x + playerTwo.width &&
-        ball.y + ball.gravity + ball.height > playerTwo.y &&
-        ball.y + ball.gravity < playerTwo.y + playerTwo.height
-	) {
-        ball.speed = ball.speed * -1 * 1.1;
-    } else if (
-        ball.x + ball.speed <= playerOne.x + playerOne.width &&
-        ball.x + ball.speed > playerOne.x &&
-        ball.y + ball.gravity + ball.height > playerOne.y &&
-        ball.y + ball.gravity < playerOne.y + playerOne.height
-    ) {
-        ball.speed = ball.speed * -1 * 1.1;
-    } else if (ball.x + ball.speed < 0) {
+//Handles the collision between the ball and the paddles or walls
+function ballWallCollision() {
+    function paddleCollision(paddle) {
+        const nextBallX = ball.x + ball.speed;
+        const nextBallY = ball.y + ball.gravity;
+        return (
+            nextBallX < paddle.x + paddle.width &&
+            nextBallX + ball.width > paddle.x &&
+            nextBallY < paddle.y + paddle.height &&
+            nextBallY + ball.height > paddle.y
+        );
+    }
+
+    if (paddleCollision(playerTwo)) {
+        ball.speed = -Math.abs(ball.speed) * 1.1;
+        const hitPos = (ball.y + ball.height / 2) - playerTwo.y;
+        const relativeIntersect = hitPos / playerTwo.height;
+        ball.gravity = ((relativeIntersect < 0.5 ? -1 : 1) * Math.max(1, Math.abs(ball.gravity))) + playerTwoVelocity * 0.5;
+    }
+    else if (paddleCollision(playerOne)) {
+        ball.speed = Math.abs(ball.speed) * 1.1;
+        const hitPos = (ball.y + ball.height / 2) - playerOne.y;
+        const relativeIntersect = hitPos / playerOne.height;
+        ball.gravity = ((relativeIntersect < 0.5 ? -1 : 1) * Math.max(1, Math.abs(ball.gravity))) + playerOneVelocity * 0.5;
+    }
+    else if (ball.x + ball.speed < 0) {
         scoreTwo += 1;
-        ball.x = canvas.width / 2 - ball.width / 2;
-        ball.y = canvas.height / 2 - ball.height / 2;
-        ball.speed = 3;
-        ball.gravity = (Math.random() > 0.5 ? 1 : -1);
-        return;
-    } else if (ball.x + ball.speed > canvas.width) {
-        scoreOne += 1;
         ball.x = canvas.width / 2 - ball.width / 2;
         ball.y = canvas.height / 2 - ball.height / 2;
         ball.speed = 4;
         ball.gravity = (Math.random() > 0.5 ? 1 : -1);
         return;
     }
-    drawElements();
+    else if (ball.x + ball.speed > canvas.width) {
+        scoreOne += 1;
+        ball.x = canvas.width / 2 - ball.width / 2;
+        ball.y = canvas.height / 2 - ball.height / 2;
+        ball.speed = -4;
+        ball.gravity = (Math.random() > 0.5 ? 1 : -1);
+        return;
+    }
 }
 
 //Draws all the elements on the canvas

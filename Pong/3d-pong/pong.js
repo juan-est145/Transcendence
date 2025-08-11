@@ -269,8 +269,11 @@ window.addEventListener('keyup', function (event) {
 });
 
 function isColliding(ball, paddle) {
-    const paddleMin = paddle.position.subtract(new BABYLON.Vector3(0.1, 0.4, 0.4));
-    const paddleMax = paddle.position.add(new BABYLON.Vector3(0.1, 0.4, 0.4));
+    const paddleHalfWidth = 0.1 / 2;
+	const paddleHalfHeight = 0.6 / 2;
+	const paddleHalfDepth = 0.4 / 2;
+	const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+	const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
     const ballMin = ball.position.subtract(new BABYLON.Vector3(0.1, 0.1, 0.1));
     const ballMax = ball.position.add(new BABYLON.Vector3(0.1, 0.1, 0.1));
 
@@ -281,75 +284,82 @@ function isColliding(ball, paddle) {
     );
 }
 
+let lastPaddleOneY = paddleOne.position.y;
+let lastPaddleTwoY = paddleTwo.position.y;
+let lastPaddleOneZ = paddleOne.position.z;
+let lastPaddleTwoZ = paddleTwo.position.z;
+let paddleOneVelocityY = 0;
+let paddleTwoVelocityY = 0;
+let paddleOneVelocityZ = 0;
+let paddleTwoVelocityZ = 0;
+
 engine.runRenderLoop(function () {
-	const paddleMargin = 0.05;
-	paddleOne.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleOne.position.y + paddleSpeed * paddleOneDir));
-	paddleTwo.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleTwo.position.y + paddleSpeed * paddleTwoDir));
+    const paddleMargin = 0.05;
+    paddleOneVelocityY = paddleOne.position.y - lastPaddleOneY;
+    paddleTwoVelocityY = paddleTwo.position.y - lastPaddleTwoY;
+    paddleOneVelocityZ = paddleOne.position.z - lastPaddleOneZ;
+    paddleTwoVelocityZ = paddleTwo.position.z - lastPaddleTwoZ;
+    lastPaddleOneY = paddleOne.position.y;
+    lastPaddleTwoY = paddleTwo.position.y;
+    lastPaddleOneZ = paddleOne.position.z;
+    lastPaddleTwoZ = paddleTwo.position.z;
 
-	ball.position.addInPlace(ballVelocity);
-	if (ball.position.y < 0.2 || ball.position.y > 2.8) 
-		ballVelocity.y *= -1;
-	
-	[paddleOne, paddleTwo].forEach(paddle => {
+    paddleOne.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleOne.position.y + paddleSpeed * paddleOneDir));
+    paddleTwo.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleTwo.position.y + paddleSpeed * paddleTwoDir));
+
+    ball.position.addInPlace(ballVelocity);
+    if (ball.position.y < 0.2 || ball.position.y > 2.8) 
+        ballVelocity.y *= -1;
+
+    [paddleOne, paddleTwo].forEach(paddle => {
 		if (isColliding(ball, paddle)) {
-			const paddleMin = paddle.position.subtract(new BABYLON.Vector3(0.1, 0.4, 0.4));
-			const paddleMax = paddle.position.add(new BABYLON.Vector3(0.1, 0.4, 0.4));
-			const ballMin = ball.position.subtract(new BABYLON.Vector3(0.1, 0.1, 0.1));
-			const ballMax = ball.position.add(new BABYLON.Vector3(0.1, 0.1, 0.1));
+			const paddleHalfWidth = 0.1 / 2;
+			const paddleHalfHeight = 0.6 / 2;
+			const paddleHalfDepth = 0.4 / 2;
+			const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+			const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+			const ballCenterY = ball.position.y;
+			const relativeIntersect = (ballCenterY - paddleMin.y) / (paddleMax.y - paddleMin.y);
 
-			const overlapYTop = Math.abs(ballMin.y - paddleMax.y) < 0.05;
-			const overlapYBottom = Math.abs(ballMax.y - paddleMin.y) < 0.05;
-			const overlapX = ballMin.x <= paddleMax.x && ballMax.x >= paddleMin.x;
-
+			let inertiaY = 0, inertiaZ = 0;
 			if (paddle === paddleOne) {
-				const overlapZFront = Math.abs(ballMin.z - paddleMax.z) < 0.05;
-				if (overlapYTop) {
-					ballVelocity.y *= -1 * 1.1;
-					ball.position.y = paddleMax.y;
-				} else if (overlapYBottom) {
-					ballVelocity.y *= -1 * 1.1;
-					ball.position.y = paddleMin.y;
-				} else if (overlapX) {
-					ballVelocity.x *= -1 * 1.1;
-					ball.position.x = paddleMax.x + 0.11;
-				} else if (overlapZFront) {
-					ballVelocity.z *= -1 * 1.1;
-					ball.position.z = paddleMax.z + 0.11;
-				}
-			} else if (paddle === paddleTwo) {
-				const overlapZBack = Math.abs(ballMax.z - paddleMin.z) < 0.05;
-				if (overlapYTop) {
-					ballVelocity.y *= -1 * 1.1;
-					ball.position.y = paddleMax.y;
-				} else if (overlapYBottom) {
-					ballVelocity.y *= -1 * 1.1;
-					ball.position.y = paddleMin.y;
-				} else if (overlapX) {
-					ballVelocity.x *= -1 * 1.1;
-					ball.position.x = paddleMin.x - 0.11;
-				} else if (overlapZBack) {
-					ballVelocity.z *= -1 * 1.1;
-					ball.position.z = paddleMin.z - 0.11;
-				}
+				inertiaY = paddleOneVelocityY;
+				inertiaZ = paddleOneVelocityZ;
+			} else {
+				inertiaY = paddleTwoVelocityY;
+				inertiaZ = paddleTwoVelocityZ;
+			}
+
+			//Have to check if 0.2 is good or if it needs more
+			const direction = (relativeIntersect < 0.5 ? -1 : 1);
+			ballVelocity.y = direction * Math.abs(ballVelocity.y) + inertiaY * 0.2;
+
+			ballVelocity.z += inertiaZ * 0.5;
+			if (paddle === paddleOne) {
+				ballVelocity.x = Math.abs(ballVelocity.x) * 1.1;
+				ball.position.x = paddleMax.x + 0.11;
+			} else {
+				ballVelocity.x = -Math.abs(ballVelocity.x) * 1.1;
+				ball.position.x = paddleMin.x - 0.11;
 			}
 		}
 	});
 
 	if (ball.position.x < -4.8) {
-		ball.position.x = 0;
-		ball.position.y = 1;
-		ball.position.z = 0;
-		ballVelocity = new BABYLON.Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
-		scoreTwo++;
-		updateScores();
-	} else if (ball.position.x > 4.8) {
-		ball.position.x = 0;
-		ball.position.y = 1;
-		ball.position.z = 0;
-		ballVelocity = new BABYLON.Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
-		scoreOne++;
-		updateScores();
-	}
+        scoreTwo++;
+        updateScores();
+        ball.position.x = 0;
+        ball.position.y = 1;
+        ball.position.z = 0;
+        ballVelocity = new BABYLON.Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
+    } else if (ball.position.x > 4.8) {
+        scoreOne++;
+        updateScores();
+        ball.position.x = 0;
+        ball.position.y = 1;
+        ball.position.z = 0;
+        ballVelocity = new BABYLON.Vector3(-0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
+    }
 
-	scene.render();
+    scene.render();
 });
