@@ -16,6 +16,11 @@ services:
       target: prod
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:4343/docs/json"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mvc:
     build:
@@ -26,7 +31,8 @@ services:
       - .env
     hostname: ponggame
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 networks:
   lan:

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
-    "open-api": "npx openapi-typescript https://api:4343/docs/json -o ./api-schema.json",
+    "open-api": "mkdir -p ./schema && npx openapi-typescript https://api:4343/docs/json -o ./schema/api-schema.d.ts",
     "tailwind": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css",
     "tailwind:dev": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css --watch=always",
     "start": "npm run tailwind && npm run build:ts && npm run open-api && fastify start -l info -p 4343 dist/app.js --options",
