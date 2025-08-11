@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Log in</title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
 </head>
-<body>
-	<h1>Welcome back</h1>
+
+<body class="bg-gray-900 text-white min-h-screen flex justify-center items-center">
+	<form class="bg-gray-800 min-w-lg min-h-[200px] rounded-xl"
+		action="/auth/login" method="post">
+		<h1 class="text-4xl text-center">Log in</h1>
+		<fieldset class="flex flex-col justify-center items-center gap-2">
+			<input class="bg-blue-600 text-white rounded font-semibold text-center" type="text" id="email"
+				placeholder="Email" required>
+			<input class="bg-blue-600 text-white rounded font-semibold text-center" type="text" id="password"
+				placeholder="Password" required>
+		</fieldset>
+
+		<!-- <label for="email">Email</label> -->
+	</form>
 </body>
+
 </html>
