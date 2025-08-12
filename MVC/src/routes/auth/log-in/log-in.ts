@@ -9,20 +9,20 @@ export async function auth(fastify: FastifyInstance) {
 	});
 
 	fastify.post<{ Body: LogInBody }>("/login", async (req, res) => {
-		// TO DO: Add try catch
-		//Value.Assert(logInBody, req.body);
 		try {
 			validateLogInBody(req.body);
 			const jwt = await postLogin(fastify, req.body);
-			// Temp: Later we must create a session with the jwt.
+			// TO DO: Later we must create a session with the jwt.
 			return jwt;
 
 		} catch (error) {
 			if (error instanceof ZodError) {
-				return res.status(400).send({ msg: error.issues.map((element) => element.message) });
+				const ejsVariables = { errors: error.issues.map((element) => element.message) }
+				return res.status(400).viewAsync("/log-in.ejs", ejsVariables);
 			} else {
 				const logInError = error as LogInError;
-				return res.status(logInError.statusCode).send(logInError.details);
+				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) }
+				return res.status(logInError.statusCode).viewAsync("/log-in.ejs", ejsVariables);
 			}
 		}
 	});

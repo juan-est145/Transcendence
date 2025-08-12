@@ -1,7 +1,12 @@
+<% var errors = typeof errors !== 'undefined' ? errors : null; %>
+<% if (errors && errors.length) {  %>
 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded absolute left-1/2 transform -translate-x-1/2 top-2 mb-4 animate-fade-out"
 	role="alert">
 	<strong class="font-bold">Error:</strong>
 	<ul class="mt-2 list-disc list-inside">
-		<li>The username is already taken</li>
+		<% errors.forEach((element) => { %>
+			<li> <%= element %> </li>
+		<% }); %>
 	</ul>
 </div>
+<% } %>
