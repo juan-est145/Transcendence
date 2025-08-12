@@ -6,6 +6,7 @@ RUN apk update && apk upgrade && apk add --no-cache openssl && openssl req -x509
 -keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=ponggame.com"
 
 EXPOSE 4343
+EXPOSE 9320
 
 ENTRYPOINT [ "npm" ]
 

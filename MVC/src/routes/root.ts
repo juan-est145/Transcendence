@@ -7,7 +7,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     return reply.viewAsync("index.ejs", { user });
   });
 
-  fastify.register(auth, { prefix: "/auth" })
+  fastify.register(auth, { prefix: "/auth" });
 }
 
 export default root
