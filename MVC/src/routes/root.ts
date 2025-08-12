@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
-import { auth } from './auth/log-in';
+import { auth } from './auth/log-in/log-in';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.get('/', async function (request, reply) {
