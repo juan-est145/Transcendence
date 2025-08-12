@@ -11,7 +11,8 @@
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
 	<%- include('components/navbar.ejs') %>
-		<main class="flex-grow flex flex-col justify-center">
+		<main class="flex-grow flex flex-col justify-center relative">
+			<%- include('components/errorPopup.ejs') %>
 			<form
 				class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3"
 				action="/auth/login" method="post">
