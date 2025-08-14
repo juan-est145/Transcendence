@@ -37,6 +37,7 @@ services:
       - .env
     hostname: ponggame
     ports:
+      - "8000:4343"
       - '9321:9320'
     depends_on:
       api:

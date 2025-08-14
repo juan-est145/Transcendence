@@ -35,7 +35,11 @@ export async function auth(fastify: FastifyInstance) {
 			validateLogInBody(req.body);
 			const jwt = await postLogin(fastify, req.body);
 			// TO DO: Later we must create a session with the jwt.
+			// const test = req.session as any;
+			// test.jwt = jwt
+			// req.session.jwt as any = jwt;
 			return jwt;
+			//return res.viewAsync("/index.ejs");
 
 		} catch (error) {
 			if (error instanceof ZodError) {

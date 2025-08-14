@@ -8,14 +8,15 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
   https: {
     key: NonSharedBuffer;
     cert: NonSharedBuffer;
-  }
+  },
 }
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {
   https: {
     key: fs.readFileSync("/etc/ssl/private/cert.key"),
     cert: fs.readFileSync("/etc/ssl/certs/selfsigned.crt"),
-  }
+  },
+  trustProxy: true,
 }
 
 const app: FastifyPluginAsync<AppOptions> = async (
