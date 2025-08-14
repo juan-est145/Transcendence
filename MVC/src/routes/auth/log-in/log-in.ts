@@ -9,7 +9,7 @@ import { ZodError } from "zod";
 export async function auth(fastify: FastifyInstance) {
 	// TO DO: When sessions have been implemented, we must redirect the user if it is
 	// already logged in in all of these routes. We probably will need a hook for that.
-	
+
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
 	 * it redirects him.
@@ -18,6 +18,9 @@ export async function auth(fastify: FastifyInstance) {
 	 * @returns The login page.
 	 */
 	fastify.get("/login", async (req, res) => {
+		// if (req.session.jwt) {
+		// 	await req.session.destroy();
+		// }
 		return res.viewAsync("/log-in.ejs");
 	});
 
@@ -33,7 +36,7 @@ export async function auth(fastify: FastifyInstance) {
 	fastify.post<{ Body: LogInBody }>("/login", async (req, res) => {
 		try {
 			validateLogInBody(req.body);
-			const jwt = await postLogin(fastify, req.body);
+			const token = await postLogin(fastify, req.body);
 			// TO DO: Later we must create a session with the jwt.
 			//const test = req.session as any;
 			// test.jwt = jwt
@@ -41,9 +44,8 @@ export async function auth(fastify: FastifyInstance) {
 			// return jwt;
 			// return { msg: "prueba" };
 			//
-			const test = req.session as any;
-			test.jwt = jwt;
-			return jwt;
+			req.session.jwt = token.jwt;
+			return res.redirect("/");
 
 		} catch (error) {
 			if (error instanceof ZodError) {

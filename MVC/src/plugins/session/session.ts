@@ -1,14 +1,14 @@
 import fp from "fastify-plugin";
 import fastifyCookie from "@fastify/cookie";
 import fastifySession, { FastifySessionOptions } from "@fastify/session";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+//import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { PrismaClient } from '@prisma/client';
 
 // Apparently creating a cookie in the browser fucks everything up. No idea why
-// I despise all the bloody fastify ecosystem
+// I despise all the bloody Typescript and Javascript ecosystem
 
 export default fp<FastifySessionOptions>(async (fastify) => {
-	const prisma = new PrismaClient();
+	//const prisma = new PrismaClient();
 	const sessionOpts: FastifySessionOptions = {
 		secret: process.env.COOKIE_SECRET!,
 		cookie: {
@@ -18,22 +18,22 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 			sameSite: "lax",
 		},
 		saveUninitialized: false,
-		store: new PrismaSessionStore(
-			prisma,
-			{
-				checkPeriod: 2 * 60 * 1000,  //ms
-				dbRecordIdIsSessionId: true,
-				dbRecordIdFunction: undefined,
-			}
-		)
+		// store: new PrismaSessionStore(
+		// 	prisma,
+		// 	{
+		// 		checkPeriod: 2 * 60 * 1000,  //ms
+		// 		dbRecordIdIsSessionId: true,
+		// 		dbRecordIdFunction: undefined,
+		// 	}
+		// )
 	};
 
-	await prisma.$connect();
-	fastify.decorate('prisma', prisma);
+	// await prisma.$connect();
+	// fastify.decorate('prisma', prisma);
 
-	fastify.addHook('onClose', async () => {
-		await prisma.$disconnect();
-	});
+	// fastify.addHook('onClose', async () => {
+	// 	await prisma.$disconnect();
+	// });
 
 	fastify.register(fastifyCookie);
 	fastify.register(fastifySession, sessionOpts);
