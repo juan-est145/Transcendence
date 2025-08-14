@@ -17,7 +17,7 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 			secure: true,
 			sameSite: "lax",
 		},
-		saveUninitialized: true,
+		saveUninitialized: false,
 		store: new PrismaSessionStore(
 			prisma,
 			{
