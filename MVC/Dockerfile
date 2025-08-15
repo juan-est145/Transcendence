@@ -2,7 +2,7 @@ FROM node:24-bookworm AS dev
 
 WORKDIR /app
 
-RUN apt update && apt upgrade && apt install openssl && openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
+RUN apt update && apt upgrade && apt install sqlite3 openssl -y && openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
 -keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=ponggame.com"
 
 EXPOSE 4343
