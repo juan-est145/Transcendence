@@ -53,4 +53,11 @@ export async function auth(fastify: FastifyInstance) {
 			}
 		}
 	});
+
+	fastify.get("/log-out", async (req, res) => {
+		if (req.session.jwt) {
+			await req.session.destroy();
+		}
+		return res.redirect("/");
+	});
 }
