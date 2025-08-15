@@ -38,13 +38,7 @@ export async function auth(fastify: FastifyInstance) {
 		try {
 			validateLogInBody(req.body);
 			const token = await postLogin(fastify, req.body);
-			// TO DO: Later we must create a session with the jwt.
-			//const test = req.session as any;
-			// test.jwt = jwt
-			// req.session.jwt as any = jwt;
-			// return jwt;
-			// return { msg: "prueba" };
-			//
+			fastify.jwt.verify(token.jwt);
 			req.session.jwt = token.jwt;
 			return res.redirect("/");
 
