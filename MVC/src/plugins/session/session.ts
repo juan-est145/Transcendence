@@ -1,14 +1,22 @@
 import fp from "fastify-plugin";
 import fastifyCookie from "@fastify/cookie";
 import fastifySession, { FastifySessionOptions } from "@fastify/session";
-//import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { PrismaClient } from '@prisma/client';
+import knex from "knex";
+import { ConnectSessionKnexStore } from "connect-session-knex";
 
 // Apparently creating a cookie in the browser fucks everything up. No idea why
 // I despise all the bloody Typescript and Javascript ecosystem
 
 export default fp<FastifySessionOptions>(async (fastify) => {
-	//const prisma = new PrismaClient();
+	
+	const knexIntance = knex({
+		client: 'sqlite3',
+		connection: {
+			filename: "/app/db/Sessions.db",
+		},
+		useNullAsDefault: true
+	});
+
 	const sessionOpts: FastifySessionOptions = {
 		secret: process.env.COOKIE_SECRET!,
 		cookie: {
@@ -18,38 +26,28 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 			sameSite: "lax",
 		},
 		saveUninitialized: false,
-		// store: new PrismaSessionStore(
-		// 	prisma,
-		// 	{
-		// 		checkPeriod: 2 * 60 * 1000,  //ms
-		// 		dbRecordIdIsSessionId: true,
-		// 		dbRecordIdFunction: undefined,
-		// 	}
-		// )
+		store: new ConnectSessionKnexStore({
+			createTable: true,
+			knex: knexIntance,
+			tableName: "sessions"
+		}),
 	};
-
-	// await prisma.$connect();
-	// fastify.decorate('prisma', prisma);
-
-	// fastify.addHook('onClose', async () => {
-	// 	await prisma.$disconnect();
-	// });
 
 	fastify.register(fastifyCookie);
 	fastify.register(fastifySession, sessionOpts);
 });
 
 
-declare module 'fastify' {
-	interface FastifyInstance {
-		prisma: PrismaClient;
-	}
-}
+// declare module 'fastify' {
+// 	interface FastifyInstance {
+// 		prisma: PrismaClient;
+// 	}
+// }
 
 
-declare module "fastify" {
-    interface Session {
-        user_id: string
-        id?: number
-    }
-}
+// declare module "fastify" {
+//     interface Session {
+//         user_id: string
+//         id?: number
+//     }
+// }
