@@ -11,7 +11,10 @@ npm-api:
 npm-mvc:
 	npm install --prefix MVC/
 
-dev: npm-api npm-mvc
+dev-db:
+	mkdir -p ./API/db && touch ./API/db/Database.db && mkdir -p ./MVC/db && touch ./MVC/db/Sessions.db
+
+dev: npm-api npm-mvc dev-db
 	docker compose -f $(DEV-FILE) up --build -d
 
 clean:
