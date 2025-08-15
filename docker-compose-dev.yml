@@ -7,7 +7,8 @@ services:
     ports:
       - '443:4343'
     depends_on:
-      - mvc
+      mvc:
+        condition: service_healthy
   api:
     build: 
       context: ./API
@@ -35,6 +36,11 @@ services:
       - ./MVC:/app
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:4343/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     hostname: ponggame
     ports:
       - "8000:4343"

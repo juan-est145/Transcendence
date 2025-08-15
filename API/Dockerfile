@@ -2,7 +2,7 @@ FROM node:24-alpine3.21 AS dev
 
 WORKDIR /app
 
-RUN apk update && apk upgrade && apk add --no-cache sqlite openssl curl && mkdir -p ./db && touch ./db/Database.db && \
+RUN apk update && apk upgrade && apk add --no-cache openssl curl && mkdir -p ./db && touch ./db/Database.db && \
 openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
 -keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=api"
 
@@ -18,7 +18,7 @@ FROM node:24-alpine3.21 AS prod
 
 WORKDIR /app
 
-RUN apk update && apk upgrade && apk add --no-cache sqlite openssl curl && mkdir -p ./db && touch ./db/Database.db && chown -R node:node ./db && \
+RUN apk update && apk upgrade && apk add --no-cache openssl curl && mkdir -p ./db && touch ./db/Database.db && chown -R node:node ./db && \
 openssl req -x509 -nodes -days 730 -newkey rsa:2048 \
 -keyout /etc/ssl/private/cert.key -out /etc/ssl/certs/selfsigned.crt -subj "/C=ES/L=Málaga/O=42Malaga/OU=student/CN=api"
 

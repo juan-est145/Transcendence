@@ -4,9 +4,6 @@ import fastifySession, { FastifySessionOptions } from "@fastify/session";
 import knex from "knex";
 import { ConnectSessionKnexStore } from "connect-session-knex";
 
-// Apparently creating a cookie in the browser fucks everything up. No idea why
-// I despise all the bloody Typescript and Javascript ecosystem
-
 export default fp<FastifySessionOptions>(async (fastify) => {
 	
 	const knexIntance = knex({
@@ -36,18 +33,3 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 	fastify.register(fastifyCookie);
 	fastify.register(fastifySession, sessionOpts);
 });
-
-
-// declare module 'fastify' {
-// 	interface FastifyInstance {
-// 		prisma: PrismaClient;
-// 	}
-// }
-
-
-// declare module "fastify" {
-//     interface Session {
-//         user_id: string
-//         id?: number
-//     }
-// }
