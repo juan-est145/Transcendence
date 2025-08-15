@@ -18,9 +18,10 @@ export async function auth(fastify: FastifyInstance) {
 	 * @returns The login page.
 	 */
 	fastify.get("/login", async (req, res) => {
-		// if (req.session.jwt) {
-		// 	await req.session.destroy();
-		// }
+		if (req.session.jwt) {
+			// This is temporary so as to not loggin a user again.
+			return res.redirect("/");
+		}
 		return res.viewAsync("/log-in.ejs");
 	});
 
