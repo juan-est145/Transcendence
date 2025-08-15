@@ -20,7 +20,7 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 			maxAge: 60 * 60 * 1000 * 24 * 7, // 7 days total,
 			httpOnly: true,
 			secure: true,
-			sameSite: "lax",
+			sameSite: "strict",
 		},
 		saveUninitialized: false,
 		store: new ConnectSessionKnexStore({
