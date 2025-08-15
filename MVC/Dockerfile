@@ -1,4 +1,4 @@
-FROM node:24-bookworm AS dev
+FROM node:24.5-trixie-slim AS dev
 
 WORKDIR /app
 
