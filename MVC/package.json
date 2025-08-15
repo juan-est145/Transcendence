@@ -32,6 +32,7 @@
     "@types/ejs": "^3.1.5",
     "connect-session-knex": "^5.0.0",
     "ejs": "^3.1.10",
+    "express-session": "^1.18.2",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.0",
     "fastify-plugin": "^5.0.0",
