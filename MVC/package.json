@@ -15,7 +15,7 @@
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run tailwind:dev & npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "npm run open-api && fastify start --ignore-watch='.ts db/' -w -l info -p 4343 -d -I 9320 -P dist/app.js --options"
+    "dev:start": "npm run open-api && fastify start --ignore-watch='.ts$ db/' -w -l info -p 4343 -d -I 9320 -P dist/app.js --options"
   },
   "keywords": [],
   "author": "",
