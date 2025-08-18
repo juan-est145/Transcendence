@@ -29,7 +29,7 @@ export async function auth(fastify: FastifyInstance) {
 	 * @param req - The fastify request instance. It must have a body property according to the
 	 * zod logInBody schema.
 	 * @param res - The fastify response instance.
-	 * @returns (Not yet implemented)
+	 * @returns A redirection to the main page.
 	 */
 	fastify.post<{ Body: LogInBody }>("/login", async (req, res) => {
 		try {
@@ -51,6 +51,12 @@ export async function auth(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route logs the client out.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns A redirection to the main page.
+	 */
 	fastify.get("/log-out", async (req, res) => {
 		if (req.session.jwt) {
 			await req.session.destroy();

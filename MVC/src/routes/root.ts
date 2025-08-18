@@ -4,6 +4,10 @@ import { DecodePayloadType } from '@fastify/jwt';
 import { Middleware } from 'openapi-fetch';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  /**
+   * This hook populates the user property in request with the basic data of the user,
+   * so it may be used elsewhere. This data is the payload of the jwt.
+   */
   fastify.addHook("onRequest", async (req, res) => {
     let user: DecodePayloadType | null = null;
     if (req.session.jwt) {
@@ -12,6 +16,11 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     (req as any).user = user ? user : null;
   });
 
+  /**
+   * This hooks handles the auth headers necessary for accesing our API's protected routes.
+   * If the user is logged in, it adds it's jwt to every request, except if the route is
+   * meant for refreshing the jwt, in which it's case, it uses the the refresh jwt token instead.
+   */
   fastify.addHook("onRequest", async (req, res) => {
     const authMiddleware: Middleware = {
       onRequest({ schemaPath, request }) {

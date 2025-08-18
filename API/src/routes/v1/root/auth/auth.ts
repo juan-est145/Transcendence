@@ -78,7 +78,7 @@ export async function auth(fastify: FastifyInstance) {
 	 * This route allows for users to log in.
 	 * @param req - The fastify request instance. It must have a body property according to the LogInBody type
 	 * @param res - The fastify response instance.
-	 * @returns In case of success, it returns a 201 json response including a JWT. In case of error, an error is thrown
+	 * @returns In case of success, it returns a 201 json response including a JWT and a refresh JWT. In case of error, an error is thrown
 	 * and catched by the route's error handler.
 	 */
 	fastify.post<{ Body: LogInBody }>("/log-in", logInSchema, async (req, res) => {
@@ -93,6 +93,14 @@ export async function auth(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows for a user to get a new JWT and refresh JWT. USeful for updating the session with valid tokens if they expire.
+	 * @param req - The fastify request instance. The user property must be populated with the refresh token payload
+	 * once it has been validated.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 json response with the new pair of tokens.
+	 * In case of error, an error is thrown and catched by the route's error handler.
+	 */
 	fastify.get("/refresh-jwt", {
 		schema: refreshSchema.schema,
 		preHandler: async (req, res) => {
