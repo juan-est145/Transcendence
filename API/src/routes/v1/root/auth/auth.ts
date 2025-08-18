@@ -103,15 +103,7 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.get("/refresh-jwt", {
 		schema: refreshSchema.schema,
-		preHandler: async (req, res) => {
-			try {
-				await req.jwtVerify();
-				if (!(req.user.hasOwnProperty("refresh") && (req.user as any).refresh === true))
-					throw (fastify.httpErrors.badRequest("You need the refresh token, not the jwt one"));
-			} catch (error) {
-				throw error;
-			}
-		}
+		preHandler: fastify.auth([fastify.verifyRefreshJwt])
 	}, async (req, res) => {
 		try {
 			const user = await getUser(fastify, (req.user as any).email);
@@ -130,15 +122,7 @@ export async function auth(fastify: FastifyInstance) {
 			tags: ["Auth"],
 			summary: "A temporary endpoint to test the validity of the jwt. Will be deleted"
 		},
-		preHandler: async (req, res) => {
-			try {
-				await req.jwtVerify();
-				if (!(req.user.hasOwnProperty("email") && req.user.hasOwnProperty("username")))
-					throw (fastify.httpErrors.badRequest("You need the jwt token, not the refresh one"));
-			} catch (error) {
-				throw error;
-			}
-		} 
+		preHandler: fastify.auth([fastify.verifyJwt])
 	}, async (req, res) => {
 		return res.code(201).send({ msg: "Everything went okay" }); 
 	});

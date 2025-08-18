@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/juan-est145/Transcendence#readme",
   "dependencies": {
+    "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.0.0",
     "@fastify/jwt": "^9.1.0",
     "@fastify/sensible": "^6.0.0",
