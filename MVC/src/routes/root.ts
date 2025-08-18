@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
-import { auth } from './auth/log-in/log-in';
+import { auth } from './auth/auth';
 import { DecodePayloadType } from '@fastify/jwt';
 import { Middleware } from 'openapi-fetch';
 

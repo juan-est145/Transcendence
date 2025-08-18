@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { LogInBody, LogInError } from "./log-in.type";
-import { createSession, postLogin, validateLogInBody } from "./log-in.service";
+import { LogInBody, LogInError } from "./auth.type";
+import { createSession, postLogin, validateLogInBody } from "./auth.service";
 import { ZodError } from "zod";
 
 /**

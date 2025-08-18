@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { logInBody } from "./log-in.dto";
-import { JwtBody, LogInBody } from "./log-in.type";
+import { logInBody } from "./auth.dto";
+import { JwtBody, LogInBody } from "./auth.type";
 import { FastifySessionObject } from "@fastify/session";
 
 /**
