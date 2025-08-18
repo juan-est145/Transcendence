@@ -52,7 +52,7 @@ export const logInSchema: RouteShorthandOptions = {
 		summary: "This endpoint allows an user to log in",
 		response: {
 			201: {
-				description: "It returns an object with a jwt field",
+				description: "It returns an object with a jwt and a refresh token.",
 				content: {
 					"application/json": {
 						schema: jwt,
@@ -60,7 +60,7 @@ export const logInSchema: RouteShorthandOptions = {
 				}
 			},
 			400: {
-				description: "If a field is invalid or missing, it will return a message with the field that is invalid",
+				description: "If a field is invalid or missing, it will return a message with the field that is invalid.",
 				content: {
 					"application/json": {
 						schema: authError,
@@ -68,7 +68,7 @@ export const logInSchema: RouteShorthandOptions = {
 				}
 			},
 			401: {
-				description: "It returns an error message if the credentials are not correct",
+				description: "It returns an error message if the credentials are not correct.",
 				content: {
 					"application/json": {
 						schema: authError,
@@ -76,7 +76,7 @@ export const logInSchema: RouteShorthandOptions = {
 				}
 			},
 			500: {
-				description: "If something else went wrong with the server, it sends back this response",
+				description: "If something else went wrong with the server, it sends back this response.",
 				content: {
 					"application/json": {
 						schema: authError,

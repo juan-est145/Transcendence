@@ -169,7 +169,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description It returns an object with a jwt field */
+                /** @description It returns an object with a jwt and a refresh token. */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -177,10 +177,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             jwt: string;
+                            refreshJwt: string;
                         };
                     };
                 };
-                /** @description If a field is invalid or missing, it will return a message with the field that is invalid */
+                /** @description If a field is invalid or missing, it will return a message with the field that is invalid. */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -197,7 +198,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description It returns an error message if the credentials are not correct */
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -214,7 +215,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description If something else went wrong with the server, it sends back this response */
+                /** @description If something else went wrong with the server, it sends back this response. */
                 500: {
                     headers: {
                         [name: string]: unknown;

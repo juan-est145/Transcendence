@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError } from "./log-in.type";
-import { postLogin, validateLogInBody } from "./log-in.service";
+import { createSession, postLogin, validateLogInBody } from "./log-in.service";
 import { ZodError } from "zod";
 
 /**
@@ -39,7 +39,7 @@ export async function auth(fastify: FastifyInstance) {
 			validateLogInBody(req.body);
 			const token = await postLogin(fastify, req.body);
 			fastify.jwt.verify(token.jwt);
-			req.session.jwt = token.jwt;
+			createSession(req.session, token);
 			return res.redirect("/");
 
 		} catch (error) {

@@ -87,7 +87,7 @@ export async function auth(fastify: FastifyInstance) {
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid email or password");
 			const jwt = signJwt(fastify, { username: user.username, email: user.email });
-			return res.code(201).send({ jwt });
+			return res.code(201).send(jwt);
 		} catch (error) {
 			throw error;
 		}
@@ -104,6 +104,8 @@ export async function auth(fastify: FastifyInstance) {
 		preHandler: async (req, res) => {
 			try {
 				await req.jwtVerify();
+				if (!(req.user.hasOwnProperty("email") && req.user.hasOwnProperty("username")))
+					throw (fastify.httpErrors.badRequest("You need the jwt token, not the refresh one"));
 			} catch (error) {
 				throw error;
 			}

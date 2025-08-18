@@ -43,4 +43,5 @@ export const jwtPayload = Type.Object({
 
 export const jwt = Type.Object({
 	jwt: Type.String(),
+	refreshJwt: Type.String(),
 });

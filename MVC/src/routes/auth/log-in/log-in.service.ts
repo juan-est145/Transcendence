@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { logInBody } from "./log-in.dto";
-import { LogInBody } from "./log-in.type";
+import { JwtBody, LogInBody } from "./log-in.type";
+import { FastifySessionObject } from "@fastify/session";
 
 /**
  * This function validates that the request body conforms to the zod object logInBody. If
@@ -31,4 +32,9 @@ export async function postLogin(fastify: FastifyInstance, body: LogInBody) {
 		throw error;
 	}
 	return data;
+}
+
+export function createSession(session: FastifySessionObject, token: JwtBody) {
+	session.jwt = token.jwt;
+	session.refreshJwt = token.refreshJwt;
 }
