@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify'
 import { auth } from './auth/log-in/log-in';
 import { DecodePayloadType } from '@fastify/jwt';
+import { Middleware } from 'openapi-fetch';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.addHook("onRequest", async (req, res) => {
@@ -9,6 +10,20 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       user = fastify.jwt.decode(req.session.jwt);
     }
     (req as any).user = user ? user : null;
+  });
+
+  fastify.addHook("onRequest", async (req, res) => {
+    const authMiddleware: Middleware = {
+      onRequest({ schemaPath, request }) {
+        if (!req.session)
+          return request;
+        const token = schemaPath === "/v1/auth/refresh-jwt" ? req.session.get("refreshJwt") : req.session.get("jwt");
+        request.headers.set("Authorization", `Bearer ${token}`);
+        return request;
+      }
+    };
+
+    fastify.apiClient.use(authMiddleware);
   });
 
   fastify.get('/', async function (request, reply) {

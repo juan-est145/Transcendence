@@ -86,3 +86,45 @@ export const logInSchema: RouteShorthandOptions = {
 		}
 	},
 }
+
+export const refreshSchema: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [authTag],
+		summary: "This endpoint returns new tokens if a refresh token is provided.",
+		response: {
+			201: {
+				description: "It returns an object with a jwt and a refresh token.",
+				content: {
+					"application/json": {
+						schema: jwt,
+					}
+				}
+			},
+			400: {
+				description: "If a field is invalid or missing, it will return a message with the field that is invalid.",
+				content: {
+					"application/json": {
+						schema: authError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: authError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: authError,
+					}
+				}
+			},
+		}
+	},
+};

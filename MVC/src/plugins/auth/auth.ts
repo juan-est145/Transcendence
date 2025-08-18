@@ -9,11 +9,21 @@ export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 	});
 
 	fastify.decorate("refreshJwt", async (req: FastifyRequest, res: FastifyReply) => {
-		fastify.jwt.verify(req.session.jwt!, async (err) => {
-			if (err && err.hasOwnProperty("code") && (err as any).code === "FAST_JWT_EXPIRED") {
-				//fastify.apiClient.GET()
+		try {
+			fastify.jwt.verify(req.session.jwt!);
+		} catch (err: any) {
+			// If the error is JWT expired, try to refresh
+			if (err && err.code === "FAST_JWT_EXPIRED") {
+				const { data, error } = await fastify.apiClient.GET("/v1/auth/refresh-jwt");
+				if (error) throw error;
+				fastify.jwt.verify(data.jwt);
+				req.session.set("jwt", data.jwt);
+				req.session.set("refreshJwt", data.refreshJwt);
+			} else {
+				// If it's another error, rethrow
+				throw err;
 			}
-		});
+		}
 	});
 
 	fastify.decorate("verifyLoggedIn", async (req: FastifyRequest, res: FastifyReply) => {

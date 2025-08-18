@@ -1,6 +1,6 @@
 import { FastifyInstance, } from "fastify";
 import { createUser, getUser, signJwt } from "./auth.service";
-import { logInSchema, signInSchema } from "./auth.swagger";
+import { logInSchema, refreshSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody, type AuthError } from "./auth.type";
 import { HttpError, HttpMap } from "../../v1.dto";
@@ -86,6 +86,27 @@ export async function auth(fastify: FastifyInstance) {
 			const user = await getUser(fastify, req.body.email);
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid email or password");
+			const jwt = signJwt(fastify, { username: user.username, email: user.email });
+			return res.code(201).send(jwt);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	fastify.get("/refresh-jwt", {
+		schema: refreshSchema.schema,
+		preHandler: async (req, res) => {
+			try {
+				await req.jwtVerify();
+				if (!(req.user.hasOwnProperty("refresh") && (req.user as any).refresh === true))
+					throw (fastify.httpErrors.badRequest("You need the refresh token, not the jwt one"));
+			} catch (error) {
+				throw error;
+			}
+		}
+	}, async (req, res) => {
+		try {
+			const user = await getUser(fastify, (req.user as any).email);
 			const jwt = signJwt(fastify, { username: user.username, email: user.email });
 			return res.code(201).send(jwt);
 		} catch (error) {

@@ -76,7 +76,7 @@ export function signJwt(fastify: FastifyInstance, payload: JwtPayload) {
 		iss: "https://api:4343"
 	});
 
-	const refreshJwt = fastify.jwt.sign({ email: payload.email }, {
+	const refreshJwt = fastify.jwt.sign({ email: payload.email, refresh: true }, {
 		expiresIn: "3h",
 		iss: "https://api:4343"
 	});
