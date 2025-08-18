@@ -1,1 +1,0 @@
-When creating auth for the MVC, use sessions stored in a redis database and store the jwt inside. Make route to refresh the jwt in case it expires in the API.
