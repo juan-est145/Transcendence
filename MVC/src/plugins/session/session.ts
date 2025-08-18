@@ -17,7 +17,7 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 	const sessionOpts: FastifySessionOptions = {
 		secret: process.env.COOKIE_SECRET!,
 		cookie: {
-			maxAge: 60 * 60 * 1000 * 24 * 7, // 7 days total,
+			maxAge: 60 * 60 * 1000 * 24 * 2, // 2 days total,
 			httpOnly: true,
 			secure: true,
 			sameSite: "strict",
@@ -28,6 +28,7 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 			knex: knexIntance,
 			tableName: "sessions"
 		}),
+		rolling: true,
 	};
 
 	fastify.register(fastifyCookie);
