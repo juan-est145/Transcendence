@@ -21,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/formbody": "^8.0.2",

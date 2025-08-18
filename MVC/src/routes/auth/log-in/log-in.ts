@@ -7,9 +7,6 @@ import { ZodError } from "zod";
  * This module deals with everything relating to the login page.
  */
 export async function auth(fastify: FastifyInstance) {
-	// TO DO: When sessions have been implemented, we must redirect the user if it is
-	// already logged in in all of these routes. We probably will need a hook for that.
-
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
 	 * it redirects him.
@@ -59,5 +56,11 @@ export async function auth(fastify: FastifyInstance) {
 			await req.session.destroy();
 		}
 		return res.redirect("/");
+	});
+
+	// Temporary route for testing protected routes. It will later on be deleted once we have a
+	// profile page.
+	fastify.get("/protected", { preHandler: fastify.auth([fastify.verifyLoggedIn]) }, async(req, res) => {
+		return res.send({ message: "You are logged in" });
 	});
 }

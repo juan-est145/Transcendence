@@ -14,5 +14,5 @@ export default fp<FastifyJWTOptions>(async (fastify) => {
 		}},
 	};
 
-	fastify.register(fastifyJwt, jwtOptions)
+	fastify.register(fastifyJwt, jwtOptions);
 });
