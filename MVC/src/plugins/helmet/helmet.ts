@@ -7,4 +7,3 @@ export default fp<FastifyHelmetOptions>(async(fastify) => {
 	};
 	fastify.register(helmet, opts);
 });
-//https://images.pexels.com/photos/31504039/pexels-photo-31504039.jpeg
