@@ -2,18 +2,20 @@ import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
 import * as GUI from '@babylonjs/gui';
 
-const canvas = document.getElementById('renderCanvas');
+const canvasEl = document.getElementById('renderCanvas');
+if (!(canvasEl instanceof HTMLCanvasElement)) {
+    throw new Error("Canvas element not found or not a canvas");
+}
+const canvas: HTMLCanvasElement = canvasEl;
 const engine = new BABYLON.Engine(canvas, true);
-window.earcut = earcut; 
+(window as any).earcut = earcut; 
 
 const createScene = function () {
 	const scene = new BABYLON.Scene(engine);
 	
-	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-8, -1, -3), scene);
-	camera.rotation.x = BABYLON.Tools.ToRadians(-30);
-	camera.rotation.y = BABYLON.Tools.ToRadians(60);
-	camera.rotation.z = BABYLON.Tools.ToRadians(-80);
-	camera.fov = 1;
+	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -8), scene);
+	camera.setTarget(new BABYLON.Vector3(0, 1, 0));
+	camera.fov = 1.1;
 	//camera.attachControl(canvas, true);
 
 	const paddleOne = BABYLON.MeshBuilder.CreateBox("paddleOne", {
@@ -25,8 +27,8 @@ const createScene = function () {
 	paddleOne.position.x = -4;
 	paddleOne.position.y = 1;
 	const paddleOneMat = new BABYLON.StandardMaterial("paddleOneMat", scene);
-	paddleOneMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	paddleOneMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+	paddleOneMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+	paddleOneMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	paddleOneMat.backFaceCulling = false;
 	paddleOne.material = paddleOneMat;
 	// paddleOne.enableEdgesRendering();
@@ -42,13 +44,13 @@ const createScene = function () {
 	paddleTwo.position.x = 4;
 	paddleTwo.position.y = 1;
 	const paddleTwoMat = new BABYLON.StandardMaterial("paddleTwoMat", scene);
-	paddleTwoMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	paddleTwoMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+	paddleTwoMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+	paddleTwoMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	paddleTwoMat.backFaceCulling = false;
 	paddleTwo.material = paddleTwoMat;
 	// paddleTwo.enableEdgesRendering();
 	// paddleTwo.edgesWidth = 1.0;
-	// paddleTwo.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
+	// paddleTwo.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 
 	const ball = BABYLON.MeshBuilder.CreateSphere("ball", {
 		diameter: 0.2,
@@ -58,68 +60,68 @@ const createScene = function () {
 	ball.position.y = 1;
 	ball.position.z = 0;
 	const ballMat = new BABYLON.StandardMaterial("ballMat", scene);
-	ballMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	ballMat.emissiveColor = new BABYLON.Color3(1, 0, 1);
+	ballMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+	ballMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	ballMat.backFaceCulling = false;
 	ball.material = ballMat;
 	// ball.enableEdgesRendering();
 	// ball.edgesWidth = 1.0;
 	// ball.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
 
-	const fieldLineMat = new BABYLON.StandardMaterial("fieldLineMat", scene);
-	fieldLineMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	fieldLineMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-	const fieldTop = BABYLON.MeshBuilder.CreateBox("fieldTop", {
-		width: 0.07,
-		height: 9.87,
-		depth: 0.07
-	}, scene);
-	fieldTop.position.x = 0;
-	fieldTop.rotation.z = BABYLON.Tools.ToRadians(90);
-	fieldTop.position.y = 2.9;
-	fieldTop.position.z = 0;
-	fieldTop.material = fieldLineMat;
+// 	const fieldLineMat = new BABYLON.StandardMaterial("fieldLineMat", scene);
+// 	fieldLineMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+// 	fieldLineMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+// 	const fieldTop = BABYLON.MeshBuilder.CreateBox("fieldTop", {
+// 		width: 0.07,
+// 		height: 9.87,
+// 		depth: 0.07
+// 	}, scene);
+// 	fieldTop.position.x = 0;
+// 	fieldTop.rotation.z = BABYLON.Tools.ToRadians(90);
+// 	fieldTop.position.y = 2.9;
+// 	fieldTop.position.z = 0;
+// 	fieldTop.material = fieldLineMat;
 
-	const fieldBottom = BABYLON.MeshBuilder.CreateBox("fieldBottom", {
-		width: 0.07,
-		height: 9.87,
-		depth: 0.07
-	}, scene);
-	fieldBottom.position.x = 0;
-	fieldBottom.rotation.z = BABYLON.Tools.ToRadians(90);
-	fieldBottom.position.y = 0.1;
-	fieldBottom.position.z = 0;
-	fieldBottom.material = fieldLineMat;
+// 	const fieldBottom = BABYLON.MeshBuilder.CreateBox("fieldBottom", {
+// 		width: 0.07,
+// 		height: 9.87,
+// 		depth: 0.07
+// 	}, scene);
+// 	fieldBottom.position.x = 0;
+// 	fieldBottom.rotation.z = BABYLON.Tools.ToRadians(90);
+// 	fieldBottom.position.y = 0.1;
+// 	fieldBottom.position.z = 0;
+// 	fieldBottom.material = fieldLineMat;
 
-   const midLine = BABYLON.MeshBuilder.CreateBox("midLine", {
-		width: 0.02,
-		height: 2.8,
-		depth: 0.04
-	}, scene);
-	midLine.position.x = 0;
-	midLine.position.y = 1.5;
-	midLine.position.z = 0.05;
-	midLine.material = fieldLineMat;
+//    const midLine = BABYLON.MeshBuilder.CreateBox("midLine", {
+// 		width: 0.02,
+// 		height: 2.8,
+// 		depth: 0.04
+// 	}, scene);
+// 	midLine.position.x = 0;
+// 	midLine.position.y = 1.5;
+// 	midLine.position.z = 0.05;
+// 	midLine.material = fieldLineMat;
 
-	const fieldLeft = BABYLON.MeshBuilder.CreateBox("fieldLeft", {
-		width: 0.07,
-		height: 2.8,
-		depth: 0.07
-	}, scene);
-	fieldLeft.position.x = -4.9;
-	fieldLeft.position.y = 1.5;
-	fieldLeft.position.z = 0;
-	fieldLeft.material = fieldLineMat;
+// 	const fieldLeft = BABYLON.MeshBuilder.CreateBox("fieldLeft", {
+// 		width: 0.07,
+// 		height: 2.8,
+// 		depth: 0.07
+// 	}, scene);
+// 	fieldLeft.position.x = -4.9;
+// 	fieldLeft.position.y = 1.5;
+// 	fieldLeft.position.z = 0;
+// 	fieldLeft.material = fieldLineMat;
 
-	const fieldRight = BABYLON.MeshBuilder.CreateBox("fieldRight", {
-		width: 0.07,
-		height: 2.8,
-		depth: 0.07
-	}, scene);
-	fieldRight.position.x = 4.9;
-	fieldRight.position.y = 1.5;
-	fieldRight.position.z = 0;
-	fieldRight.material = fieldLineMat;
+// 	const fieldRight = BABYLON.MeshBuilder.CreateBox("fieldRight", {
+// 		width: 0.07,
+// 		height: 2.8,
+// 		depth: 0.07
+// 	}, scene);
+// 	fieldRight.position.x = 4.9;
+// 	fieldRight.position.y = 1.5;
+// 	fieldRight.position.z = 0;
+// 	fieldRight.material = fieldLineMat;
 
 
 	const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
@@ -130,12 +132,12 @@ const createScene = function () {
 		height: 20,
 	}, scene);
 	const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-	groundMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	groundMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.30);
 	ground.position.y = 0;
 	ground.material = groundMat;
 
 	const ceilMat = new BABYLON.StandardMaterial("ceilMat", scene);
-	ceilMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	ceilMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.30);
 	ceilMat.backFaceCulling = false;
 	const ceiling = BABYLON.MeshBuilder.CreateGround("ceiling", {
 		width: 100,
@@ -158,7 +160,7 @@ const createScene = function () {
 	// frontWall.material = frontWallMat;
 
 	const backWallMat = new BABYLON.StandardMaterial("backWallMat", scene);
-	backWallMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	backWallMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
 	const backWall = BABYLON.MeshBuilder.CreateBox("backWall", {
 		width: 100,
 		height: 100,
@@ -169,20 +171,20 @@ const createScene = function () {
 	backWall.position.z = 4;
 	backWall.material = backWallMat;
 
-	// const leftWallMat = new BABYLON.StandardMaterial("leftWallMat", scene);
-	// leftWallMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-	// const leftWall = BABYLON.MeshBuilder.CreateBox("leftWall", {
-	// 	width: 0.2,
-	// 	height: 100,
-	// 	depth: 100
-	// }, scene);
-	// leftWall.position.x = -5;
-	// leftWall.position.y = 1;
-	// leftWall.position.z = 0;
-	// leftWall.material = leftWallMat;
+	const leftWallMat = new BABYLON.StandardMaterial("leftWallMat", scene);
+	leftWallMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.90);
+	const leftWall = BABYLON.MeshBuilder.CreateBox("leftWall", {
+		width: 0.2,
+		height: 100,
+		depth: 100
+	}, scene);
+	leftWall.position.x = -5;
+	leftWall.position.y = 1;
+	leftWall.position.z = 0;
+	leftWall.material = leftWallMat;
 
 	const rightWallMat = new BABYLON.StandardMaterial("rightWallMat", scene);
-	rightWallMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+	rightWallMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.90);
 	const rightWall = BABYLON.MeshBuilder.CreateBox("rightWall", {
 		width: 0.2,
 		height: 100,
@@ -211,38 +213,40 @@ let scoreTwo = 0;
 
 const scoreOneDT = new BABYLON.DynamicTexture("scoreOneDT", {width:256, height:128}, scene, false);
 scoreOneDT.hasAlpha = true;
-scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "white", "transparent", true);
+scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
 
 const scoreTwoDT = new BABYLON.DynamicTexture("scoreTwoDT", {width:256, height:128}, scene, false);
 scoreTwoDT.hasAlpha = true;
-scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "white", "transparent", true);
+scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
 
 const scoreOnePlane = BABYLON.MeshBuilder.CreatePlane("scoreOnePlane", {width:2, height:1}, scene);
-scoreOnePlane.position = new BABYLON.Vector3(-2.5, 2.2, 0.2);
+scoreOnePlane.position = new BABYLON.Vector3(-2.5, 1.8, 0.2);
 scoreOnePlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
 const scoreOneMat = new BABYLON.StandardMaterial("scoreOneMat", scene);
 scoreOneMat.diffuseTexture = scoreOneDT;
 scoreOneMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+scoreOneMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
 scoreOneMat.backFaceCulling = false;
 scoreOneMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
 scoreOnePlane.material = scoreOneMat;
 
 const scoreTwoPlane = BABYLON.MeshBuilder.CreatePlane("scoreTwoPlane", {width:2, height:1}, scene);
-scoreTwoPlane.position = new BABYLON.Vector3(2.5, 2.2, 0.2);
+scoreTwoPlane.position = new BABYLON.Vector3(2.5, 1.8, 0.2);
 scoreTwoPlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
 const scoreTwoMat = new BABYLON.StandardMaterial("scoreTwoMat", scene);
 scoreTwoMat.diffuseTexture = scoreTwoDT;
 scoreTwoMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+scoreTwoMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
 scoreTwoMat.backFaceCulling = false;
 scoreTwoMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
 scoreTwoPlane.material = scoreTwoMat;
 
 function updateScores() {
     scoreOneDT.clear();
-    scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "white", "transparent", true);
+    scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
 
     scoreTwoDT.clear();
-    scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "white", "transparent", true);
+    scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
 }
 
 let ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
