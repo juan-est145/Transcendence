@@ -16,7 +16,7 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.get("/login", async (req, res) => {
 		if (req.session.jwt) {
-			// This is temporary so as to not loggin a user again.
+			// This is temporary so as to not log in a user again.
 			return res.redirect("/");
 		}
 		return res.viewAsync("/log-in.ejs");
@@ -33,6 +33,8 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.post<{ Body: LogInBody }>("/login", async (req, res) => {
 		try {
+			if (req.session.jwt)
+				return res.redirect("/");
 			validateLogInBody(req.body);
 			const token = await postLogin(fastify, req.body);
 			fastify.jwt.verify(token.jwt);
