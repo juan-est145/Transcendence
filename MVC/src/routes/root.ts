@@ -40,6 +40,18 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   });
 
   fastify.register(auth, { prefix: "/auth" });
+
+  // 404 - Not Found handler
+  fastify.setNotFoundHandler(async (request, reply) => {
+    return reply.code(404).viewAsync("errors/404.ejs");
+  });
+
+  // 500 - Internal Server Error handler
+  fastify.setErrorHandler(async (error, request, reply) => {
+    fastify.log.error(error);
+    return reply.code(500).viewAsync("errors/500.ejs");
+  });
+
 }
 
 export default root
