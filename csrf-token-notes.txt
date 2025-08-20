@@ -1,0 +1,4 @@
+When we create real POST and DELETE protected routes in the MVC that use forms, we must implement the CSRF token package.
+Inside every form, there must be a hidden input field with the value of the token.
+
+Not creating a csrf token in the login page is an assumable risk.
