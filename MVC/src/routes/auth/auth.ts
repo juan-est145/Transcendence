@@ -15,11 +15,9 @@ export async function auth(fastify: FastifyInstance) {
 	 * @returns The login page.
 	 */
 	fastify.get("/login", async (req, res) => {
-		if (req.session.jwt) {
-			// This is temporary so as to not log in a user again.
+		if (req.session.jwt)
 			return res.redirect("/");
-		}
-		return res.viewAsync("/log-in.ejs");
+		return res.view("/log-in.ejs");
 	});
 
 	/**
@@ -48,7 +46,7 @@ export async function auth(fastify: FastifyInstance) {
 			} else {
 				const logInError = error as LogInError;
 				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) };
-				return res.status(logInError.statusCode).viewAsync("/log-in.ejs", ejsVariables);
+				return res.status(logInError.statusCode).view("/log-in.ejs", ejsVariables);
 			}
 		}
 	});
@@ -66,9 +64,15 @@ export async function auth(fastify: FastifyInstance) {
 		return res.redirect("/");
 	});
 
+	fastify.get("/sign-in", async (req, res) => {
+		if (req.session.jwt)
+			return res.redirect("/");
+		return res.view("/sign-in.ejs")
+	});
+
 	// Temporary route for testing protected routes. It will later on be deleted once we have a
 	// profile page.
-	fastify.get("/protected", { preHandler: fastify.auth([fastify.verifyLoggedIn]) }, async(req, res) => {
+	fastify.get("/protected", { preHandler: fastify.auth([fastify.verifyLoggedIn]) }, async (req, res) => {
 		return res.send({ message: "You are logged in" });
 	});
 }

@@ -36,7 +36,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   });
 
   fastify.get('/', async function (request, reply) {
-    return reply.viewAsync("index.ejs", { user: request.user });
+    return reply.view("index.ejs", { user: request.user });
   });
 
   fastify.register(auth, { prefix: "/auth" });

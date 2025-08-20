@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Log in</title>
+	<title>Sign in</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
 </head>
@@ -16,22 +15,21 @@
 			<form
 				class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3"
 				action="/auth/login" method="post">
-				<h1 class="text-4xl text-center m-3 font-bold">Log in</h1>
+				<h1 class="text-4xl text-center m-3 font-bold">Sign in</h1>
 				<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
+					<input
+						class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
+						type="text" id="username" name="username" placeholder="Username" required autocomplete="username">
 					<input
 						class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
 						type="email" id="email" name="email" placeholder="Email" required autocomplete="email">
 					<input
 						class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800"
-						type="password" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+						type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
 				</fieldset>
 				<button
 					class="bg-blue-800 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition text-xl w-full">Submit</button>
-				<a class="underline" href="/auth/sign-in">Don't have an account? Sign in</a>
-				<a class="underline" href="#">Forgot password?</a>
 			</form>
 		</main>
-
 </body>
-
 </html>
