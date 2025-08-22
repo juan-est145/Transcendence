@@ -22,12 +22,11 @@ export async function auth(fastify: FastifyInstance) {
 
 	/**
 	 * This route logs the client if it's credentials are valid. If they aren't it sends
-	 * back the login page with 
-	 * it redirects him.
+	 * back the login page with a message explaining the errors.
 	 * @param req - The fastify request instance. It must have a body property according to the
 	 * zod logInBody schema.
 	 * @param res - The fastify response instance.
-	 * @returns A redirection to the main page.
+	 * @returns A redirection to the main page. Later on, it must be the user's profile page.
 	 */
 	fastify.post<{ Body: LogInBody }>("/login", async (req, res) => {
 		try {
@@ -37,6 +36,7 @@ export async function auth(fastify: FastifyInstance) {
 			const token = await postLogin(fastify, req.body);
 			fastify.jwt.verify(token.jwt);
 			createSession(req.session, token);
+			// TO DO: Later, we must redirect to the profile page once it is ready.
 			return res.redirect("/");
 
 		} catch (error) {
@@ -64,12 +64,26 @@ export async function auth(fastify: FastifyInstance) {
 		return res.redirect("/");
 	});
 
+	/**
+	 * This route sends the sign in form to the client.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns The sign-in page.
+	 */
 	fastify.get("/sign-in", async (req, res) => {
 		if (req.session.jwt)
 			return res.redirect("/");
 		return res.view("/sign-in.ejs");
 	});
 
+	/**
+	 * This route creates an account if the credentials are valid. If they aren't it sends
+	 * back the sign in page with a message explaining the error's in the form.
+	 * @param req - The fastify request instance. It must have a body property according to the
+	 * zod signInBody schema.
+	 * @param res - The fastify response instance.
+	 * @returns A redirection to the main page. Later on, it must be the sign in page.
+	 */
 	fastify.post<{ Body: SignInBody }>("/sign-in", async (req, res) => {
 		try {
 			if (req.session.jwt)
@@ -77,7 +91,7 @@ export async function auth(fastify: FastifyInstance) {
 			else if (req.body.password !== req.body.repeatPasswd)
 				return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
 			await postSignIn(fastify, req.body);
-			// This is temporal for now, later on we should redirect perhaps to the user home page.
+			// TO DO: Later, we must redirect to the profile page once it is ready. Also, we should create a session if we do that.
 			return res.redirect("/");
 		} catch (error) {
 			if (error instanceof ZodError) {
