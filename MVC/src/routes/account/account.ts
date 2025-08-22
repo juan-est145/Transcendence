@@ -7,6 +7,6 @@ import { FastifyInstance } from "fastify";
  */
 export async function account(fastify: FastifyInstance) {
 	fastify.get("/", async (req, res) => {
-		return res.send({ msg: "You are at the profile page" });
+		return res.view("account.ejs", { user: req.user });
 	});
 }
