@@ -11,18 +11,17 @@
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
 	<%- include('components/navbar.ejs') %>
-		<main class="flex p-2 gap-3">
-			<article class="flex-4/6 p-2 bg-gray-800 inset-ring inset-ring-indigo-600/70 rounded-md">
-				<h1>Hola caracola</h1>
+		<main class="flex p-2 gap-8">
+			<article class="flex-3/6 px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md ml-[16.666%]">
+				<h1 class="text-3xl font-extrabold underline underline-offset-3 decoration-2 text-center">Welcome back
+					<span class="text-blue-500"><%= user.username %></span></h1>
+				<p class="text-xl font-medium">Your latest alias was <span class="text-blue-500">Prueba</span></p>
 			</article>
-
-			<aside class="flex-2/6 p-2 bg-gray-800 inset-ring inset-ring-indigo-600/70 rounded-md">
-				<h1>Here we are</h1>
+			<aside class="flex-2/6 px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
+				<h1 class="text-2xl font-extrabold text-center">Friends</h1>
 			</aside>
 		</main>
 		<%- include('components/footer.ejs') %>
 </body>
 
 </html>
-
-<!-- inset-ring inset-ring-blue-600/45 -->
