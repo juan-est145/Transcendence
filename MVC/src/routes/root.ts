@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify'
 import { auth } from './auth/auth';
 import { DecodePayloadType } from '@fastify/jwt';
 import { Middleware } from 'openapi-fetch';
+import { account } from './account/account';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   /**
@@ -40,6 +41,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   });
 
   fastify.register(auth, { prefix: "/auth" });
+  fastify.register(account, { prefix: "/account" });
 }
 
 export default root
