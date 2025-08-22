@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { LogInBody, LogInError } from "./auth.type";
+import { LogInBody, LogInError, SignInBody } from "./auth.type";
 import { createSession, postLogin, validateLogInBody } from "./auth.service";
 import { ZodError } from "zod";
 
@@ -67,7 +67,14 @@ export async function auth(fastify: FastifyInstance) {
 	fastify.get("/sign-in", async (req, res) => {
 		if (req.session.jwt)
 			return res.redirect("/");
-		return res.view("/sign-in.ejs")
+		return res.view("/sign-in.ejs");
+	});
+
+	fastify.post<{ Body: SignInBody }>("/sign-in", async (req, res) => {
+		if (req.session.jwt)
+			return res.redirect("/");
+		else if (req.body.password != req.body.repeatPasswd)
+			return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
 	});
 
 	// Temporary route for testing protected routes. It will later on be deleted once we have a
