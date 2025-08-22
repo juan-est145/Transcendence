@@ -11,10 +11,16 @@
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
 	<%- include('components/navbar.ejs') %>
-	<main>
-		<h1>Hola caracola</h1>
-	</main>
-	<%- include('components/footer.ejs') %>
+		<main class="flex p-2">
+			<article class="flex-3 p-2 bg-gray-800 shadow-sm shadow-blue-600/70 rounded-md">
+				<h1>Hola caracola</h1>
+			</article>
+
+			<aside class="flex-1">
+				<h1>Here we are</h1>
+			</aside>
+		</main>
+		<%- include('components/footer.ejs') %>
 </body>
 
 </html>
