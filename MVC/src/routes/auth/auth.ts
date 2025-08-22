@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { LogInBody, LogInError, SignInBody } from "./auth.type";
-import { createSession, postLogin, validateLogInBody } from "./auth.service";
+import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
+import { createSession, postLogin, postSignIn, validateLogInBody } from "./auth.service";
 import { ZodError } from "zod";
 
 /**
@@ -71,10 +71,24 @@ export async function auth(fastify: FastifyInstance) {
 	});
 
 	fastify.post<{ Body: SignInBody }>("/sign-in", async (req, res) => {
-		if (req.session.jwt)
+		try {
+			if (req.session.jwt)
+				return res.redirect("/");
+			else if (req.body.password !== req.body.repeatPasswd)
+				return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
+			await postSignIn(fastify, req.body);
+			// This is temporal for now, later on we should redirect perhaps to the user home page.
 			return res.redirect("/");
-		else if (req.body.password != req.body.repeatPasswd)
-			return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
+		} catch (error) {
+			if (error instanceof ZodError) {
+				const ejsVariables = { errors: error.issues.map((element) => element.message) };
+				return res.status(400).viewAsync("/sign-in.ejs", ejsVariables);
+			} else {
+				const logInError = error as SigInError;
+				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) };
+				return res.status(logInError.statusCode).view("/sign-in.ejs", ejsVariables);
+			}
+		}
 	});
 
 	// Temporary route for testing protected routes. It will later on be deleted once we have a

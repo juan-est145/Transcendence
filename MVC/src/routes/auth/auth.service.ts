@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { logInBody } from "./auth.dto";
-import { JwtBody, LogInBody } from "./auth.type";
+import { logInBody, signInBody } from "./auth.dto";
+import { JwtBody, LogInBody, SignInBody } from "./auth.type";
 import { FastifySessionObject } from "@fastify/session";
 
 /**
@@ -37,4 +37,24 @@ export async function postLogin(fastify: FastifyInstance, body: LogInBody) {
 export function createSession(session: FastifySessionObject, token: JwtBody) {
 	session.jwt = token.jwt;
 	session.refreshJwt = token.refreshJwt;
+}
+
+export function validateSignInBody(body: unknown) {
+	signInBody.parse(body);
+}
+
+export async function postSignIn(fastify: FastifyInstance, body: SignInBody) {
+	const { username, email, password } = body;
+
+	const { data, error } = await fastify.apiClient.POST("/v1/auth/sign-in", {
+		body: {
+			username,
+			email,
+			password
+		},
+	});
+	if (error) {
+		throw error;
+	}
+	return data;
 }
