@@ -13,12 +13,14 @@
 	<%- include('components/navbar.ejs') %>
 		<main class="flex p-2 gap-8">
 
-			<section class="flex flex-col gap-3 flex-3/6 ml-[16.666%]">
+			<section class="flex flex-col gap-3 flex-4/6 ml-[16.666%]">
 
 				<article
-					class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<h1 class="text-3xl font-extrabold underline underline-offset-3 decoration-2 text-center">Welcome
-						back
+					class="flex flex-col items-center gap-2 px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
+					<img src="<%= user.avatarUrl || '/images/default-avatar.png' %>" alt="Avatar"
+						class="w-32 h-32 rounded-full border-4 border-blue-500 bg-gray-700 mb-4 shadow-lg">
+					<h1 class="text-3xl font-extrabold text-center">Welcome
+						back,
 						<span class="text-blue-500">
 							<%= user.username %>
 						</span>
@@ -28,11 +30,17 @@
 
 				<article
 					class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<h1 class="text-3xl text-center font-extrabold underline underline-offset-3 decoration-2">Your
+					<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Your
 						latest stats</h1>
 					<div class="flex justify-evenly m-2">
-						<p class="text-2xl font-medium">20 wins</p>
-						<p class="text-2xl font-medium">40 losses</p>
+						<div class="text-center">
+							<p class="text-2xl font-medium">Wins</p>
+							<p class="text-2xl font-medium">20</p>
+						</div>
+						<div class="text-center">
+							<p class="text-2xl font-medium">Losses</p>
+							<p class="text-2xl font-medium">40</p>
+						</div>
 					</div>
 				</article>
 			</section>
@@ -40,6 +48,24 @@
 			<aside
 				class="flex-2/6 px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
 				<h1 class="text-2xl font-extrabold text-center">Friends</h1>
+				<ul class="space-y-3">
+
+					<!-- Here we would pass the friend information when it is available -->
+					<!-- Later on, we can create a component for this part -->
+					<li class="flex items-center gap-3">
+						<img src="/images/default-avatar.png" alt="Friend Avatar"
+							class="w-10 h-10 rounded-full border-2 border-blue-400 bg-gray-700">
+						<span class="text-lg">Friend test</span>
+						<span class="bg-blue-600 p-2 rounded-full font-semibold ml-2">Online</span>
+					</li>
+					<li class="flex items-center gap-3">
+						<img src="/images/default-avatar.png" alt="Friend Avatar"
+							class="w-10 h-10 rounded-full border-2 border-blue-400 bg-gray-700">
+						<span class="text-lg">Friend test</span>
+						<span class="bg-black p-2 rounded-full font-semibold ml-2">Offline</span>
+					</li>
+					<li class="text-gray-400 text-center">No friends yet.</li>
+				</ul>
 			</aside>
 		</main>
 		<%- include('components/footer.ejs') %>
