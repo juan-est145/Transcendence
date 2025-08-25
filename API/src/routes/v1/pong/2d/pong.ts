@@ -97,4 +97,7 @@ export async function pong2dRoutes(fastify: FastifyInstance){
         gameState.ball.gravity = 4;
         return gameState;
     });
+
 }
+
+export default pong2dRoutes;
