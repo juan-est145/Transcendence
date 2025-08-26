@@ -1,4 +1,6 @@
-import { FastifyInstance } from "fastify"
+import { FastifyPluginAsync } from "fastify"
+
+console.log("pong2dRoutes loaded");
 
 const gameState = {
     scoreOne: 0,
@@ -7,7 +9,6 @@ const gameState = {
     paddleTwo: { x: 775, y: 160, width: 15, height: 80, gravity: 2, velocity: 0},
     ball: { x: 400, y: 200, width: 15, height: 15, speed: 4, gravity: 1}
 }
-
 
 function movePaddles(input?: { paddleOne?: number, paddleTwo?: number }) {
     if (input && typeof input.paddleOne === "number") {
@@ -71,22 +72,22 @@ function tickGame(input?: { paddleOne?: number, paddleTwo?: number }) {
     ballBounce();
 }
 
-export async function pong2dRoutes(fastify: FastifyInstance){
-    fastify.get("/pong/2d/state", async (request, reply) => {
+const pong2dRoutes: FastifyPluginAsync = async (fastify, opts) => {
+    fastify.get("/state", async (request, reply) => {
         return gameState;
     });
 
-    fastify.post("/pong/2d/move", async (request, reply) => {
+    fastify.post("/move", async (request, reply) => {
         movePaddles(request.body as { paddleOne?: number, paddleTwo?: number } | undefined);
         return gameState;
     });
 
-    fastify.post("/pong/2d/tick", async (request, reply) => {
+    fastify.post("/tick", async (request, reply) => {
         tickGame(request.body as { paddleOne?: number, paddleTwo?: number } | undefined);
         return gameState;
     });
 
-    fastify.post("/pong/2d/reset", async (request, reply) => {
+    fastify.post("/reset", async (request, reply) => {
         gameState.scoreOne = 0;
         gameState.scoreTwo = 0;
         gameState.paddleOne.y = 160;

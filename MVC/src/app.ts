@@ -3,7 +3,6 @@ import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyInstance, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import fs from 'node:fs'
 
-
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
   https: {
     key: NonSharedBuffer;
@@ -43,6 +42,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'routes'),
     options: opts
   })
+
 }
 
 export default app
