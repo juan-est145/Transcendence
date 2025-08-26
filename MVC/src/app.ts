@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyInstance, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
-import fs from 'node:fs'
+import * as fs from 'node:fs'
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
   https: {

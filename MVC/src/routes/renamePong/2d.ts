@@ -1,5 +1,12 @@
 import { FastifyPluginAsync } from "fastify"
 
+
+/**
+ * TENGO QUE REVISAR EL AUTOLOAD DE FASTIFY PORQUE NO ME QUIERE CARGAR LAS RUTAS E IGUAL HAYY QUE METERLO A PELO, 
+ * ADEMAS DE ESO TENGO QUE TERMINAR DE CONECTAR EL SERVER SIDE CON EL FRONT
+ */
+
+
 console.log("pong2dRoutes loaded");
 
 const gameState = {
