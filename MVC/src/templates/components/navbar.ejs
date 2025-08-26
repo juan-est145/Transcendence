@@ -27,31 +27,19 @@
 		<!-- Estado usuario -->
 		<div id="userState" class="flex items-center space-x-4">
 			<% if (user) { %>
+				<!-- Icono perfil (puedes cambiar el src por el de la imagen de perfil real) -->
+				<%- include("dropdown.ejs") %>
 				<span class="text-gray-300 hidden sm:inline">Hola, <strong>
 						<%= user.username %>
-					</strong></span>
+					</strong>
+				</span>
 
-				<!-- Icono perfil (puedes cambiar el src por el de la imagen de perfil real) -->
-				<a href="/account"
-					class="block w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-400 transition">
-					<% if (user.avatarUrl) { %>
-						<img src="<%= user.avatarUrl %>" alt="Perfil" class="w-full h-full object-cover" />
-						<% } else { %>
-							<!-- SVG icono usuario simple -->
-							<svg class="w-full h-full text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-								<path
-									d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-							</svg>
-							<% } %>
-				</a>
-
-				<a href="/auth/log-out" class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2">
-					Log out
-				</a>
+				<!-- class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 text-nowrap" -->
 
 				<% } else { %>
 					<a href="/auth/login"
-						class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold">Log in</a>
+						class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold">Log
+						in</a>
 					<% } %>
 		</div>
 	</nav>
