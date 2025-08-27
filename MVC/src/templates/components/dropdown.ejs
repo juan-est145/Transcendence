@@ -1,4 +1,4 @@
-<div class="relative group">
+<div class="relative group/dropdown">
 	<button
 		class="block w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-400 transition cursor-pointer">
 		<% if (user.avatarUrl) { %>
@@ -12,14 +12,14 @@
 				<% } %>
 	</button>
 	<ul
-		class="hidden absolute z-1 right-1.5 group-hover:block group-hover:bg-blue-600 text-lg group-hover:rounded-md py-2">
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover:rounded-md">
+		class="hidden absolute z-1 right-1.5 group-hover/dropdown:block group-hover/dropdown:bg-blue-600 text-lg group-hover/dropdown:rounded-md py-2">
+		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
 			<a class="block px-4 py-2" href="/account">Account</a>
 		</li>
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover:rounded-md">
+		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
 			<a class="block px-4 py-2" href="#">Settings</a>
 		</li>
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover:rounded-md">
+		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
 			<a class="block px-4 py-2" href="/auth/log-out">Log out</a>
 		</li>
 	</ul>
