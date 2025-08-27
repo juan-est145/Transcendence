@@ -32,7 +32,7 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 		if (error instanceof PrismaClientKnownRequestError && error.code == "P2002") {
 			throw fastify.httpErrors.conflict("Username or email already exits");
 		}
-		throw (error);
+		throw error;
 	}
 }
 

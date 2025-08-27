@@ -1,10 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { getAccountSchema } from "./account.swagger";
+import { JwtPayload } from "../auth/auth.type";
+import { getAccount } from "./account.service";
 
 export async function account(fastify: FastifyInstance) {
 	fastify.addHook("preHandler", fastify.auth([fastify.verifyJwt]));
 
 	fastify.get("/", getAccountSchema, async (req, res) => {
-		return res.send({ msg: "Hola caracola" });
+		const jwtPayload: JwtPayload = await req.jwtDecode();
+		const user = await getAccount(fastify, jwtPayload);
+		return res.send(user);
 	});
 }
