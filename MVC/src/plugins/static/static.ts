@@ -4,7 +4,9 @@ import fp from "fastify-plugin";
 
 export default fp<FastifyStaticOptions>(async (fastify) => {
 	const options: FastifyStaticOptions = {
-		root: path.join(process.cwd(), "public")
+		root: path.join(process.cwd(), "public"),
+		prefix: '/public/',
+		index: ['index.html'],
 	};
 	fastify.register(fastifyStatic, options)
 });
