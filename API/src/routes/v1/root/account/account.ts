@@ -7,8 +7,12 @@ export async function account(fastify: FastifyInstance) {
 	fastify.addHook("preHandler", fastify.auth([fastify.verifyJwt]));
 
 	fastify.get("/", getAccountSchema, async (req, res) => {
-		const jwtPayload: JwtPayload = await req.jwtDecode();
-		const user = await getAccount(fastify, jwtPayload);
-		return res.send(user);
+		try {
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const user = await getAccount(fastify, jwtPayload);
+			return res.send(user);
+		} catch (error) {
+			throw error;
+		}
 	});
 }
