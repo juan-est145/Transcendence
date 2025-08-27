@@ -2,57 +2,13 @@ import { FastifyInstance, } from "fastify";
 import { createUser, getUser, signJwt } from "./auth.service";
 import { logInSchema, refreshSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
-import { LogInBody, SignInBody, type AuthError } from "./auth.type";
-import { HttpError, HttpMap } from "../../v1.dto";
-import { getErrorDetails, getErrorHttpValues } from "./auth.aux";
+import { LogInBody, SignInBody } from "./auth.type";
 
 /**
  * All auth endpoints are processed here. The route also has a default error handler that will catch all
  * the different http errors and send the appropiate response.
  */
 export async function auth(fastify: FastifyInstance) {
-	/**
-	 * The /auth route error catcher.
-	 * 
-	 * @remarks
-	 * This function assigns the appropiate error code and message (500 internal server error if none are provided).
-	 * @param error - The fastify error instance.
-	 * @param req - The fastify request instance. This request object does not have any custom properties.
-	 * @param res- The fastify response instance.
-	 * @returns Returns a json response in the format of the type AuthError. If the error is of type 400,
-	 * in the details object there will be a field value indicating which property is not valid.
-	 * ```ts
-	 * type AuthError = {
-	 *	statusCode: number;
-	 * 	httpError: HttpError;
-	 *	} & {
-	 *	details?: {
-	 *		field?: string | undefined;
-	 *		msg?: string[] | undefined;
-	 *	}[] | undefined;
-	 *	}
-	 * ```
-	 */
-	fastify.setErrorHandler((error, req, res) => {
-		const statusCode = error.statusCode ?? 500;
-		const httpError = HttpMap.get(statusCode) ?? HttpError.INTERNAL_SERVER_ERROR;
-		const errorMsg: AuthError = {
-			statusCode,
-			httpError,
-			details: [{ msg: [error.message] }]
-		};
-
-		if (error.validation) {
-			getErrorHttpValues(errorMsg, 400);
-			errorMsg.details = [{
-				field: error.validation[0].params.missingProperty as string,
-				msg: [error.message]
-			}];
-		}
-		console.error(`- An error of type ${errorMsg.statusCode} occurred. The details are as follow:\n ${getErrorDetails(errorMsg)}`);
-		return res.code(errorMsg.statusCode).send(errorMsg);
-	});
-
 	/**
 	 * This route allows for the creation of new users
 	 * @param req - The fastify request instance. It must have a body property according to the SignInBody type

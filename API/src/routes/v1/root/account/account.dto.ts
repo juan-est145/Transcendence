@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { username, email, authError } from '../auth/auth.dto';
+import { username, email } from '../auth/auth.dto';
 
 export const accountRes = Type.Object({
 	username,
@@ -12,5 +12,3 @@ export const accountRes = Type.Object({
 		online: Type.Boolean(),
 	}),
 });
-
-export const accountError = authError;

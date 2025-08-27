@@ -1,5 +1,6 @@
-import { signInBody, singInRes, authError, logInBody, jwt } from "./auth.dto";
+import { signInBody, singInRes, logInBody, jwt } from "./auth.dto";
 import { RouteShorthandOptions } from "fastify";
+import { generalError } from "../root.dto";
 
 const authTag = "Auth"
 
@@ -21,7 +22,7 @@ export const signInSchema: RouteShorthandOptions = {
 				description: "If a field is invalid or missing, it will return a message with the field that is invalid",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -29,7 +30,7 @@ export const signInSchema: RouteShorthandOptions = {
 				description: "If a username or email are already registered, it sends back this response",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -37,7 +38,7 @@ export const signInSchema: RouteShorthandOptions = {
 				description: "If something else went wrong with the server, it sends back this response",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -63,7 +64,7 @@ export const logInSchema: RouteShorthandOptions = {
 				description: "If a field is invalid or missing, it will return a message with the field that is invalid.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -71,7 +72,7 @@ export const logInSchema: RouteShorthandOptions = {
 				description: "It returns an error message if the credentials are not correct.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -79,7 +80,7 @@ export const logInSchema: RouteShorthandOptions = {
 				description: "If something else went wrong with the server, it sends back this response.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -105,7 +106,7 @@ export const refreshSchema: RouteShorthandOptions = {
 				description: "If a field is invalid or missing, it will return a message with the field that is invalid.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -113,7 +114,7 @@ export const refreshSchema: RouteShorthandOptions = {
 				description: "It returns an error message if the credentials are not correct.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},
@@ -121,7 +122,7 @@ export const refreshSchema: RouteShorthandOptions = {
 				description: "If something else went wrong with the server, it sends back this response.",
 				content: {
 					"application/json": {
-						schema: authError,
+						schema: generalError,
 					}
 				}
 			},

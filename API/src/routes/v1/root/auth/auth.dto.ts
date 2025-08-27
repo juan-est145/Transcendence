@@ -1,5 +1,4 @@
 import { Type } from '@sinclair/typebox';
-import { baseHttpError } from '../../v1.dto';
 
 export const username = Type.String({ minLength: 3, maxLength: 20 });
 export const email = Type.String({ format: "email" });
@@ -15,21 +14,6 @@ export const singInRes = Type.Object({
 	username,
 	email,
 });
-
-export const authError = Type.Intersect([
-	baseHttpError,
-	Type.Object({
-		details: Type.Optional(
-			Type.Array(
-				Type.Object({
-					field: Type.Optional(Type.String()),
-					msg: Type.Optional(Type.Array(Type.String())),
-				}),
-			)
-		)
-	}
-	)
-]);
 
 export const logInBody = Type.Object({
 	email,
