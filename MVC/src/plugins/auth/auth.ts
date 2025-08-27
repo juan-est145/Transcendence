@@ -1,6 +1,7 @@
 import fp from "fastify-plugin";
 import auth, { FastifyAuthPluginOptions } from "@fastify/auth";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { httpErrors } from "@fastify/sensible";
 
 export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 	/**
@@ -11,7 +12,7 @@ export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 	 */
 	fastify.decorate("verifySession", async (req: FastifyRequest, res: FastifyReply) => {
 		if (!(req.session.jwt && req.session.refreshJwt))
-			return res.redirect("/");
+			throw httpErrors.unauthorized();
 	});
 
 	/**
