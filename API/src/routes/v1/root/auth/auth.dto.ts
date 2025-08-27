@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox';
 import { baseHttpError } from '../../v1.dto';
 
-const username = Type.String({ minLength: 3, maxLength: 20 });
-const email = Type.String({ format: "email" });
+export const username = Type.String({ minLength: 3, maxLength: 20 });
+export const email = Type.String({ format: "email" });
 const password = Type.String({ minLength: 3, maxLength: 20 });
 
 export const signInBody = Type.Object({
