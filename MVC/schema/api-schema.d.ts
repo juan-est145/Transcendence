@@ -365,6 +365,8 @@ export interface paths {
                                 updatedAt: string;
                                 avatar: string;
                                 online: boolean;
+                                victories: number;
+                                defeats: number;
                             };
                         };
                     };

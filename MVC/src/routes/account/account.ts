@@ -1,4 +1,5 @@
 import { FastifyInstance } from "fastify";
+import { getProfileInfo } from "./account.service";
 
 // TO DO: This entire module must be auth protected. For now it isn't because the frontend is being built.
 
@@ -7,6 +8,7 @@ import { FastifyInstance } from "fastify";
  */
 export async function account(fastify: FastifyInstance) {
 	fastify.get("/", async (req, res) => {
-		return res.view("account.ejs", { user: req.user });
+		const profile = await getProfileInfo(fastify);
+		return res.view("account.ejs", { user: req.user, profile: profile.profile });
 	});
 }
