@@ -10,5 +10,7 @@ export const accountRes = Type.Object({
 		updatedAt: Type.String({ format: "date-time" }),
 		avatar: Type.String(),
 		online: Type.Boolean(),
+		victories: Type.Number(),
+		defeats: Type.Number(),
 	}),
 });

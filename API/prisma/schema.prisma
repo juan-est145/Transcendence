@@ -31,8 +31,8 @@ model Profile {
   user      Users     @relation(fields: [id], references: [id])
   friend1   Friends[] @relation("Friend1")
   friend2   Friends[] @relation("Friend2")
-  // This field will not be added until work starts on the tournaments. For now is not valid.
-  //tournaments Tournament_Players[]
+  //This field will not be added until work starts on the tournaments. For now is not valid.
+  tournaments Tournament_Players[]
 }
 
 // It is imperative that user1Id is always the smallest index number to avoid duplicates. 
@@ -52,19 +52,19 @@ enum Friendship {
   FRIENDS
 }
 
-// model Tournament {
-//   id         String               @id @default(ulid())
-//   startedAt  DateTime             @default(now())
-//   finishedAt DateTime?
-//   players    Tournament_Players[]
-// }
+model Tournament {
+  id         String               @id @default(ulid())
+  startedAt  DateTime             @default(now())
+  finishedAt DateTime?
+  players    Tournament_Players[]
+}
 
-// model Tournament_Players {
-//   playerAlias  String
-//   rank         Int
-//   playerId     Int
-//   tournamentId String
-//   players      Profile    @relation(fields: [playerId], references: [id])
-//   tournaments  Tournament @relation(fields: [tournamentId], references: [id])
-//   @@id([playerId, tournamentId])
-// }
+model Tournament_Players {
+  playerAlias  String
+  rank         Int
+  playerId     Int
+  tournamentId String
+  players      Profile    @relation(fields: [playerId], references: [id])
+  tournaments  Tournament @relation(fields: [tournamentId], references: [id])
+  @@id([playerId, tournamentId])
+}

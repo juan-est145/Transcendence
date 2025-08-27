@@ -1,4 +1,4 @@
 import { type Static } from "@sinclair/typebox";
-import { accountError } from "./account.dto";
+import { accountRes } from "./account.dto";
 
-export type AccountError = Static <typeof accountError>;
+export type AccountRes = Static<typeof accountRes>;

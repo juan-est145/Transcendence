@@ -9,8 +9,8 @@ export async function account(fastify: FastifyInstance) {
 	fastify.get("/", getAccountSchema, async (req, res) => {
 		try {
 			const jwtPayload: JwtPayload = await req.jwtDecode();
-			const user = await getAccount(fastify, jwtPayload);
-			return res.send(user);
+			const account = await getAccount(fastify, jwtPayload);
+			return res.send(account);
 		} catch (error) {
 			throw error;
 		}
