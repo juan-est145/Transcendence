@@ -1,6 +1,7 @@
 import { FastifyInstance, RouteShorthandOptions } from "fastify"
 import { pingRes } from "./root.dto";
 import { auth } from "./auth/auth";
+import { account } from "./account/account";
 
 
 const rootSchema: RouteShorthandOptions = {
@@ -26,6 +27,7 @@ async function root(fastify: FastifyInstance): Promise<void> {
 	});
 
 	fastify.register(auth, { prefix: "auth" });
+	fastify.register(account, { prefix: "account" });
 }
 
 export { root }
