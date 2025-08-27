@@ -55,7 +55,7 @@ export function validateSignInBody(body: unknown) {
 
 /**
  * This function sends the user's credential to the REST API for signin in. If the response
- * code is between 400 or 500 it throws an exception.
+ * code is between 400 and 500 it throws an exception.
  * @param fastify - The fastify instance. It is decorated with the API client.
  * @param body - A fastify request body with a username, password, email and a repeat password field.
  * 				With the exception of the repeat password field, the rest of them are sent to the API.

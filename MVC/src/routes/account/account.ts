@@ -2,11 +2,24 @@ import { FastifyInstance } from "fastify";
 import { getProfileInfo } from "./account.service";
 
 /**
- * This module deals with the user profile page
+ * This module deals with the user's account page
  */
 export async function account(fastify: FastifyInstance) {
+	/**
+	 * This entire module requires the user to be logged in in order to be able to access and
+	 * interact with it.
+	 */
 	fastify.addHook("onRequest", fastify.auth([fastify.verifyLoggedIn]));
 
+	/**
+	 * This route sends to the client the user profile page. It uses the jwt 
+	 * stored in the session to identiy the user and load the correct data.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns The account page page.
+	 * @remarks The page requires both a user property for the header and a profile
+	 * property for adding data like victories or the avatar route.
+	 */
 	fastify.get("/", async (req, res) => {
 		const profile = await getProfileInfo(fastify);
 		return res.view("account.ejs", { user: req.user, profile: profile.profile });

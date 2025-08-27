@@ -42,7 +42,7 @@ export async function auth(fastify: FastifyInstance) {
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
-				return res.status(400).viewAsync("/log-in.ejs", ejsVariables);
+				return res.status(400).view("/log-in.ejs", ejsVariables);
 			} else {
 				const logInError = error as LogInError;
 				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) };
@@ -96,18 +96,12 @@ export async function auth(fastify: FastifyInstance) {
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
-				return res.status(400).viewAsync("/sign-in.ejs", ejsVariables);
+				return res.status(400).view("/sign-in.ejs", ejsVariables);
 			} else {
 				const logInError = error as SigInError;
 				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) };
 				return res.status(logInError.statusCode).view("/sign-in.ejs", ejsVariables);
 			}
 		}
-	});
-
-	// Temporary route for testing protected routes. It will later on be deleted once we have a
-	// profile page.
-	fastify.get("/protected", { preHandler: fastify.auth([fastify.verifyLoggedIn]) }, async (req, res) => {
-		return res.send({ message: "You are logged in" });
 	});
 }

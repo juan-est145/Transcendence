@@ -5,15 +5,14 @@ import bcrypt from "bcrypt";
 import { LogInBody, SignInBody } from "./auth.type";
 
 /**
- * All auth endpoints are processed here. The route also has a default error handler that will catch all
- * the different http errors and send the appropiate response.
+ * All auth endpoints are processed here.
  */
 export async function auth(fastify: FastifyInstance) {
 	/**
 	 * This route allows for the creation of new users
 	 * @param req - The fastify request instance. It must have a body property according to the SignInBody type
 	 * @param res - The fastify response instance.
-	 * @returns In case of success, it returns a 201 json response including the email and username of the new user.
+	 * @returns In case of success, it returns a 201 JSON response including the email and username of the new user.
 	 * In case of error, an error is thrown and catched by the route's error handler.
 	 * @remarks
 	 * The password field must ALWAYS be hashed using bcrypt before passing it to the createUser
