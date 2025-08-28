@@ -1,13 +1,12 @@
-import { test } from 'node:test'
-import * as assert from 'node:assert'
-import { build } from '../helper'
+import { build } from "../helper";
 
-test('example is loaded', async (t) => {
-  const app = await build(t)
+const app = build();
 
-  const res = await app.inject({
-    url: '/v1/ping'
+describe("Example test", () => {
+  it("Example is loaded", async () => {
+    const res = await app.inject({
+      url: "/v1/ping",
+    });
+    expect(res.statusCode).toEqual(200);
   });
-
-  assert.equal(res.statusCode, 200)
-})
+});
