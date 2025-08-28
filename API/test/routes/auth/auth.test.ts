@@ -1,4 +1,5 @@
 import { build } from "../../helper";
+import * as authService from "../../../src/routes/v1/root/auth/auth.service";
 
 const app = build();
 
@@ -50,3 +51,36 @@ describe("Login tests", () => {
 	});
 });
 
+
+describe("Sign-in tests", () => {
+	it("Successful sign up", async () => {
+		const values = {
+			username: "johndoe",
+			email: "johndoe@nobody.com",
+			password: "secret",
+		}
+
+		const mockUser: { username: string, email: string } = {
+			username: values.username,
+			email: values.email,
+		};
+
+		const spy = jest.spyOn(authService, "createUser").mockResolvedValue(mockUser as any);
+		const res = await app.inject({
+			url: "/v1/auth/sign-in",
+			method: "POST",
+			headers: {
+				"content-type": "application/json"
+			},
+			body: {
+				username: values.username,
+				password: values.password,
+				email: values.email,
+			}
+		});
+
+		expect(res.statusCode).toBe(201);
+		expect(JSON.parse(res.body)).toEqual(mockUser);
+		spy.mockRestore();
+	});
+});
