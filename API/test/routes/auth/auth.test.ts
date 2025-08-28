@@ -4,8 +4,15 @@ import * as authService from "../../../src/routes/v1/root/auth/auth.service";
 const app = build();
 
 describe("Login tests", () => {
+	beforeAll(() => {
+		jest.spyOn(console, 'error').mockImplementation(() => { });
+	});
+
+	afterAll(() => {
+		jest.spyOn(console, 'error').mockRestore();
+	});
+
 	it("Incorrect credentials", async () => {
-		const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 		const res = await app.inject({
 			url: "/v1/auth/log-in",
 			method: "POST",
@@ -18,7 +25,6 @@ describe("Login tests", () => {
 			}
 		});
 		expect(res.statusCode).toEqual(401);
-		errorSpy.mockRestore();
 	});
 
 	it("Correct credentials", async () => {
@@ -37,7 +43,6 @@ describe("Login tests", () => {
 	});
 
 	it("Invalid fields", async () => {
-		const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 		const res = await app.inject({
 			url: "/v1/auth/log-in",
 			method: "POST",
@@ -47,7 +52,6 @@ describe("Login tests", () => {
 			body: {}
 		});
 		expect(res.statusCode).toEqual(400);
-		errorSpy.mockRestore();
 	});
 });
 
