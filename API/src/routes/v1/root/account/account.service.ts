@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
-import { AccountRes } from "./account.type";
+import { AccountRes, GetAccntQuery } from "./account.type";
 
 /**
  * This function retrieves an user and it's profile from the database. It also modifies the object
@@ -31,24 +31,27 @@ export async function getAccount(fastify: FastifyInstance, jwtPayload: JwtPayloa
 				email: true
 			}
 		});
-
-		const tournaments = query!.profile!.tournaments || [];
-		const victories = tournaments.filter(t => t.rank === 1).length;
-		const defeats = tournaments.filter(t => t.rank !== 1).length;
-		const result: AccountRes = {
-			...query!,
-			profile: {
-				id: query!.profile!.id,
-				createdAt: query!.profile!.createdAt.toISOString(),
-				updatedAt: query!.profile!.updatedAt.toISOString(),
-				avatar: query!.profile!.avatar,
-				online: query!.profile!.online,
-				victories,
-				defeats
-			}
-		};
-		return result;
+		return addTourResults(query!);
 	} catch (error) {
 		throw error;
 	}
+}
+
+function addTourResults(query: GetAccntQuery) {
+	const tournaments = query!.profile!.tournaments || [];
+	const victories = tournaments.filter(t => t.rank === 1).length;
+	const defeats = tournaments.filter(t => t.rank !== 1).length;
+	const result: AccountRes = {
+		...query!,
+		profile: {
+			id: query!.profile!.id,
+			createdAt: query!.profile!.createdAt.toISOString(),
+			updatedAt: query!.profile!.updatedAt.toISOString(),
+			avatar: query!.profile!.avatar,
+			online: query!.profile!.online,
+			victories,
+			defeats
+		}
+	};
+	return result;
 }
