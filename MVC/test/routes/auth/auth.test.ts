@@ -109,7 +109,7 @@ describe("Sign in tests", () => {
 			},
 			body: "username=something&email=something@example.com&password=prueba&repeatPasswd=prueba",
 		});
-		expect(res.headers.location).toBe("/");
+		expect(res.statusCode).toBe(201);
 	});
 
 	it("Sign in failure from API", async () => {

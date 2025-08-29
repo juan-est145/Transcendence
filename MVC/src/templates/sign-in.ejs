@@ -12,6 +12,7 @@
 	<%- include('components/navbar.ejs') %>
 		<main class="flex-grow flex flex-col justify-center relative">
 			<%- include('components/errorPopup.ejs') %>
+			<%- include('components/successPopup.ejs') %>
 			<form
 				class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3"
 				action="/auth/sign-in" method="post">

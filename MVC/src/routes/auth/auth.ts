@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
-import { createSession, postLogin, postSignIn, validateLogInBody } from "./auth.service";
+import { createSession, postLogin, postSignIn, validateLogInBody, validateSignInBody } from "./auth.service";
 import { ZodError } from "zod";
 
 /**
@@ -88,9 +88,9 @@ export async function auth(fastify: FastifyInstance) {
 				return res.redirect("/");
 			else if (req.body.password !== req.body.repeatPasswd)
 				return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
+			validateSignInBody(req.body);
 			await postSignIn(fastify, req.body);
-			// TO DO: Later, we must redirect to the profile page once it is ready. Also, we should create a session if we do that.
-			return res.redirect("/");
+			return res.status(201).view("/sign-in.ejs", { success: ["Your account was created successfully"] });
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
