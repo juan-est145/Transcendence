@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "c8 jest --detectOpenHandles --forceExit",
+    "test": "c8 --exclude=\"**/*.dto.ts\" --exclude=\"test/**\" jest --detectOpenHandles --forceExit",
     "open-api": "mkdir -p ./schema && npx openapi-typescript https://api:4343/docs/json -o ./schema/api-schema.d.ts",
     "tailwind": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css",
     "tailwind:dev": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css --watch=always",
