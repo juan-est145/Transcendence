@@ -96,9 +96,9 @@ export async function auth(fastify: FastifyInstance) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
 				return res.status(400).view("/sign-in.ejs", ejsVariables);
 			} else {
-				const logInError = error as SigInError;
-				const ejsVariables = { errors: logInError.details?.map((element) => element.msg) };
-				return res.status(logInError.statusCode).view("/sign-in.ejs", ejsVariables);
+				const signInError = error as SigInError;
+				const ejsVariables = { errors: signInError.details?.map((element) => element.msg) };
+				return res.status(signInError.statusCode).view("/sign-in.ejs", ejsVariables);
 			}
 		}
 	});
