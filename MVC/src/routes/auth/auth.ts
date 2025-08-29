@@ -36,9 +36,7 @@ export async function auth(fastify: FastifyInstance) {
 			const token = await postLogin(fastify, req.body);
 			fastify.jwt.verify(token.jwt);
 			createSession(req.session, token);
-			// TO DO: Later, we must redirect to the profile page once it is ready.
-			return res.redirect("/");
-
+			return res.redirect("/account");
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
