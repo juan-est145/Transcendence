@@ -45,13 +45,17 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
   // 404 - Not Found handler
   fastify.setNotFoundHandler(async (request, reply) => {
-    return reply.code(404).viewAsync("errors/404.ejs");
+    return reply.code(404).view("errors/404.ejs");
   });
 
-  // 500 - Internal Server Error handler
+  // 500 - Internal Server Error handler for generic errors.
+  // 401 - Unauthorized for not logged error's.
   fastify.setErrorHandler(async (error, request, reply) => {
     fastify.log.error(error);
-    return reply.code(500).viewAsync("errors/500.ejs");
+    if (error.statusCode === 401) {
+      return reply.code(error.statusCode).viewAsync("errors/401.ejs");
+    }
+    return reply.code(500).view("errors/500.ejs");
   });
 
 }
