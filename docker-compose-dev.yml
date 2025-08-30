@@ -68,7 +68,7 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-Ifk", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-Ifk", "https://localhost:9000/minio/health/live"]
       interval: 10s
       timeout: 5s
       retries: 5
