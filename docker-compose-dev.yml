@@ -9,6 +9,8 @@ services:
     depends_on:
       mvc:
         condition: service_healthy
+    networks:
+      - lan
   api:
     build: 
       context: ./API
@@ -16,16 +18,19 @@ services:
       target: dev
     volumes:
       - ./API:/app
+    hostname: api
     ports:
       - '4343:4343'
       - '9320:9320'
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:4343/docs/json"]
+      test: ["CMD", "curl", "-Ifk", "https://localhost:4343/docs/json"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - lan
 
   mvc:
     build:
@@ -37,7 +42,7 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:4343/"]
+      test: ["CMD", "curl", "-Ifk", "https://localhost:4343/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,6 +53,31 @@ services:
     depends_on:
       api:
         condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - lan
+  
+  minio:
+    build:
+      context: ./minio
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - "./minio/data:/data"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-Ifk", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    hostname: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - lan
 
 networks:
   lan:

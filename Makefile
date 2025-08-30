@@ -14,10 +14,13 @@ npm-mvc:
 dev-db:
 	mkdir -p ./API/db && touch ./API/db/Database.db && mkdir -p ./MVC/db && touch ./MVC/db/Sessions.db
 
-dev: npm-api npm-mvc dev-db
+dev-minio:
+	mkdir -p ./minio/data
+
+dev: npm-api npm-mvc dev-db dev-minio
 	docker compose -f $(DEV-FILE) up --build -d
 
 clean:
-	docker compose -f $(PROD-FILE) down || docker compose -f $(DEV-FILE) down
+	docker compose -f $(PROD-FILE) down && docker compose -f $(DEV-FILE) down
 
 .PHONY: all dev clean npm-api npm-mvc
