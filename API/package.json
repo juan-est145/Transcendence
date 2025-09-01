@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/juan-est145/Transcendence#readme",
   "dependencies": {
+    "prom-client": "^15.1.0",
+    "fastify-metrics": "^10.3.0",
     "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.0.0",
     "@fastify/helmet": "^13.0.1",
