@@ -24,4 +24,15 @@ export async function account(fastify: FastifyInstance) {
 		const profile = await getProfileInfo(fastify);
 		return res.view("account.ejs", { user: req.user, profile: profile.profile });
 	});
+
+	fastify.get("/avatar", async (req, res) => {
+		try {
+			const { avatarBucketName, defaultAvatarName } = fastify.globals;
+			const stream = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
+			res.type("image/png");
+			return res.send(stream);
+		} catch (error) {
+			throw error;
+		}
+	});
 }
