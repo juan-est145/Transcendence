@@ -12,8 +12,8 @@ done
 
 # Add user
 mc alias set local https://localhost:9000 "${MINIO_ROOT_USER}" "${MINIO_ROOT_PASSWORD}" --insecure
-mc admin policy attach local readwrite --user "${MINIO_NODE_USER}"
 mc admin user add local "${MINIO_NODE_USER}" "${MINIO_NODE_PASSWORD}"
+mc admin policy attach local readwrite --user "${MINIO_NODE_USER}"
 
 # Bring MinIO to foreground
 wait $MINIO_PID
