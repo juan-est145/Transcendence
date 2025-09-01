@@ -1,3 +1,5 @@
+import { FastifyInstance } from 'fastify';
+
 interface UserProfile {
 	id: number;
 	username: string;
@@ -18,6 +20,11 @@ interface SearchUser {
 }
 
 export class SearchService {
+	private fastify: FastifyInstance;
+
+	constructor(fastify: FastifyInstance) {
+		this.fastify = fastify;
+	}
 
 	/**
 	* Search users by username query
@@ -26,25 +33,17 @@ export class SearchService {
 	*/
 	async searchUsers(query: string): Promise<SearchUser[]> {
 		try {
-			const fetch = (await import('node-fetch')).default;
-			const https = await import('https');
-
-			const agent = new https.Agent({
-				rejectUnauthorized: false // For development with self-signed certificates
+			const { data, error } = await this.fastify.apiClient.GET("/v1/users/search", {
+				params: { 
+					query: { q: query } 
+				}
 			});
 			
-			const response = await fetch(`https://api:4343/v1/users/search?q=${encodeURIComponent(query)}`, {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				agent
-			});
-			
-			if (!response.ok) {
-				throw new Error(`API responded with status ${response.status}`);
+			if (error) {
+				throw new Error(`API error: ${JSON.stringify(error)}`);
 			}
-			return await response.json() as SearchUser[];
+			
+			return data;
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 			throw new Error(`Error searching users: ${errorMessage}`);
@@ -58,29 +57,21 @@ export class SearchService {
 	*/
 	async getUserById(userId: number): Promise<UserProfile> {
 		try {
-			const fetch = (await import('node-fetch')).default;
-			const https = await import('https');
-			
-			const agent = new https.Agent({
-				rejectUnauthorized: false // For development with self-signed certificates
+			const { data, error } = await this.fastify.apiClient.GET("/v1/users/{userId}", {
+				params: { 
+					path: { userId: userId.toString() } // Convertir a string
+				}
 			});
 			
-			const response = await fetch(`https://api:4343/v1/users/${userId}`, {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				agent
-			});
-			
-			if (!response.ok) {
-				if (response.status === 404) {
+			if (error) {
+				// Verificar el tipo de error de manera más segura
+				if ((error as any)?.status === 404) {
 					throw new Error('User not found');
 				}
-				throw new Error(`HTTP error! status: ${response.status}`);
+				throw new Error(`API error: ${JSON.stringify(error)}`);
 			}
-
-			return await response.json() as UserProfile;
+			
+			return data;
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 			throw new Error(`Error fetching user: ${errorMessage}`);

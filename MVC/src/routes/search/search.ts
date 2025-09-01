@@ -10,7 +10,7 @@ interface SearchUser {
 }
 
 const search: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-	const searchService = new SearchService();
+	const searchService = new SearchService(fastify);
 	
 	// Search page
 	fastify.get('/search', async (request, reply) => {
