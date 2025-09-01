@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><%= title %></title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+	<%- include("components/navbar.ejs") %>
+	
+	<div class="container mx-auto px-6 py-8">
+		<h1 class="text-3xl font-bold mb-6">Search Users</h1>
+		
+		<!-- Search Form -->
+		<form method="GET" action="/search" class="mb-8">
+			<div class="flex items-center space-x-4">
+				<input 
+					type="text" 
+					name="q"
+					value="<%= query %>"
+					placeholder="Enter username to search..." 
+					class="bg-gray-700 text-white px-4 py-2 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none flex-1 max-w-md"
+					autocomplete="off"
+					minlength="2"
+					required />
+				<button 
+					type="submit"
+					class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md text-white transition font-semibold">
+					Search
+				</button>
+			</div>
+		</form>
+		
+		<!-- Error Message -->
+		<% if (error) { %>
+			<div class="bg-red-600 text-white p-4 rounded-md mb-6">
+				<%= error %>
+			</div>
+		<% } %>
+		
+		<!-- Search Results -->
+		<% if (query && query.length >= 2) { %>
+			<h2 class="text-xl font-semibold mb-4">
+				Search results for "<%= query %>" (<%= users.length %> found)
+			</h2>
+			
+			<% if (users.length === 0) { %>
+				<div class="bg-gray-800 p-6 rounded-md text-center">
+					<p class="text-gray-400">No users found matching your search.</p>
+				</div>
+			<% } else { %>
+				<div class="grid gap-4">
+					<% users.forEach(function(userResult) { %>
+						<div class="bg-gray-800 p-4 rounded-md hover:bg-gray-700 transition">
+							<div class="flex items-center justify-between">
+								<a href="/user/<%= userResult.id %>" class="flex items-center space-x-4 flex-1">
+									<img 
+										src="<%= userResult.avatar || '/images/default-avatar.png' %>" 
+										alt="<%= userResult.username %>" 
+										class="w-12 h-12 rounded-full"
+									/>
+									<div>
+										<h3 class="font-semibold text-lg"><%= userResult.username %></h3>
+										<p class="text-gray-400"><%= userResult.email %></p>
+										<p class="text-sm text-gray-500">
+											Joined: <%= new Date(userResult.createdAt).toLocaleDateString() %>
+										</p>
+									</div>
+								</a>
+								
+								<!-- Add Friend Button -->
+								<% if (user && user.id !== userResult.id) { %>
+									<form method="POST" action="/friends/add" class="ml-4">
+										<input type="hidden" name="friendId" value="<%= userResult.id %>" />
+										<button 
+											type="submit"
+											class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2"
+											title="Add as friend">
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+											</svg>
+											<span>Add Friend</span>
+										</button>
+									</form>
+								<% } %>
+							</div>
+						</div>
+					<% }); %>
+				</div>
+			<% } %>
+		<% } %>
+	</div>
+</body>
+</html>

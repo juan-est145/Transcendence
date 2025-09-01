@@ -1,43 +1,62 @@
 <% var user=typeof user !=='undefined' ? user : null; %>
 
-	<nav class="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-md">
-		<div class="flex items-center space-x-8">
-			<a href="/" class="text-xl font-bold hover:text-blue-400 transition">PongGame</a>
+<nav class="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-md">
+	<div class="flex items-center space-x-8">
+		<a href="/" class="text-xl font-bold hover:text-blue-400 transition">PongGame</a>
 
-			<% if (user) { %>
-				<!-- Opciones para usuario logueado -->
-				<ul class="hidden md:flex space-x-6 text-gray-300 items-center">
-					<li><a href="/" class="hover:text-blue-400 transition">Home</a></li>
-					<li><a href="/local" class="hover:text-blue-400 transition">Local</a></li>
-					<li><a href="/multiplayer" class="hover:text-blue-400 transition">Multiplayer</a></li>
-					<li><a href="/tournament" class="hover:text-blue-400 transition">Tournament</a></li>
-					<li><a href="/ranking" class="hover:text-blue-400 transition">Ranking</a></li>
-					<li><a href="/search" class="hover:text-blue-400 transition">Buscar usuarios</a></li>
-				</ul>
-				<% } else { %>
-					<!-- Opciones para no logueado -->
-					<ul class="hidden md:flex space-x-6 text-gray-300">
-						<li><a href="/" class="hover:text-blue-400 transition">Home</a></li>
-						<li><a href="/about" class="hover:text-blue-400 transition">About</a></li>
-						<li><a href="/contact" class="hover:text-blue-400 transition">Contact</a></li>
-					</ul>
-					<% } %>
-		</div>
-
-		<!-- Estado usuario -->
-		<div id="userState" class="flex items-center space-x-4">
-			<% if (user) { %>
-				<!-- Icono perfil (puedes cambiar el src por el de la imagen de perfil real) -->
-				<%- include("dropdown.ejs") %>
-				<span class="text-gray-300 hidden sm:inline">Hola, <strong>
-						<%= user.username %>
-					</strong>
-				</span>
-
-				<% } else { %>
-					<a href="/auth/login"
-						class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold">Log
-						in</a>
-					<% } %>
-		</div>
-	</nav>
+		<% if (user) { %>
+			<!-- Options for logged in user -->
+			<ul class="hidden md:flex space-x-6 text-gray-300 items-center">
+				<li><a href="/local" class="hover:text-blue-400 transition">Local</a></li>
+				<li><a href="/multiplayer" class="hover:text-blue-400 transition">Multiplayer</a></li>
+				<li><a href="/tournament" class="hover:text-blue-400 transition">Tournament</a></li>
+				<li><a href="/ranking" class="hover:text-blue-400 transition">Ranking</a></li>
+			</ul>
+		<% } else { %>
+			<!-- Options for non-logged user -->
+			<ul class="hidden md:flex space-x-6 text-gray-300">
+				<li><a href="/about" class="hover:text-blue-400 transition">About</a></li>
+				<li><a href="/contact" class="hover:text-blue-400 transition">Contact</a></li>
+			</ul>
+		<% } %>
+	</div>
+	
+	<!-- User state -->
+	<div id="userState" class="flex items-center space-x-4">
+		<% if (user) { %>
+			<!-- User search form in navbar - Hide on search page -->
+			<% if (typeof title === 'undefined' || !title.includes('Search')) { %>
+				<div class="relative">
+					<form method="GET" action="/search" class="flex items-center space-x-2">
+						<input 
+							type="text" 
+							name="q"
+							placeholder="Search users..." 
+							class="bg-gray-700 text-white px-3 py-1 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none w-48"
+							autocomplete="off"
+							minlength="2"
+							required/>
+						<button 
+							type="submit"
+							class="bg-blue-600 hover:bg-blue-700 p-2 rounded-md text-white transition flex items-center justify-center"
+							title="Search">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+							</svg>
+						</button>
+					</form>
+				</div>
+			<% } %>
+			<!-- Profile icon -->
+			<%- include("dropdown.ejs") %>
+			<span class="text-gray-300 hidden sm:inline">Hello, <strong>
+					<%= user.username %>
+				</strong>
+			</span>
+		<% } else { %>
+			<a href="/auth/login"
+				class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold">Log
+				in</a>
+		<% } %>
+	</div>
+</nav>

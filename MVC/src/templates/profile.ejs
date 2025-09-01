@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><%= title %></title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+	<%- include("components/navbar.ejs") %>
+	
+	<div class="container mx-auto px-6 py-8">
+		<!-- Profile Header -->
+		<div class="bg-gray-800 rounded-lg p-6 mb-8">
+			<div class="flex items-center justify-between">
+				<div class="flex items-center space-x-6">
+					<img 
+						src="<%= userProfile.avatar || '/images/default-avatar.png' %>" 
+						alt="<%= userProfile.username %>"
+						class="w-24 h-24 rounded-full border-4 border-blue-500"
+					/>
+					<div>
+						<h1 class="text-3xl font-bold"><%= userProfile.username %></h1>
+						<p class="text-gray-400"><%= userProfile.email %></p>
+						<p class="text-sm text-gray-500">
+							Member since: <%= new Date(userProfile.createdAt).toLocaleDateString() %>
+						</p>
+					</div>
+				</div>
+				
+				<!-- Action Buttons -->
+				<div class="flex space-x-4">
+					<% if (user && user.id !== userProfile.id) { %>
+						<!-- Other user's profile - Show interaction buttons -->
+						<form method="POST" action="/friends/add" class="inline">
+							<input type="hidden" name="friendId" value="<%= userProfile.id %>" />
+							<button 
+								type="submit"
+								class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+								</svg>
+								<span>Add Friend</span>
+							</button>
+						</form>
+						
+						<button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-8 8-9 8s-9-3.582-9-8 8-8 9-8 9 3.582 9 8z"></path>
+							</svg>
+							<span>Message</span>
+						</button>
+						
+						<button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+							</svg>
+							<span>Challenge</span>
+						</button>
+					<% } else if (user && user.id === userProfile.id) { %>
+						<!-- Own profile - Show edit buttons -->
+						<a href="/profile/edit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+							</svg>
+							<span>Edit Profile</span>
+						</a>
+					<% } %>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Stats Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+			<div class="bg-gray-800 rounded-lg p-6 text-center">
+				<h3 class="text-2xl font-bold text-blue-400"><%= userProfile.gamesPlayed || 0 %></h3>
+				<p class="text-gray-400">Games Played</p>
+			</div>
+			<div class="bg-gray-800 rounded-lg p-6 text-center">
+				<h3 class="text-2xl font-bold text-green-400"><%= userProfile.wins || 0 %></h3>
+				<p class="text-gray-400">Wins</p>
+			</div>
+			<div class="bg-gray-800 rounded-lg p-6 text-center">
+				<h3 class="text-2xl font-bold text-red-400"><%= userProfile.losses || 0 %></h3>
+				<p class="text-gray-400">Losses</p>
+			</div>
+		</div>
+		
+		<!-- Win Rate -->
+		<% 
+			const winRate = userProfile.gamesPlayed > 0 
+				? ((userProfile.wins / userProfile.gamesPlayed) * 100).toFixed(1) 
+				: 0;
+		%>
+		<div class="bg-gray-800 rounded-lg p-6 mb-8">
+			<h3 class="text-xl font-semibold mb-4">Win Rate</h3>
+			<div class="bg-gray-700 rounded-full h-4 mb-2">
+				<div 
+					class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-500"
+					style="width: <%= winRate %>%">
+				</div>
+			</div>
+			<p class="text-center text-lg font-semibold"><%= winRate %>%</p>
+		</div>
+		
+		<!-- Recent Games Section -->
+		<div class="bg-gray-800 rounded-lg p-6">
+			<h3 class="text-xl font-semibold mb-4">Recent Games</h3>
+			<div class="text-center text-gray-400 py-8">
+				<p>No recent games to display</p>
+				<% if (user && user.id !== userProfile.id) { %>
+					<p class="mt-2">Challenge <%= userProfile.username %> to a game!</p>
+				<% } %>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

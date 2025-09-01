@@ -2,6 +2,7 @@ import { FastifyInstance, RouteShorthandOptions } from "fastify"
 import { pingRes } from "./root.dto";
 import { auth } from "./auth/auth";
 import { account } from "./account/account";
+import { users } from "./users/users";
 import { HttpError, HttpMap } from "../v1.dto";
 import { getErrorDetails, getErrorHttpValues } from "./root.service";
 import { GeneralError } from "./root.type";
@@ -74,6 +75,7 @@ async function root(fastify: FastifyInstance): Promise<void> {
 
 	fastify.register(auth, { prefix: "auth" });
 	fastify.register(account, { prefix: "account" });
+	fastify.register(users, { prefix: "users" });
 }
 
 export { root }
