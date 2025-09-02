@@ -3,6 +3,7 @@ import { auth } from './auth/auth';
 import { DecodePayloadType } from '@fastify/jwt';
 import { Middleware } from 'openapi-fetch';
 import pong2dRoutes from './renamePong/2d';
+import pong3dRoutes from './renamePong3D/3d';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   /**
@@ -43,6 +44,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.register(auth, { prefix: "/auth" });
 
   fastify.register(pong2dRoutes, { prefix: "/renamePong/2d" });
+  fastify.register(pong3dRoutes, { prefix: "/renamePong3D/3d" });
 }
 
 export default root

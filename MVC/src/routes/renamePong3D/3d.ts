@@ -25,7 +25,28 @@ function movePaddles(input?: { paddleOne?: number, paddleTwo?: number, paddleOne
     gameState.paddleTwo.velocityY = input?.paddleTwoVelocity ?? 0;
 }
 
-function isColliding(paddle, ball) {
+interface Paddle {
+    x: number;
+    y: number;
+    z: number;
+    width: number;
+    height: number;
+    depth: number;
+    velocityY: number;
+    velocityZ: number;
+}
+
+interface Ball {
+    x: number;
+    y: number;
+    z: number;
+    radius: number;
+    velocityX: number;
+    velocityY: number;
+    velocityZ: number;
+}
+
+function isColliding(paddle: Paddle, ball: Ball) {
 	const paddleMin = {
 		x: paddle.x - paddle.width / 2,
 		y: paddle.y - paddle.height / 2,
@@ -56,8 +77,8 @@ function ballWallCollision(){
 		gameState.ball.velocityY *= -1;
 	}
 
-	[gameState.paddleOne, gameState.paddleTwo].forEach(paddle => {
-		if (isColliding(gameState.ball, paddle)){
+	[gameState.paddleOne, gameState.paddleTwo].forEach((paddle, idx) => {
+		if (isColliding(paddle, gameState.ball)){
 			const hitPos = (gameState.ball.y - paddle.y) + paddle.height / 2;
 			const relativeIntersect = hitPos / paddle.height;
 			const direction = (relativeIntersect < 0.5 ? -1 : 1);
@@ -100,21 +121,21 @@ function tickGame(input?: { paddleOne?: number, paddleTwo?: number, paddleOneVel
 
 const pong3dRoutes: FastifyPluginAsync = async (fastify, options) => {
 
-	fastify.get('/state', async (request, reply) => {
+	fastify.get('/3d/state', async (request, reply) => {
 		return gameState;
 	});
 
-	fastify.post("/move", async (request, reply) => {
+	fastify.post("/3d/move", async (request, reply) => {
 		movePaddles(request.body as any);
 		return gameState;
 	});
 
-	fastify.post('/tick', async (request, reply) => {
+	fastify.post('/3d/tick', async (request, reply) => {
 		tickGame(request.body as any);
 		return gameState;
 	});
 
-	fastify.post('/reset', async (request, reply) => {
+	fastify.post('/3d/reset', async (request, reply) => {
 		gameState.scoreOne = 0;
 		gameState.scoreTwo = 0;
 		gameState.paddleOne.y = 1;
