@@ -1,6 +1,5 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
-import * as GUI from '@babylonjs/gui';
 
 const canvasEl = document.getElementById('renderCanvas');
 if (!(canvasEl instanceof HTMLCanvasElement)) {
@@ -31,9 +30,6 @@ const createScene = function () {
 	paddleOneMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	paddleOneMat.backFaceCulling = false;
 	paddleOne.material = paddleOneMat;
-	// paddleOne.enableEdgesRendering();
-	// paddleOne.edgesWidth = 1.0;
-	// paddleOne.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
 
 	const paddleTwo = BABYLON.MeshBuilder.CreateBox("paddleTwo", {
 		size: 1,
@@ -48,9 +44,6 @@ const createScene = function () {
 	paddleTwoMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	paddleTwoMat.backFaceCulling = false;
 	paddleTwo.material = paddleTwoMat;
-	// paddleTwo.enableEdgesRendering();
-	// paddleTwo.edgesWidth = 1.0;
-	// paddleTwo.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 
 	const ball = BABYLON.MeshBuilder.CreateSphere("ball", {
 		diameter: 0.2,
@@ -64,65 +57,6 @@ const createScene = function () {
 	ballMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	ballMat.backFaceCulling = false;
 	ball.material = ballMat;
-	// ball.enableEdgesRendering();
-	// ball.edgesWidth = 1.0;
-	// ball.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
-
-// 	const fieldLineMat = new BABYLON.StandardMaterial("fieldLineMat", scene);
-// 	fieldLineMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-// 	fieldLineMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-// 	const fieldTop = BABYLON.MeshBuilder.CreateBox("fieldTop", {
-// 		width: 0.07,
-// 		height: 9.87,
-// 		depth: 0.07
-// 	}, scene);
-// 	fieldTop.position.x = 0;
-// 	fieldTop.rotation.z = BABYLON.Tools.ToRadians(90);
-// 	fieldTop.position.y = 2.9;
-// 	fieldTop.position.z = 0;
-// 	fieldTop.material = fieldLineMat;
-
-// 	const fieldBottom = BABYLON.MeshBuilder.CreateBox("fieldBottom", {
-// 		width: 0.07,
-// 		height: 9.87,
-// 		depth: 0.07
-// 	}, scene);
-// 	fieldBottom.position.x = 0;
-// 	fieldBottom.rotation.z = BABYLON.Tools.ToRadians(90);
-// 	fieldBottom.position.y = 0.1;
-// 	fieldBottom.position.z = 0;
-// 	fieldBottom.material = fieldLineMat;
-
-//    const midLine = BABYLON.MeshBuilder.CreateBox("midLine", {
-// 		width: 0.02,
-// 		height: 2.8,
-// 		depth: 0.04
-// 	}, scene);
-// 	midLine.position.x = 0;
-// 	midLine.position.y = 1.5;
-// 	midLine.position.z = 0.05;
-// 	midLine.material = fieldLineMat;
-
-// 	const fieldLeft = BABYLON.MeshBuilder.CreateBox("fieldLeft", {
-// 		width: 0.07,
-// 		height: 2.8,
-// 		depth: 0.07
-// 	}, scene);
-// 	fieldLeft.position.x = -4.9;
-// 	fieldLeft.position.y = 1.5;
-// 	fieldLeft.position.z = 0;
-// 	fieldLeft.material = fieldLineMat;
-
-// 	const fieldRight = BABYLON.MeshBuilder.CreateBox("fieldRight", {
-// 		width: 0.07,
-// 		height: 2.8,
-// 		depth: 0.07
-// 	}, scene);
-// 	fieldRight.position.x = 4.9;
-// 	fieldRight.position.y = 1.5;
-// 	fieldRight.position.z = 0;
-// 	fieldRight.material = fieldLineMat;
-
 
 	const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
 	light.intensity = 0.9;
@@ -145,19 +79,6 @@ const createScene = function () {
 	}, scene);
 	ceiling.position.y = 3;
 	ceiling.material = ceilMat;
-
-	// const frontWallMat = new BABYLON.StandardMaterial("frontWallMat", scene);
-	// frontWallMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-	// frontWallMat.backFaceCulling = false;
-	// const frontWall = BABYLON.MeshBuilder.CreateBox("frontWall", {
-	// 	width: 100,
-	// 	height: 100,
-	// 	depth: 0.2
-	// }, scene);
-	// frontWall.position.x = 0;
-	// frontWall.position.y = 0.5;
-	// frontWall.position.z = -4;
-	// frontWall.material = frontWallMat;
 
 	const backWallMat = new BABYLON.StandardMaterial("backWallMat", scene);
 	backWallMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
@@ -208,162 +129,79 @@ window.addEventListener('resize', function () {
 });
 const { scene, paddleOne, paddleTwo, ball } = createScene();
 
-let scoreOne = 0;
-let scoreTwo = 0;
-
-const scoreOneDT = new BABYLON.DynamicTexture("scoreOneDT", {width:256, height:128}, scene, false);
-scoreOneDT.hasAlpha = true;
-scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-const scoreTwoDT = new BABYLON.DynamicTexture("scoreTwoDT", {width:256, height:128}, scene, false);
-scoreTwoDT.hasAlpha = true;
-scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-const scoreOnePlane = BABYLON.MeshBuilder.CreatePlane("scoreOnePlane", {width:2, height:1}, scene);
-scoreOnePlane.position = new BABYLON.Vector3(-2.5, 1.8, 0.2);
-scoreOnePlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
-const scoreOneMat = new BABYLON.StandardMaterial("scoreOneMat", scene);
-scoreOneMat.diffuseTexture = scoreOneDT;
-scoreOneMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-scoreOneMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
-scoreOneMat.backFaceCulling = false;
-scoreOneMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
-scoreOnePlane.material = scoreOneMat;
-
-const scoreTwoPlane = BABYLON.MeshBuilder.CreatePlane("scoreTwoPlane", {width:2, height:1}, scene);
-scoreTwoPlane.position = new BABYLON.Vector3(2.5, 1.8, 0.2);
-scoreTwoPlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
-const scoreTwoMat = new BABYLON.StandardMaterial("scoreTwoMat", scene);
-scoreTwoMat.diffuseTexture = scoreTwoDT;
-scoreTwoMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-scoreTwoMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
-scoreTwoMat.backFaceCulling = false;
-scoreTwoMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
-scoreTwoPlane.material = scoreTwoMat;
-
-function updateScores() {
-    scoreOneDT.clear();
-    scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-    scoreTwoDT.clear();
-    scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-}
-
-let ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
-let paddleSpeed = 0.1;
-let paddleOneDir = 0;
-let paddleTwoDir = 0;
-
-window.addEventListener('keydown', function (event) {
-	if (event.key == "w")
-		paddleOneDir = 1;
-	else if (event.key == "s")
-		paddleOneDir = -1;
-	else if (event.key == "ArrowUp")
-		paddleTwoDir = 1;
-	else if (event.key == "ArrowDown")
-		paddleTwoDir = -1;
-});
-
-window.addEventListener('keyup', function (event) {
-	if (event.key == "w" || event.key == "s")
-		paddleOneDir = 0;
-	else if (event.key == "ArrowUp" || event.key == "ArrowDown")
-		paddleTwoDir = 0;
-});
-
-function isColliding(ball, paddle) {
-    const paddleHalfWidth = 0.1 / 2;
-	const paddleHalfHeight = 0.6 / 2;
-	const paddleHalfDepth = 0.4 / 2;
-	const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-	const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-    const ballMin = ball.position.subtract(new BABYLON.Vector3(0.1, 0.1, 0.1));
-    const ballMax = ball.position.add(new BABYLON.Vector3(0.1, 0.1, 0.1));
-
-    return (
-        ballMin.x <= paddleMax.x && ballMax.x >= paddleMin.x &&
-        ballMin.y <= paddleMax.y && ballMax.y >= paddleMin.y &&
-        ballMin.z <= paddleMax.z && ballMax.z >= paddleMin.z
-    );
-}
-
-let lastPaddleOneY = paddleOne.position.y;
-let lastPaddleTwoY = paddleTwo.position.y;
-let lastPaddleOneZ = paddleOne.position.z;
-let lastPaddleTwoZ = paddleTwo.position.z;
-let paddleOneVelocityY = 0;
-let paddleTwoVelocityY = 0;
-let paddleOneVelocityZ = 0;
-let paddleTwoVelocityZ = 0;
-
 engine.runRenderLoop(function () {
-    const paddleMargin = 0.05;
-    paddleOneVelocityY = paddleOne.position.y - lastPaddleOneY;
-    paddleTwoVelocityY = paddleTwo.position.y - lastPaddleTwoY;
-    paddleOneVelocityZ = paddleOne.position.z - lastPaddleOneZ;
-    paddleTwoVelocityZ = paddleTwo.position.z - lastPaddleTwoZ;
-    lastPaddleOneY = paddleOne.position.y;
-    lastPaddleTwoY = paddleTwo.position.y;
-    lastPaddleOneZ = paddleOne.position.z;
-    lastPaddleTwoZ = paddleTwo.position.z;
-
-    paddleOne.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleOne.position.y + paddleSpeed * paddleOneDir));
-    paddleTwo.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleTwo.position.y + paddleSpeed * paddleTwoDir));
-
-    ball.position.addInPlace(ballVelocity);
-    if (ball.position.y < 0.2 || ball.position.y > 2.8) 
-        ballVelocity.y *= -1;
-
-    [paddleOne, paddleTwo].forEach(paddle => {
-		if (isColliding(ball, paddle)) {
-			const paddleHalfWidth = 0.1 / 2;
-			const paddleHalfHeight = 0.6 / 2;
-			const paddleHalfDepth = 0.4 / 2;
-			const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-			const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-			const ballCenterY = ball.position.y;
-			const relativeIntersect = (ballCenterY - paddleMin.y) / (paddleMax.y - paddleMin.y);
-
-			let inertiaY = 0, inertiaZ = 0;
-			if (paddle === paddleOne) {
-				inertiaY = paddleOneVelocityY;
-				inertiaZ = paddleOneVelocityZ;
-			} else {
-				inertiaY = paddleTwoVelocityY;
-				inertiaZ = paddleTwoVelocityZ;
-			}
-
-			//Have to check if 0.2 is good or if it needs more
-			const direction = (relativeIntersect < 0.5 ? -1 : 1);
-			ballVelocity.y = direction * Math.abs(ballVelocity.y) + inertiaY * 0.2;
-
-			ballVelocity.z += inertiaZ * 0.5;
-			if (paddle === paddleOne) {
-				ballVelocity.x = Math.abs(ballVelocity.x) * 1.1;
-				ball.position.x = paddleMax.x + 0.11;
-			} else {
-				ballVelocity.x = -Math.abs(ballVelocity.x) * 1.1;
-				ball.position.x = paddleMin.x - 0.11;
-			}
-		}
-	});
-
-	if (ball.position.x < -4.8) {
-        scoreTwo++;
-        updateScores();
-        ball.position.x = 0;
-        ball.position.y = 1;
-        ball.position.z = 0;
-        ballVelocity = new BABYLON.Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
-    } else if (ball.position.x > 4.8) {
-        scoreOne++;
-        updateScores();
-        ball.position.x = 0;
-        ball.position.y = 1;
-        ball.position.z = 0;
-        ballVelocity = new BABYLON.Vector3(-0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
-    }
-
     scene.render();
 });
+
+let paddleOneY = 1;
+let paddleTwoY = 1;
+const paddleSpeed = 0.08;
+const keysPressed: { [key: string]: boolean } = {};
+
+window.addEventListener('keydown', (event) => {
+    keysPressed[event.key] = true;
+});
+
+window.addEventListener('keyup', (event) => {
+    keysPressed[event.key] = false;
+});
+
+function handlePaddleInput() {
+	if (keysPressed["w"]) {
+		paddleOneY -= paddleSpeed;
+	}
+	if (keysPressed["s"]) {
+		paddleOneY += paddleSpeed;
+	}
+	if (keysPressed["ArrowUp"]) {
+		paddleTwoY -= paddleSpeed;
+	}
+	if (keysPressed["ArrowDown"]) {
+		paddleTwoY += paddleSpeed;
+	}
+	paddleOneY = Math.max(0, Math.min(1 - paddleOne.scaling.y, paddleOneY));
+	paddleTwoY = Math.max(0, Math.min(1 - paddleTwo.scaling.y, paddleTwoY));
+}
+
+async function sendMove() {
+	await fetch("https://localhost:8000/renamePong3D/move", {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ paddleOne: paddleOneY, paddleTwo: paddleTwoY }),
+	});
+}
+
+async function tickGame() {
+	await fetch("https://localhost:8000/renamePong3D/tick", {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ paddleOne: paddleOneY, paddleTwo: paddleTwoY }),
+	});
+}
+
+async function getGameState() {
+	const result = await fetch("https://localhost:8000/renamePong3D/state");
+	return await result.json();
+}
+
+async function mainLoop() {
+	handlePaddleInput();
+	await sendMove();
+	await tickGame();
+	const gameState = await getGameState();
+
+	paddleOne.position.x = gameState.paddleOne.x;
+	paddleOne.position.y = gameState.paddleOne.y;
+	paddleOne.position.z = gameState.paddleOne.z;
+
+	paddleTwo.position.x = gameState.paddleTwo.x;
+	paddleTwo.position.y = gameState.paddleTwo.y;
+	paddleTwo.position.z = gameState.paddleTwo.z;
+
+	ball.position.x = gameState.ball.x;
+	ball.position.y = gameState.ball.y;
+	ball.position.z = gameState.ball.z;
+
+	window.requestAnimationFrame(mainLoop);
+}
+mainLoop();
