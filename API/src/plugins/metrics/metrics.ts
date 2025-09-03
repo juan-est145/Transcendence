@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin'
-import fastify, { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { register, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client'
 
 //colecta las informacions básicas del computador. register es un objeto para registrar dados
@@ -20,7 +20,7 @@ const httpRequestDuration = new Histogram({
 	buckets: [0.1, 0.5, 1, 2, 5],
 });
 
-//Gauge mide el estado actual de algo, puede subir a lo largo del tiempo
+//Gauge mide el estado actual de algo, puede cambiar a lo largo del tiempo
 const activeConnections = new Gauge ({
 	name: 'active_connections',
 	help: 'Number of active connections',
@@ -54,9 +54,35 @@ const metricsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 
 	fastify.addHook('onResponse', async (req, res) => {
 		const duration = (Date.now() - (req as any).startTime) / 1000;
-		const route = req.routerPath || req.url;
+		const route = req.url;
 		//const route = (req as any).routeConfig?.url || req.url || 'unknown';
 
-		
+	httpRequestsTotal
+		.labels(req.method, route, res.statusCode.toString()) //guarda as etiquetas de metodo, url e status de resposta
+		.inc(); //incrementa um +1
+	
+	httpRequestDuration
+		.labels(req.method, route)//salva as etiquetas
+		.observe(duration);//observa o valor a ser medido
+
+	activeConnections.dec();
+	
 	});
 };
+
+export default fp(metricsPlugin, {
+	name: 'metrics',
+});
+
+declare module 'fastify' {
+	interface FastifyInstance {
+		metrics: {
+			httpRequestsTotal: Counter<string>;
+			httpRequestDuration: Histogram<string>;
+			activeConnections: Gauge<string>;
+			authAttempts: Counter<string>;
+			dbOperations: Counter<string>;
+		}
+	}
+}
+
