@@ -5,11 +5,16 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/style.css">
+	<link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
 	<title>Pong</title>
 	</head>
 <body>
 	<canvas id="renderCanvas" style="background-color: black;"></canvas>
 	<script type = "module" src="pong.ts"></script>
-	<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+	<div id="scoreBoard" style="position: absolute; top: 20px; left: 0; width: 100%; text-align: center; z-index: 10;">
+  	<span id="scoreOne" style="color: #808080; font-family: 'Press Start 2P', monospace; font-size: 32px; margin-right: 40px;">0</span>
+  	<span id="scoreTwo" style="color: #808080; font-family: 'Press Start 2P', monospace; font-size: 32px;">0</span>
+</div>
+	<!-- <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet"> -->
 	</body>
 </html>

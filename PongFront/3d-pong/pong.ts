@@ -147,23 +147,20 @@ window.addEventListener('keyup', (event) => {
 });
 
 function handlePaddleInput() {
-	if (keysPressed["w"]) {
-		paddleOneY -= paddleSpeed;
-	}
-	if (keysPressed["s"]) {
+	if (keysPressed["w"])
 		paddleOneY += paddleSpeed;
-	}
-	if (keysPressed["ArrowUp"]) {
-		paddleTwoY -= paddleSpeed;
-	}
-	if (keysPressed["ArrowDown"]) {
+	if (keysPressed["s"])
+		paddleOneY -= paddleSpeed;
+	if (keysPressed["ArrowUp"])
 		paddleTwoY += paddleSpeed;
-	}
-	paddleOneY = Math.max(0, Math.min(1 - paddleOne.scaling.y, paddleOneY));
-	paddleTwoY = Math.max(0, Math.min(1 - paddleTwo.scaling.y, paddleTwoY));
+	if (keysPressed["ArrowDown"])
+		paddleTwoY -= paddleSpeed;
+	paddleOneY = Math.max(0.3, Math.min(2.7, paddleOneY));
+	paddleTwoY = Math.max(0.3, Math.min(2.7, paddleTwoY));
 }
 
 async function sendMove() {
+	console.log("Sending move:", paddleOneY, paddleTwoY);
 	await fetch("https://localhost:8000/renamePong3D/move", {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -201,6 +198,9 @@ async function mainLoop() {
 	ball.position.x = gameState.ball.x;
 	ball.position.y = gameState.ball.y;
 	ball.position.z = gameState.ball.z;
+
+	document.getElementById("scoreOne")!.textContent = gameState.scoreOne.toString();
+	document.getElementById("scoreTwo")!.textContent = gameState.scoreTwo.toString();
 
 	window.requestAnimationFrame(mainLoop);
 }

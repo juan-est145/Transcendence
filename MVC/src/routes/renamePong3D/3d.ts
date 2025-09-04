@@ -14,11 +14,12 @@ const gameState = {
 };
 
 function movePaddles(input?: { paddleOne?: number, paddleTwo?: number, paddleOneVelocity?: number, paddleTwoVelocity?: number }) {
-    if (input && typeof input.paddleOne === "number") {
-        gameState.paddleOne.y = Math.max(0, Math.min(1 - gameState.paddleOne.height, input.paddleOne));
+	console.log("movePaddles called with input:", input);
+	if (input && typeof input.paddleOne === "number") {
+        gameState.paddleOne.y = Math.max(0.3, Math.min(3 - gameState.paddleOne.height, input.paddleOne));
     }
     if (input && typeof input.paddleTwo === "number") {
-        gameState.paddleTwo.y = Math.max(0, Math.min(1 - gameState.paddleTwo.height, input.paddleTwo));
+        gameState.paddleTwo.y = Math.max(0.3, Math.min(3 - gameState.paddleTwo.height, input.paddleTwo));
     }
 
     gameState.paddleOne.velocityY = input?.paddleOneVelocity ?? 0;
@@ -73,7 +74,7 @@ function isColliding(paddle: Paddle, ball: Ball) {
 }
 
 function ballWallCollision(){
-	if (gameState.ball.y < 0.2 || gameState.ball.y > 2.8) {
+	if (gameState.ball.y < 0.2 || gameState.ball.y > 2.7) {
 		gameState.ball.velocityY *= -1;
 	}
 
@@ -90,6 +91,8 @@ function ballWallCollision(){
 				gameState.ball.velocityX = -Math.abs(gameState.ball.velocityX);
 				gameState.ball.x = paddle.x - paddle.width / 2 - gameState.ball.radius;
 			}
+			gameState.ball.velocityX *= 1.08;
+			gameState.ball.velocityY *= 1.08;
 		}
 	});
 
@@ -101,7 +104,6 @@ function ballWallCollision(){
 		resetBall();
 	}
 }
-
 
 function resetBall() {
 	gameState.ball.x = 0;
@@ -121,21 +123,21 @@ function tickGame(input?: { paddleOne?: number, paddleTwo?: number, paddleOneVel
 
 const pong3dRoutes: FastifyPluginAsync = async (fastify, options) => {
 
-	fastify.get('/3d/state', async (request, reply) => {
+	fastify.get('/state', async (request, reply) => {
 		return gameState;
 	});
 
-	fastify.post("/3d/move", async (request, reply) => {
-		movePaddles(request.body as any);
+	fastify.post("/move", async (request, reply) => {
+		movePaddles(request.body as { paddleOne?: number, paddleTwo?: number, paddleOneVelocity?: number, paddleTwoVelocity?: number } | undefined);
 		return gameState;
 	});
 
-	fastify.post('/3d/tick', async (request, reply) => {
-		tickGame(request.body as any);
+	fastify.post('/tick', async (request, reply) => {
+		tickGame(request.body as { paddleOne?: number, paddleTwo?: number, paddleOneVelocity?: number, paddleTwoVelocity?: number } | undefined);
 		return gameState;
 	});
 
-	fastify.post('/3d/reset', async (request, reply) => {
+	fastify.post('/reset', async (request, reply) => {
 		gameState.scoreOne = 0;
 		gameState.scoreTwo = 0;
 		gameState.paddleOne.y = 1;
