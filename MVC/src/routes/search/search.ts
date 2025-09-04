@@ -57,11 +57,11 @@ const search: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	});
 	
 	// API endpoint to get user profile
-	fastify.get('/api/users/:userId', async (request, reply) => {
-		const { userId } = request.params as { userId: string };
-		
+	fastify.get('/api/users/:username', async (request, reply) => {
+		const { username } = request.params as { username: string };
+
 		try {
-			const user = await searchService.getUserById(parseInt(userId));
+			const user = await searchService.getUserByUsername(username);
 			return reply.send(user);
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -74,31 +74,36 @@ const search: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 	});
 
 	// User profile page
-	fastify.get('/user/:userId', async (request, reply) => {
-		const { userId } = request.params as { userId: string };
+	fastify.get('/user/:username', async (request, reply) => {
+		const { username } = request.params as { username: string };
 		const currentUser = (request as any).user;
 		
 		try {
-			const userProfile = await searchService.getUserById(parseInt(userId));
-			const isOwnProfile = currentUser && currentUser.id === userProfile.id;
+			const userProfile = await searchService.getUserByUsername(username);
 			return reply.view('profile', { 
 				title: `${userProfile.username}'s Profile`,
 				userProfile,
 				user: currentUser,
-				isOwnProfile
 			});
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			if (errorMessage === 'User not found') {
-				return reply.view('errors/404', {
+
+			if (errorMessage === 'User not found' || 
+				errorMessage.includes('404') || 
+				errorMessage.toLowerCase().includes('not found')) {
+	
+				return reply.code(404).view('errors/404', {
 					title: 'User not found',
-					user: currentUser
+					user: currentUser,
+					message: `User with username '${username}' not found`
 				});
 			}
-			fastify.log.error(errorMessage);
+
+			fastify.log.error(error);
 			return reply.view('errors/500', { 
 				title: 'Error',
-				user: currentUser 
+				user: currentUser,
+				message: 'Internal server error'
 			});
 		}
 	});

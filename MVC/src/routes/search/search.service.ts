@@ -26,11 +26,6 @@ export class SearchService {
 		this.fastify = fastify;
 	}
 
-	/**
-	* Search users by username query
-	* @param query - The search term to look for in usernames
-	* @returns Array of users matching the search criteria
-	*/
 	async searchUsers(query: string): Promise<SearchUser[]> {
 		try {
 			const { data, error } = await this.fastify.apiClient.GET("/v1/users/search", {
@@ -50,29 +45,34 @@ export class SearchService {
 		}
 	}
 
-	/**
-	* Get user profile by user ID
-	* @param userId - The ID of the user to fetch
-	* @returns User profile data
-	*/
-	async getUserById(userId: number): Promise<UserProfile> {
+	async getUserByUsername(username: string): Promise<UserProfile> {
 		try {
-			const { data, error } = await this.fastify.apiClient.GET("/v1/users/{userId}", {
+			const { data, error } = await this.fastify.apiClient.GET("/v1/users/{username}", {
 				params: { 
-					path: { userId: userId.toString() } // Convertir a string
+					path: { username }
 				}
 			});
 			
 			if (error) {
-				// Verificar el tipo de error de manera más segura
-				if ((error as any)?.status === 404) {
-					throw new Error('User not found');
-				}
-				throw new Error(`API error: ${JSON.stringify(error)}`);
+				const statusCode = (error as any)?.statusCode || (error as any)?.status;
+
+ 				if (statusCode === 404) {
+ 				   throw new Error('User not found');
+ 			   }
+			
+ 			   throw new Error(`API error: ${statusCode}`);
 			}
 			
 			return data;
 		} catch (error: unknown) {
+			if (error instanceof Error && error.message === 'User not found') {
+				throw error;
+			}
+		
+			if (error instanceof Error && error.message.includes('404')) {
+				throw new Error('User not found');
+			}
+		
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 			throw new Error(`Error fetching user: ${errorMessage}`);
 		}

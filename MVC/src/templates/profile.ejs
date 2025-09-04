@@ -33,7 +33,7 @@
 				<div class="flex space-x-4">
 					<% if (user) { %>
 						<form method="POST" action="/friends/add" class="inline">
-							<input type="hidden" name="friendId" value="<%= userProfile.id %>" />
+							<input type="hidden" name="friendUsername" value="<%= userProfile.username %>" />
 							<button 
 								type="submit"
 								class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
@@ -66,9 +66,10 @@
 		
 		<!-- Win Rate -->
 		<% 
-			const winRate = userProfile.gamesPlayed > 0 
-				? ((userProfile.wins / userProfile.gamesPlayed) * 100).toFixed(1) 
+			const winRateNum = userProfile.gamesPlayed > 0 
+				? (userProfile.wins / userProfile.gamesPlayed) * 100 
 				: 0;
+			const winRate = winRateNum.toFixed(1);
 		%>
 		<div class="bg-gray-800 rounded-lg p-6 mb-8">
 			<h3 class="text-xl font-semibold mb-4">Win Rate</h3>

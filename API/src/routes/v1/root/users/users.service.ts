@@ -8,7 +8,7 @@ export class UsersService {
 		const users = await this.prisma.users.findMany({
 			where: {
 				username: {
-					contains: query,
+					contains: query
 				}
 			},
 			select: {
@@ -37,10 +37,10 @@ export class UsersService {
 		}));
 	}
 	
-	async getUserById(userId: number): Promise<GetUserResponse | null> {
+	async getUserByUsername(username: string): Promise<GetUserResponse | null> {
 		const user = await this.prisma.users.findUnique({
 			where: {
-				id: userId
+				username: username
 			},
 			select: {
 				id: true,

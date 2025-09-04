@@ -9,9 +9,11 @@ export const SearchUsersQuery = Type.Object({
 });
 
 export const GetUserParams = Type.Object({
-	userId: Type.String({ 
-		pattern: '^[0-9]+$',
-		description: 'User ID'
+	username: Type.String({
+		minLength: 1,
+		maxLength: 50,
+		pattern: '^[a-zA-Z0-9_-]+$',
+		description: 'Username'
 	})
 });
 

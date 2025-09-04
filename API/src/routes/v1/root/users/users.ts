@@ -17,24 +17,28 @@ async function users(fastify: FastifyInstance): Promise<void> {
 		}
 	});
 	
-	fastify.get('/:userId', getUserSchema, async (request, reply) => {
-		const { userId } = request.params as { userId: string };
+	fastify.get('/:username', getUserSchema, async (request, reply) => {
+		const { username } = request.params as { username: string };
 		
 		try {
-			const user = await usersService.getUserById(parseInt(userId));
+			const user = await usersService.getUserByUsername(username);
 			
 			if (!user) {
 				return reply.code(404).send({ 
 					statusCode: 404,
-					httpError: 'NOT_FOUND',
-					details: [{ msg: ['User not found'] }]
+					error: 'Not Found',
+					message: `User with username '${username}' not found`
 				});
 			}
 			
 			return reply.send(user);
 		} catch (error) {
-			fastify.log.error(error);
-			throw new Error('Internal server error');
+			fastify.log.error(`Error fetching user '${username}':`, error);
+			return reply.code(500).send({ 
+				statusCode: 500,
+				error: 'Internal Server Error',
+				message: 'Internal server error'
+			});
 		}
 	});
 }

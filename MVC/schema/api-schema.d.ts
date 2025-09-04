@@ -477,21 +477,21 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/users/{userId}": {
+    "/v1/users/{username}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get user profile by ID */
+        /** Get user profile by username */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description User ID */
-                    userId: string;
+                    /** @description Username */
+                    username: string;
                 };
                 cookie?: never;
             };

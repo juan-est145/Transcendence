@@ -33,6 +33,6 @@ export const getUserSchema: RouteShorthandOptions = {
 			}
 		},
 		tags: ["Users"],
-		summary: "Get user profile by ID"
+		summary: "Get user profile by username"
 	}
 };
