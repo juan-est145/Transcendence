@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: 'transcendence-dashboards'
+  orgID: 1
+  folder: 'Transcendence API'
+  type: file
+  disableDeletion: false
+  updateIntervalSeconds: 10
+  allowUiUpdates: true
+  options:
+    path: /etc/grafana/provisioning/dashboards
