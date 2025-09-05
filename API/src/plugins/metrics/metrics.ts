@@ -1,9 +1,9 @@
 import fp from 'fastify-plugin'
-import { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import { FastifyInstance} from 'fastify'
 import { register, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client'
 
 //colecta las informacions básicas del computador. register es un objeto para registrar dados
-collectDefaultMetrics( {register} );
+collectDefaultMetrics();
 
 //contador de cuantas requisiciones fueran hechas
 const httpRequestsTotal = new Counter ({ 
@@ -38,51 +38,64 @@ const dbOperations = new Counter ({
 	labelNames: ['operation', 'table'],
 });
 
-const metricsPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
-	fastify.decorate( 'metrics', {
-		httpRequestsTotal,
-		httpRequestDuration,
-		activeConnections,
-		authAttempts,
-		dbOperations,
-	});
 
-	fastify.addHook('onRequest', async (req, res) => {
-		(req as any).startTime = Date.now();
-		activeConnections.inc()
-	});
+export default fp(async function (fastify: FastifyInstance) {
+  // Hook para capturar métricas de todas as requisições
+    if (!fastify.hasDecorator('metrics'))
+    {
 
-	fastify.addHook('onResponse', async (req, res) => {
-		const duration = (Date.now() - (req as any).startTime) / 1000;
-		const route = req.url;
-		//const route = (req as any).routeConfig?.url || req.url || 'unknown';
+      fastify.addHook('onRequest', async (request) => {
+        activeConnections.inc();
+        request.startTime = Date.now();
+    });
 
-	httpRequestsTotal
-		.labels(req.method, route, res.statusCode.toString()) //guarda as etiquetas de metodo, url e status de resposta
-		.inc(); //incrementa um +1
-	
-	httpRequestDuration
-		.labels(req.method, route)//salva as etiquetas
-		.observe(duration);//observa o valor a ser medido
+    fastify.addHook('onResponse', async (request, reply) => {
+      const duration = (Date.now() - (request.startTime || Date.now())) / 1000;
+      const route = request.routeOptions?.url || request.url;
 
-	activeConnections.dec();
-	
-	});
-};
+      httpRequestsTotal.inc({
+        method: request.method,
+        route: route,
+        status_code: reply.statusCode.toString(),
+      });
 
-export default fp(metricsPlugin, {
-	name: 'metrics',
+      httpRequestDuration.observe(
+        {
+          method: request.method,
+          route: route,
+        },
+        duration
+      );
+
+      activeConnections.dec();
+    });
+
+    // Decorar fastify com métricas customizadas
+    fastify.decorate('metrics', {
+      httpRequestsTotal,
+      httpRequestDuration,
+      activeConnections,
+      authAttempts,
+      register,
+      dbOperations,
+    });
+  }
 });
 
+// Adicionar tipos TypeScript
 declare module 'fastify' {
-	interface FastifyInstance {
-		metrics: {
-			httpRequestsTotal: Counter<string>;
-			httpRequestDuration: Histogram<string>;
-			activeConnections: Gauge<string>;
-			authAttempts: Counter<string>;
-			dbOperations: Counter<string>;
-		}
-	}
+  interface FastifyRequest {
+    startTime?: number;
+  }
+  
+  interface FastifyInstance {
+    metrics: {
+      httpRequestsTotal: Counter<string>;
+      httpRequestDuration: Histogram<string>;
+      activeConnections: Counter<string>;
+      authAttempts: Counter<string>;
+      dbOperations: Counter<string>;
+      register: typeof register;
+    };
+  }
 }
-
