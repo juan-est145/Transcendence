@@ -3,7 +3,6 @@ import { JwtPayload } from "../auth/auth.type";
 import { AccountRes, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { httpErrors } from "@fastify/sensible";
-import { getUser } from "../auth/auth.service";
 
 /**
  * This function retrieves an user and it's profile from the database. It also modifies the object
@@ -44,9 +43,14 @@ export async function getAccount(fastify: FastifyInstance, jwtPayload: JwtPayloa
 
 export async function getAvatar(fastify: FastifyInstance, email: string) {
 	try {
-		const user = await getUser(fastify, email);
-		const avatar = await fastify.prisma.avatar.findUniqueOrThrow({
-			where: { id: user.id }
+		const avatar = await fastify.prisma.avatar.findFirstOrThrow({
+			where: {
+				profile: {
+					user: {
+						email
+					}
+				}
+			}
 		});
 		return avatar;
 	} catch (error) {
