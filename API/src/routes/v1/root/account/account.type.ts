@@ -11,7 +11,6 @@ export interface GetAccntQuery {
 		id: number;
 		createdAt: Date;
 		updatedAt: Date;
-		avatar: string;
 		online: boolean;
 	} | null;
 };

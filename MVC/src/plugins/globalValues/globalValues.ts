@@ -1,8 +1,8 @@
 import fp from "fastify-plugin";
 
 interface IGlobals {
-	avatarBucketName: string,
-	defaultAvatarName: string,
+	avatarBucketName: "avatars",
+	defaultAvatarName: "default-avatar.png",
 };
 
 export default fp(async (fastify) => {

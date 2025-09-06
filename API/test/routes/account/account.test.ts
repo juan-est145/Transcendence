@@ -21,7 +21,6 @@ describe("Account service", () => {
 				id: 1,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				avatar: "xd",
 				online: true,
 				tournaments: [
 					{ rank: 1 },

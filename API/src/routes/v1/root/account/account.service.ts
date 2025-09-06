@@ -47,7 +47,6 @@ function addTourResults(query: GetAccntQuery) {
 			id: query!.profile!.id,
 			createdAt: query!.profile!.createdAt.toISOString(),
 			updatedAt: query!.profile!.updatedAt.toISOString(),
-			avatar: query!.profile!.avatar,
 			online: query!.profile!.online,
 			victories,
 			defeats

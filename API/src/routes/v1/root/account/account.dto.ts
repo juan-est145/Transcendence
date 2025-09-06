@@ -8,7 +8,6 @@ export const accountRes = Type.Object({
 		id: Type.Number(),
 		createdAt: Type.String({ format: "date-time" }),
 		updatedAt: Type.String({ format: "date-time" }),
-		avatar: Type.String(),
 		online: Type.Boolean(),
 		victories: Type.Number(),
 		defeats: Type.Number(),

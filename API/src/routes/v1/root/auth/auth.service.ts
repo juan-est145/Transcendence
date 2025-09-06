@@ -19,7 +19,11 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 				password: body.password,
 				email: body.email,
 				profile: {
-					create: {}
+					create: {
+						avatar: {
+							create: {}
+						}
+					}
 				}
 			},
 			select: {
