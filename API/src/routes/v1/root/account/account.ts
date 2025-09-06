@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, postAvatarSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
-import { getAccount, getAvatar } from "./account.service";
+import { getAccount, getAvatar, updateAvatar } from "./account.service";
+import { AccountPostAvatarBody } from "./account.type";
 
 /**
  * This module deals with the user's account
@@ -32,9 +33,19 @@ export async function account(fastify: FastifyInstance) {
 
 	fastify.get("/avatar", getAvatarSchema, async (req, res) => {
 		try {
-			const { email }: JwtPayload = await req.jwtDecode();
-			const avatar = await getAvatar(fastify, email);
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const avatar = await getAvatar(fastify, jwtPayload);
 			return res.send(avatar);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	fastify.post<{ Body: AccountPostAvatarBody }>("/avatar", postAvatarSchema, async (req, res) => {
+		try {
+			const { email }: JwtPayload = await req.jwtDecode();
+			const result = await updateAvatar(fastify, email, req.body);
+			return res.status(201).send(result);
 		} catch (error) {
 			throw error;
 		}

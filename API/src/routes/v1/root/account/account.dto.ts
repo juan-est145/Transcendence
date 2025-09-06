@@ -19,3 +19,15 @@ export const accountAvatarRes = Type.Object({
 	name: Type.String(),
 	contentType: Type.String(),
 });
+
+export const accountPostAvatarBody = Type.Object({
+	name: Type.String(),
+	contentType: Type.String(),
+});
+
+export const accountPostAvatarRes = Type.Intersect([
+	accountPostAvatarBody,
+	Type.Object({
+		id: Type.Number(),
+	}),
+]);

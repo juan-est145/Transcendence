@@ -1,8 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
-import { AccountRes, GetAccntQuery } from "./account.type";
+import { AccountPostAvatarBody, AccountRes, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { httpErrors } from "@fastify/sensible";
+import { getUser } from "../auth/auth.service";
 
 /**
  * This function retrieves an user and it's profile from the database. It also modifies the object
@@ -41,20 +42,41 @@ export async function getAccount(fastify: FastifyInstance, jwtPayload: JwtPayloa
 	}
 }
 
-export async function getAvatar(fastify: FastifyInstance, email: string) {
+export async function getAvatar(fastify: FastifyInstance, jwtPayload: JwtPayload) {
 	try {
+		const { username, email } = jwtPayload;
 		const avatar = await fastify.prisma.avatar.findFirstOrThrow({
 			where: {
 				profile: {
 					user: {
-						email
+						email,
+						username,
 					}
 				}
 			}
 		});
 		return avatar;
 	} catch (error) {
-		if (error instanceof PrismaClientKnownRequestError && error.code == "P2025")
+		if (error instanceof PrismaClientKnownRequestError && error.code === "P2025")
+			throw httpErrors.notFound();
+		throw error;
+	}
+}
+
+export async function updateAvatar(fastify: FastifyInstance, email: string, avatar: AccountPostAvatarBody) {
+	try {
+		const { profile } = await getUser(fastify, email);
+		const { name, contentType } = avatar;
+		const result = await fastify.prisma.avatar.update({
+			where: { id: profile?.id },
+			data: {
+				name,
+				contentType,
+			}
+		});
+		return result;
+	} catch (error) {
+		if (error instanceof PrismaClientKnownRequestError && error.code === "")
 			throw httpErrors.notFound();
 		throw error;
 	}
@@ -72,7 +94,7 @@ function addTourResults(query: GetAccntQuery) {
 			updatedAt: query!.profile!.updatedAt.toISOString(),
 			online: query!.profile!.online,
 			victories,
-			defeats
+			defeats,
 		}
 	};
 	return result;
