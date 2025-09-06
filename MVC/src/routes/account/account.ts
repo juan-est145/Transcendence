@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getProfileInfo } from "./account.service";
+import { getProfileAvatar, getProfileInfo } from "./account.service";
 
 /**
  * This module deals with the user's account page
@@ -27,8 +27,7 @@ export async function account(fastify: FastifyInstance) {
 
 	fastify.get("/avatar", async (req, res) => {
 		try {
-			const { avatarBucketName, defaultAvatarName } = fastify.globals;
-			const stream = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
+			const stream = await getProfileAvatar(fastify);
 			res.type("image/png");
 			return res.send(stream);
 		} catch (error) {

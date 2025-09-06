@@ -1,4 +1,6 @@
+import { httpErrors } from "@fastify/sensible";
 import { FastifyInstance } from "fastify";
+import { InvalidObjectNameError } from "minio";
 
 /**
  * This function sends a GET request using a JWT to get the account and profile information.
@@ -11,4 +13,17 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 	if (error)
 		throw error;
 	return data;
+}
+
+export async function getProfileAvatar(fastify: FastifyInstance) {
+	try {
+		const { avatarBucketName, defaultAvatarName } = fastify.globals;
+		const stream = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
+		return stream;
+	} catch (error) {
+		if (error instanceof InvalidObjectNameError) {
+			throw httpErrors.notFound("Avatar location was not found");
+		}
+		throw error;
+	}
 }
