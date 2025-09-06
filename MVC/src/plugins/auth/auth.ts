@@ -32,7 +32,7 @@ export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 				const { data, error } = await fastify.apiClient.GET("/v1/auth/refresh-jwt");
 				if (error) {
 					await req.session.destroy();
-					throw error;
+					throw httpErrors.unauthorized();
 				} 
 				fastify.jwt.verify(data.jwt);
 				req.session.set("jwt", data.jwt);
