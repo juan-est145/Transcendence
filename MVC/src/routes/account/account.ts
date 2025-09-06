@@ -38,7 +38,7 @@ export async function account(fastify: FastifyInstance) {
 	fastify.post("/avatar", async (req, res) => {
 		const data = await req.file();
 		// TO DO: Add validation to make sure that the data is not missing
-		await storeAvatar(fastify, data!, (req.user as any).username);
+		await storeAvatar(fastify, data!, req.user!.username);
 		return res.redirect("/account");
 	});
 }

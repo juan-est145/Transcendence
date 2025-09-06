@@ -1,6 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
 import { auth } from './auth/auth';
-import { DecodePayloadType } from '@fastify/jwt';
 import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
 
@@ -10,11 +9,9 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
    * so it may be used elsewhere. This data is the payload of the jwt.
    */
   fastify.addHook("onRequest", async (req, res) => {
-    let user: DecodePayloadType | null = null;
     if (req.session.jwt) {
-      user = fastify.jwt.decode(req.session.jwt);
+      await req.jwtVerify();
     }
-    (req as any).user = user ? user : null;
   });
 
   /**
