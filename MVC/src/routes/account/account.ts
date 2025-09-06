@@ -34,4 +34,8 @@ export async function account(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
+
+	fastify.post("/avatar", async (req, res) => {
+		return res.redirect("/");
+	});
 }
