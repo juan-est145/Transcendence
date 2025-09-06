@@ -32,7 +32,7 @@ describe("Account service", () => {
 			}
 
 		};
-		jest.spyOn(app.prisma.users, "findUnique").mockResolvedValue(query as any);
+		jest.spyOn(app.prisma.users, "findUniqueOrThrow").mockResolvedValue(query as any);
 
 		const result = await getAccount(app, { username: "test", email: "test@email.com" });
 

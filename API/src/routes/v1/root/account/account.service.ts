@@ -1,6 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountRes, GetAccntQuery } from "./account.type";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { httpErrors } from "@fastify/sensible";
+import { getUser } from "../auth/auth.service";
 
 /**
  * This function retrieves an user and it's profile from the database. It also modifies the object
@@ -14,7 +17,7 @@ import { AccountRes, GetAccntQuery } from "./account.type";
 export async function getAccount(fastify: FastifyInstance, jwtPayload: JwtPayload) {
 	// TO DO: Later on, we must include friends.
 	try {
-		const query = await fastify.prisma.users.findUnique({
+		const query = await fastify.prisma.users.findUniqueOrThrow({
 			where: {
 				username: jwtPayload.username,
 				email: jwtPayload.email,
@@ -33,6 +36,22 @@ export async function getAccount(fastify: FastifyInstance, jwtPayload: JwtPayloa
 		});
 		return addTourResults(query!);
 	} catch (error) {
+		if (error instanceof PrismaClientKnownRequestError && error.code == "P2025")
+			throw httpErrors.notFound();
+		throw error;
+	}
+}
+
+export async function getAvatar(fastify: FastifyInstance, email: string) {
+	try {
+		const user = await getUser(fastify, email);
+		const avatar = await fastify.prisma.avatar.findUniqueOrThrow({
+			where: { id: user.id }
+		});
+		return avatar;
+	} catch (error) {
+		if (error instanceof PrismaClientKnownRequestError && error.code == "P2025")
+			throw httpErrors.notFound();
 		throw error;
 	}
 }

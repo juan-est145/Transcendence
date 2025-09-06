@@ -1,4 +1,5 @@
 import { httpErrors } from "@fastify/sensible";
+import { FastifySessionObject } from "@fastify/session";
 import { FastifyInstance } from "fastify";
 import { InvalidObjectNameError } from "minio";
 
@@ -15,8 +16,9 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 	return data;
 }
 
-export async function getProfileAvatar(fastify: FastifyInstance) {
+export async function getProfileAvatar(fastify: FastifyInstance, session: FastifySessionObject) {
 	try {
+		//const profile = await getProfileInfo(fastify);
 		const { avatarBucketName, defaultAvatarName } = fastify.globals;
 		const stream = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
 		return stream;
@@ -27,3 +29,7 @@ export async function getProfileAvatar(fastify: FastifyInstance) {
 		throw error;
 	}
 }
+
+// async function findAvatarName(fastify: FastifyInstance) {
+// 	const { data, error } = await fastify.apiClient.GET
+// }

@@ -13,3 +13,9 @@ export const accountRes = Type.Object({
 		defeats: Type.Number(),
 	}),
 });
+
+export const accountAvatarRes = Type.Object({
+	id: Type.Number(),
+	name: Type.String(),
+	contentType: Type.String(),
+});
