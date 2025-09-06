@@ -17,19 +17,27 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 }
 
 export async function getProfileAvatar(fastify: FastifyInstance, session: FastifySessionObject) {
+	const { avatarBucketName, defaultAvatarName, defaultcontentType } = fastify.globals;
 	try {
-		//const profile = await getProfileInfo(fastify);
-		const { avatarBucketName, defaultAvatarName } = fastify.globals;
-		const stream = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
-		return stream;
+		const avatar = await findAvatarName(fastify);
+		const stream = await fastify.minioClient.getObject(avatarBucketName, avatar.name);
+		return { stream, contentType: avatar.contentType };
 	} catch (error) {
 		if (error instanceof InvalidObjectNameError) {
-			throw httpErrors.notFound("Avatar location was not found");
+			try {
+				const defaultAvatar = await fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
+				return { stream: defaultAvatar, contentType: defaultcontentType };
+			} catch (error) {
+				throw httpErrors.notFound("Avatar location was not found");
+			}
 		}
 		throw error;
 	}
 }
 
-// async function findAvatarName(fastify: FastifyInstance) {
-// 	const { data, error } = await fastify.apiClient.GET
-// }
+async function findAvatarName(fastify: FastifyInstance) {
+	const { data, error } = await fastify.apiClient.GET("/v1/account/avatar");
+	if (error)
+		throw error;
+	return data;
+}

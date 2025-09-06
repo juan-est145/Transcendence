@@ -27,9 +27,9 @@ export async function account(fastify: FastifyInstance) {
 
 	fastify.get("/avatar", async (req, res) => {
 		try {
-			const stream = await getProfileAvatar(fastify, req.session);
-			res.type("image/png");
-			return res.send(stream);
+			const avatar = await getProfileAvatar(fastify, req.session);
+			res.type(avatar.contentType);
+			return res.send(avatar.stream);
 		} catch (error) {
 			throw error;
 		}
