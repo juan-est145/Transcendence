@@ -1,5 +1,5 @@
+import { MultipartFile } from "@fastify/multipart";
 import { httpErrors } from "@fastify/sensible";
-import { FastifySessionObject } from "@fastify/session";
 import { FastifyInstance } from "fastify";
 import { InvalidObjectNameError } from "minio";
 
@@ -16,7 +16,7 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 	return data;
 }
 
-export async function getProfileAvatar(fastify: FastifyInstance, session: FastifySessionObject) {
+export async function getProfileAvatar(fastify: FastifyInstance) {
 	const { avatarBucketName, defaultAvatarName, defaultcontentType } = fastify.globals;
 	try {
 		const avatar = await findAvatarName(fastify);
@@ -40,4 +40,17 @@ async function findAvatarName(fastify: FastifyInstance) {
 	if (error)
 		throw error;
 	return data;
+}
+
+export async function storeAvatar(fastify: FastifyInstance, avatar: MultipartFile, username: string) {
+	const { avatarBucketName } = fastify.globals;
+	try {
+		let size = 0;
+		avatar.file.on("data", (chunk) => {
+			size += chunk.length;
+		});
+		await fastify.minioClient.putObject(avatarBucketName, `${username}/${avatar.filename}`, avatar.file, size, {"Content-Type": avatar.mimetype,});
+	} catch (error) {
+		throw (error);
+	}
 }

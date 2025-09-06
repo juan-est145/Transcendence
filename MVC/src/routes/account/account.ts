@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getProfileAvatar, getProfileInfo } from "./account.service";
+import { getProfileAvatar, getProfileInfo, storeAvatar } from "./account.service";
 
 /**
  * This module deals with the user's account page
@@ -27,7 +27,7 @@ export async function account(fastify: FastifyInstance) {
 
 	fastify.get("/avatar", async (req, res) => {
 		try {
-			const avatar = await getProfileAvatar(fastify, req.session);
+			const avatar = await getProfileAvatar(fastify);
 			res.type(avatar.contentType);
 			return res.send(avatar.stream);
 		} catch (error) {
@@ -36,6 +36,9 @@ export async function account(fastify: FastifyInstance) {
 	});
 
 	fastify.post("/avatar", async (req, res) => {
-		return res.redirect("/");
+		const data = await req.file();
+		// TO DO: Add validation to make sure that the data is not missing
+		await storeAvatar(fastify, data!, (req.user as any).username);
+		return res.redirect("/account");
 	});
 }
