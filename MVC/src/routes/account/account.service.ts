@@ -51,10 +51,10 @@ export async function storeAvatar(fastify: FastifyInstance, avatar: MultipartFil
 		await fastify.minioClient.removeObject(avatarBucketName, username, { forceDelete: true });
 		await fastify.minioClient.putObject(avatarBucketName, name, fileBuffer, size, { "Content-Type": avatar.mimetype, });
 		await updateProfileAvatar(fastify, name, avatar.mimetype);
-		// TO DO. If the error is in the API, maybe we should delete the avatar image.
-		// TO DO. We need to think what to do with the duplicate files. Maybe generate a random id
-		// for each user.
 	} catch (error) {
+		if (error instanceof Object && error.hasOwnProperty("statusCode") && error.hasOwnProperty("httpError")) {
+			await fastify.minioClient.removeObject(avatarBucketName, username, { forceDelete: true });
+		}
 		throw (error);
 	}
 }
