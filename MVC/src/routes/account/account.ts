@@ -40,7 +40,7 @@ export async function account(fastify: FastifyInstance) {
 	fastify.post("/avatar", async (req, res) => {
 		try {
 			const data = await req.file();
-			const buffer = await data?.toBuffer()
+			const buffer = await data?.toBuffer();
 			validateAvatar(data);
 			await storeAvatar(fastify, req.user!.username, data!, buffer!);
 			return res.redirect("/account");
