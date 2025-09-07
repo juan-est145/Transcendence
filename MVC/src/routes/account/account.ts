@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { getProfileAvatar, getProfileInfo, storeAvatar, validateAvatar } from "./account.service";
 import { ZodError } from "zod";
+import globals from "../../globals/globals";
 
 /**
  * This module deals with the user's account page
@@ -39,20 +40,30 @@ export async function account(fastify: FastifyInstance) {
 	fastify.post("/avatar", async (req, res) => {
 		try {
 			const data = await req.file();
-			// const buffer = await data?.toBuffer()
-			// buffer;
+			const buffer = await data?.toBuffer()
 			// TO DO: Add validation to make sure that the data is not missing
 			validateAvatar(data);
-			await storeAvatar(fastify, data!, req.user!.username);
+			await storeAvatar(fastify, req.user!.username, data!, buffer!);
 			return res.redirect("/account");
 		} catch (error) {
+			const user = req.user;
+			const profile = (await getProfileInfo(fastify)).profile;
 			if (error instanceof ZodError) {
 				const ejsVariables = { 
 					errors: error.issues.map((element) => element.message),
-					user: req.user,
-					profile: (await getProfileInfo(fastify)).profile,
+					user,
+					profile,
 				};
 				return res.status(400).view("account.ejs", ejsVariables);
+			}
+			else if (error instanceof Error && error.message === "request file too large")
+			{
+				const ejsVariables = {
+					errors: [`Max file size is ${Math.floor(globals.maxFileSize / 1000000)} mbs`],
+					user,
+					profile,
+				}
+				return res.status(413).view("account.ejs", ejsVariables);
 			}
 			throw error;
 		}

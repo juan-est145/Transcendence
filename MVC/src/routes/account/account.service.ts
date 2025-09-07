@@ -49,13 +49,12 @@ export function validateAvatar(avatar: unknown) {
 	avatarBody.parse(avatar);
 }
 
-export async function storeAvatar(fastify: FastifyInstance, avatar: MultipartFile, username: string) {
+export async function storeAvatar(fastify: FastifyInstance, username: string, avatar: MultipartFile, buffer: Buffer<ArrayBufferLike>) {
 	const { avatarBucketName } = globals;
 	const name = `${username}/${crypto.randomUUID()}`;
 	try {
-		const { size, fileBuffer } = await getFileSizeAndBuffer(avatar);
 		await fastify.minioClient.removeObject(avatarBucketName, username, { forceDelete: true });
-		await fastify.minioClient.putObject(avatarBucketName, name, fileBuffer, size, { "Content-Type": avatar.mimetype, });
+		await fastify.minioClient.putObject(avatarBucketName, name, buffer, buffer.length, { "Content-Type": avatar.mimetype, });
 		await updateProfileAvatar(fastify, name, avatar.mimetype);
 	} catch (error) {
 		if (error instanceof Object && error.hasOwnProperty("statusCode") && error.hasOwnProperty("httpError")) {
@@ -72,21 +71,4 @@ async function updateProfileAvatar(fastify: FastifyInstance, name: string, conte
 	if (error)
 		throw error;
 	return data;
-}
-
-async function getFileSizeAndBuffer(avatar: MultipartFile) {
-	const chunks: Buffer[] = [];
-	let size = 0;
-
-	await new Promise<void>((resolve, reject) => {
-		avatar.file.on("data", (chunk) => {
-			chunks.push(chunk);
-			size += chunk.length;
-		});
-		avatar.file.on("end", resolve);
-		avatar.file.on("error", reject);
-	});
-
-	const fileBuffer = Buffer.concat(chunks);
-	return { size, fileBuffer };
 }
