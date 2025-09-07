@@ -51,7 +51,8 @@ export function validateAvatar(avatar: unknown) {
 
 export async function storeAvatar(fastify: FastifyInstance, username: string, avatar: MultipartFile, buffer: Buffer<ArrayBufferLike>) {
 	const { avatarBucketName } = globals;
-	const name = `${username}/${crypto.randomUUID()}`;
+	const fileExtension = getFileExtension(avatar.filename);
+	const name = `${username}/${crypto.randomUUID()}${fileExtension}`;
 	try {
 		await fastify.minioClient.removeObject(avatarBucketName, username, { forceDelete: true });
 		await fastify.minioClient.putObject(avatarBucketName, name, buffer, buffer.length, { "Content-Type": avatar.mimetype, });
@@ -62,6 +63,11 @@ export async function storeAvatar(fastify: FastifyInstance, username: string, av
 		}
 		throw (error);
 	}
+}
+
+function getFileExtension(name: string) {
+	const index = name.lastIndexOf(".");
+	return index !== -1? name.substring(index) : "";
 }
 
 async function updateProfileAvatar(fastify: FastifyInstance, name: string, contentType: string) {

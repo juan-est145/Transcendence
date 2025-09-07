@@ -41,7 +41,6 @@ export async function account(fastify: FastifyInstance) {
 		try {
 			const data = await req.file();
 			const buffer = await data?.toBuffer()
-			// TO DO: Add validation to make sure that the data is not missing
 			validateAvatar(data);
 			await storeAvatar(fastify, req.user!.username, data!, buffer!);
 			return res.redirect("/account");
