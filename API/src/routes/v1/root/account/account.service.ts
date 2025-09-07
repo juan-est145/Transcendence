@@ -76,7 +76,7 @@ export async function updateAvatar(fastify: FastifyInstance, email: string, avat
 		});
 		return result;
 	} catch (error) {
-		if (error instanceof PrismaClientKnownRequestError && error.code === "")
+		if (error instanceof PrismaClientKnownRequestError && error.code === "P2025")
 			throw httpErrors.notFound();
 		throw error;
 	}
