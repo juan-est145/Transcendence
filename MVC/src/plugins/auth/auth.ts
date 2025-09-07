@@ -31,7 +31,6 @@ export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 			if (err && err.code === "FAST_JWT_EXPIRED") {
 				const { data, error } = await fastify.apiClient.GET("/v1/auth/refresh-jwt");
 				if (error) {
-					await req.session.destroy();
 					throw httpErrors.unauthorized();
 				} 
 				req.session.set("jwt", data.jwt);

@@ -15,6 +15,8 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.setErrorHandler(async (error, request, reply) => {
     fastify.log.error(error);
     if (error.statusCode === 401) {
+      if (request.session)
+        await request.session.destroy();
       return reply.code(error.statusCode).viewAsync("errors/401.ejs");
     }
     return reply.code(500).view("errors/500.ejs");
@@ -30,7 +32,6 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       try {
         await req.jwtVerify();
       } catch (error) {
-        await req.session.destroy();
         throw httpErrors.unauthorized();
       }
     }

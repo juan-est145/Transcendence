@@ -3,6 +3,8 @@ import { httpErrors } from "@fastify/sensible";
 import { FastifyInstance } from "fastify";
 import { S3Error } from "minio";
 import crypto from "crypto";
+import globals from "../../globals/globals";
+import { avatarBody } from "./account.dto";
 
 /**
  * This function sends a GET request using a JWT to get the account and profile information.
@@ -18,7 +20,7 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 }
 
 export async function getProfileAvatar(fastify: FastifyInstance) {
-	const { avatarBucketName, defaultAvatarName, defaultcontentType } = fastify.globals;
+	const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
 	try {
 		const avatar = await findAvatarName(fastify);
 		const stream = await fastify.minioClient.getObject(avatarBucketName, avatar.name);
@@ -43,8 +45,12 @@ async function findAvatarName(fastify: FastifyInstance) {
 	return data;
 }
 
+export function validateAvatar(avatar: unknown) {
+	avatarBody.parse(avatar);
+}
+
 export async function storeAvatar(fastify: FastifyInstance, avatar: MultipartFile, username: string) {
-	const { avatarBucketName } = fastify.globals;
+	const { avatarBucketName } = globals;
 	const name = `${username}/${crypto.randomUUID()}`;
 	try {
 		const { size, fileBuffer } = await getFileSizeAndBuffer(avatar);

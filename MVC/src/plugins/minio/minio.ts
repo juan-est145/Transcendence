@@ -2,6 +2,7 @@ import { httpErrors } from "@fastify/sensible";
 import fp from "fastify-plugin";
 import { Client } from "minio";
 import * as fs from "node:fs";
+import globals from "../../globals/globals";
 
 export default fp(async (fastify) => {
 	const minioClient = new Client({
@@ -12,10 +13,10 @@ export default fp(async (fastify) => {
 		secretKey: process.env.MINIO_NODE_PASSWORD!,
 	});
 
-	const bucket = fastify.globals.avatarBucketName;
+	const bucket = globals.avatarBucketName;
 	const defaultAvatar = {
-		name: fastify.globals.defaultAvatarName,
-		fsRoute: `${process.cwd()}/public/images/${fastify.globals.defaultAvatarName}`
+		name: globals.defaultAvatarName,
+		fsRoute: `${process.cwd()}/public/images/${globals.defaultAvatarName}`
 	};
 
 	if (!fs.existsSync(defaultAvatar.fsRoute)) {
