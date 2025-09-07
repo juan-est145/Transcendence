@@ -2,7 +2,6 @@ import { FastifyPluginAsync } from 'fastify'
 import { auth } from './auth/auth';
 import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
-import { httpErrors } from '@fastify/sensible';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // 404 - Not Found handler
@@ -22,20 +21,6 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     return reply.code(500).view("errors/500.ejs");
   });
 
-
-  /**
-   * This hook populates the user property in request with the basic data of the user,
-   * so it may be used elsewhere. This data is the payload of the jwt.
-   */
-  fastify.addHook("onRequest", async (req, res) => {
-    if (req.session.jwt) {
-      try {
-        await req.jwtVerify();
-      } catch (error) {
-        throw httpErrors.unauthorized();
-      }
-    }
-  });
 
   /**
    * This hooks handles the auth headers necessary for accesing our API's protected routes.
