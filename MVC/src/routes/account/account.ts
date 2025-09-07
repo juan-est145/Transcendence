@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { getProfileAvatar, getProfileInfo, storeAvatar, validateAvatar } from "./account.service";
+import { ZodError } from "zod";
 
 /**
  * This module deals with the user's account page
@@ -36,10 +37,24 @@ export async function account(fastify: FastifyInstance) {
 	});
 
 	fastify.post("/avatar", async (req, res) => {
-		const data = await req.file();
-		// TO DO: Add validation to make sure that the data is not missing
-		validateAvatar(data);
-		await storeAvatar(fastify, data!, req.user!.username);
-		return res.redirect("/account");
+		try {
+			const data = await req.file();
+			// const buffer = await data?.toBuffer()
+			// buffer;
+			// TO DO: Add validation to make sure that the data is not missing
+			validateAvatar(data);
+			await storeAvatar(fastify, data!, req.user!.username);
+			return res.redirect("/account");
+		} catch (error) {
+			if (error instanceof ZodError) {
+				const ejsVariables = { 
+					errors: error.issues.map((element) => element.message),
+					user: req.user,
+					profile: (await getProfileInfo(fastify)).profile,
+				};
+				return res.status(400).view("account.ejs", ejsVariables);
+			}
+			throw error;
+		}
 	});
 }

@@ -21,6 +21,7 @@
 
 					<form action="/account/avatar" , method="POST" enctype="multipart/form-data">
 						<label for="avatar" class="cursor-pointer flex flex-col justify-center items-center">
+							<%- include('components/errorPopup.ejs') %>
 							<img src="/account/avatar" alt="Avatar"
 								class="w-32 h-32 rounded-full border-4 border-blue-500 bg-gray-700 mb-1 shadow-lg">
 							<span class="text-sm italic">Change avatar</span>
