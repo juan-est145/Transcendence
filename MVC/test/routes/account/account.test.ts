@@ -56,4 +56,16 @@ describe("Avatar services", () => {
 		jest.spyOn(service, "findAvatarName").mockRestore();
 		jest.spyOn(app.minioClient, "getObject").mockRestore();
 	});
+
+	it("Get file extension", () => {
+		const service = new AccountService(app);
+
+		const fileExten = service.getFileExtension("prueba.pdf");
+		const noExten = service.getFileExtension("nothing");
+		const multipleExten = service.getFileExtension("otro.png.jpg.gif");
+
+		expect(fileExten).toBe(".pdf");
+		expect(noExten).toBe("");
+		expect(multipleExten).toBe(".gif");
+	});
 });
