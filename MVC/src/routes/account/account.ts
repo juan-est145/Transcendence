@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getProfileAvatar, getProfileInfo, storeAvatar, validateAvatar } from "./account.service";
+import { AccountService } from "./account.service";
 import { ZodError } from "zod";
 import globals from "../../globals/globals";
 
@@ -13,6 +13,8 @@ export async function account(fastify: FastifyInstance) {
 	 */
 	fastify.addHook("onRequest", fastify.auth([fastify.verifyLoggedIn]));
 
+	const accountService = new AccountService(fastify);
+
 	/**
 	 * This route sends to the client the user profile page. It uses the jwt 
 	 * stored in the session to identiy the user and load the correct data.
@@ -23,7 +25,7 @@ export async function account(fastify: FastifyInstance) {
 	 * property for adding data like victories.
 	 */
 	fastify.get("/", async (req, res) => {
-		const profile = await getProfileInfo(fastify);
+		const profile = await accountService.getProfileInfo();
 		return res.view("account.ejs", { user: req.user, profile: profile.profile });
 	});
 
@@ -37,7 +39,7 @@ export async function account(fastify: FastifyInstance) {
 	 */
 	fastify.get("/avatar", async (req, res) => {
 		try {
-			const avatar = await getProfileAvatar(fastify);
+			const avatar = await accountService.getProfileAvatar();
 			res.type(avatar.contentType);
 			return res.send(avatar.stream);
 		} catch (error) {
@@ -57,12 +59,12 @@ export async function account(fastify: FastifyInstance) {
 		try {
 			const data = await req.file();
 			const buffer = await data?.toBuffer();
-			validateAvatar(data);
-			await storeAvatar(fastify, req.user!.username, data!, buffer!);
+			accountService.validateAvatar(data);
+			await accountService.storeAvatar(req.user!.username, data!, buffer!);
 			return res.redirect("/account");
 		} catch (error) {
 			const user = req.user;
-			const profile = (await getProfileInfo(fastify)).profile;
+			const profile = (await accountService.getProfileInfo()).profile;
 			if (error instanceof ZodError) {
 				const ejsVariables = {
 					errors: error.issues.map((element) => element.message),
