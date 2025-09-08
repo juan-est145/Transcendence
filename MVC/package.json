@@ -32,34 +32,24 @@
     "@fastify/multipart": "^9.0.3",
     "@fastify/sensible": "^6.0.0",
     "@fastify/session": "^11.1.0",
-    "@fastify/static": "^8.2.0",
     "@fastify/view": "^11.1.0",
-    "@tailwindcss/cli": "^4.1.11",
+    "@tailwindcss/cli": "^4.1.13",
     "@types/ejs": "^3.1.5",
     "connect-session-knex": "^5.0.0",
     "ejs": "^3.1.10",
     "express-session": "^1.18.2",
     "fastify": "^5.0.0",
-    "fastify-cli": "^7.4.0",
     "fastify-plugin": "^5.0.0",
-    "knex": "^3.1.0",
     "minio": "^8.0.5",
     "openapi-fetch": "^0.14.0",
-    "sqlite3": "^5.1.7",
     "tailwindcss": "^4.1.11",
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/node": "^22.1.0",
+    "@types/node": "^24.3.1",
     "autoprefixer": "^10.4.21",
-    "c8": "^10.1.2",
-    "concurrently": "^9.0.0",
     "fastify-tsconfig": "^3.0.0",
-    "jest": "^30.1.1",
-    "openapi-typescript": "^7.9.1",
-    "ts-jest": "^29.4.1",
     "ts-node": "^10.4.0",
-    "typescript": "~5.8.2"
+    "typescript": "^5.9.2"
   }
 }
