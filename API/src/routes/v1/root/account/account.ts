@@ -31,6 +31,14 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route returns the avatar information of a user profile.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with
+	 * the user's avatar data from the avatar table in the db. Else, it throws
+	 * an error and send's a JSON with the details.
+	 */
 	fastify.get("/avatar", getAvatarSchema, async (req, res) => {
 		try {
 			const jwtPayload: JwtPayload = await req.jwtDecode();
@@ -41,6 +49,15 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows to update the avatar information related to a user profile.
+	 * @param req - The fastify request instance. It must have a body that conforms
+	 * to the AccountPostAvatarBody type.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 JSON resposnse with the new
+	 * information of the user's avatar. Else, it throws
+	 * an error and send's a JSON with the details.
+	 */
 	fastify.post<{ Body: AccountPostAvatarBody }>("/avatar", postAvatarSchema, async (req, res) => {
 		try {
 			const { email }: JwtPayload = await req.jwtDecode();
