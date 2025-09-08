@@ -42,7 +42,8 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   });
 
   fastify.get('/', async function (request, reply) {
-    return reply.view("index.ejs", { user: request.user });
+    const user = request.session && request.session.get("jwt") ? fastify.jwt.decode(request.session.get("jwt")!) : null;
+    return reply.view("index.ejs", { user });
   });
 
   fastify.register(auth, { prefix: "/auth" });
