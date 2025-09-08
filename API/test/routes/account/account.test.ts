@@ -1,6 +1,6 @@
 import { build } from "../../helper";
-import * as accountService from "../../../src/routes/v1/root/account/account.service";
-import * as authService from "../../../src/routes/v1/root/auth/auth.service";
+import { AccountService } from "../../../src/routes/v1/root/account/account.service";
+import { AuthService } from "../../../src/routes/v1/root/auth/auth.service";
 import { AccountPostAvatarBody, GetAccntQuery } from "../../../src/routes/v1/root/account/account.type";
 import { Avatar } from "@prisma/client";
 
@@ -15,6 +15,8 @@ afterAll(() => {
 });
 
 describe("Account service", () => {
+	const accountService = new AccountService(app, new AuthService(app));
+
 	it("Add tournament results", async () => {
 		const query: GetAccntQuery = {
 			username: "Test",
@@ -36,7 +38,7 @@ describe("Account service", () => {
 		};
 		jest.spyOn(app.prisma.users, "findUniqueOrThrow").mockResolvedValue(query as any);
 
-		const result = await accountService.getAccount(app, { username: "test", email: "test@email.com" });
+		const result = await accountService.getAccount({ username: "test", email: "test@email.com" });
 
 
 		expect(result.profile.victories).toBe(2);
@@ -53,7 +55,7 @@ describe("Account service", () => {
 		};
 		jest.spyOn(app.prisma.avatar, "findFirstOrThrow").mockResolvedValue(result) as any;
 
-		const res = await accountService.getAvatar(app, { username: "Someone", email: "someone@gmail.com" });
+		const res = await accountService.getAvatar({ username: "Someone", email: "someone@gmail.com" });
 
 		expect(res).toBe(result);
 
@@ -72,7 +74,7 @@ describe("Account service", () => {
 			contentType: avatar.contentType,
 		};
 
-		jest.spyOn(authService, "getUser").mockResolvedValue({
+		jest.spyOn(AuthService.prototype, "getUser").mockResolvedValue({
 			id: 1,
 			username: "Someone",
 			email: "someone@gmail.com",
@@ -88,10 +90,10 @@ describe("Account service", () => {
 
 		jest.spyOn(app.prisma.avatar, "update").mockResolvedValue(anwser);
 
-		const res = await accountService.updateAvatar(app, "something@gmail.com", { name: "test.png", contentType: "image/png" });
+		const res = await accountService.updateAvatar("something@gmail.com", { name: "test.png", contentType: "image/png" });
 		expect(res).toBe(anwser);
 
-		jest.spyOn(authService, "getUser").mockRestore();
+		jest.spyOn(AuthService.prototype, "getUser").mockRestore();
 		jest.spyOn(app.prisma.avatar, "update").mockRestore();
 	});
 });

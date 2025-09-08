@@ -1,5 +1,5 @@
 import { build } from "../../helper";
-import * as authService from "../../../src/routes/v1/root/auth/auth.service";
+import { AuthService } from "../../../src/routes/v1/root/auth/auth.service";
 
 const app = build();
 
@@ -69,7 +69,7 @@ describe("Sign-in tests", () => {
 			email: values.email,
 		};
 
-		const spy = jest.spyOn(authService, "createUser").mockResolvedValue(mockUser as any);
+		const spy = jest.spyOn(AuthService.prototype, "createUser").mockResolvedValue(mockUser as any);
 		const res = await app.inject({
 			url: "/v1/auth/sign-in",
 			method: "POST",

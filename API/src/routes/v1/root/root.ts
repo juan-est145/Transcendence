@@ -1,30 +1,14 @@
-import { FastifyInstance, RouteShorthandOptions } from "fastify"
-import { pingRes } from "./root.dto";
+import { FastifyInstance } from "fastify"
 import { auth } from "./auth/auth";
 import { account } from "./account/account";
 import { HttpError, HttpMap } from "../v1.dto";
-import { getErrorDetails, getErrorHttpValues } from "./root.service";
+import { RootService } from "./root.service";
 import { GeneralError } from "./root.type";
-
-
-const rootSchema: RouteShorthandOptions = {
-	schema: {
-		response: {
-			200: {
-				description: "It returns a message that says Pong",
-				content: {
-					"application/json": {
-						schema: pingRes,
-					},
-				}
-			}
-		},
-		tags: ["Default"],
-		summary: "This endpoint tests the availability of the API"
-	}
-}
+import { rootSchema } from "./root.schema";
 
 async function root(fastify: FastifyInstance): Promise<void> {
+	const rootService = new RootService();
+
 	fastify.get("/ping", rootSchema, async (req, res) => {
 		return { msg: "Pong" }
 	});
@@ -62,13 +46,13 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		};
 
 		if (error.validation) {
-			getErrorHttpValues(errorMsg, 400);
+			rootService.getErrorHttpValues(errorMsg, 400);
 			errorMsg.details = [{
 				field: error.validation[0].params.missingProperty as string,
 				msg: [error.message]
 			}];
 		}
-		console.error(`- An error of type ${errorMsg.statusCode} occurred. The details are as follow:\n ${getErrorDetails(errorMsg)}`);
+		console.error(`- An error of type ${errorMsg.statusCode} occurred. The details are as follow:\n ${rootService.getErrorDetails(errorMsg)}`);
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
