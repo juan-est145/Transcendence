@@ -20,13 +20,21 @@ export async function account(fastify: FastifyInstance) {
 	 * @param res - The fastify response instance.
 	 * @returns The account page page.
 	 * @remarks The page requires both a user property for the header and a profile
-	 * property for adding data like victories or the avatar route.
+	 * property for adding data like victories.
 	 */
 	fastify.get("/", async (req, res) => {
 		const profile = await getProfileInfo(fastify);
 		return res.view("account.ejs", { user: req.user, profile: profile.profile });
 	});
 
+	/**
+	 * This route loads the avatar associated with the user's account. It checks the database
+	 * through the API to find the the name of the avatar and then retrieves it and send's it to the
+	 * user from the minio s3 store.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns The avatar image alongise it's content type in the header.
+	 */
 	fastify.get("/avatar", async (req, res) => {
 		try {
 			const avatar = await getProfileAvatar(fastify);
@@ -37,6 +45,14 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route stores an avatar for the user account. It accepts files no bigger than
+	 * 2 mb and that are either png, jpeg or gif.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns A redirect to the user account in case of success. In case of a validation error,
+	 * it will re-render the account page with a message displaying the errors that are present.
+	 */
 	fastify.post("/avatar", async (req, res) => {
 		try {
 			const data = await req.file();
@@ -48,20 +64,19 @@ export async function account(fastify: FastifyInstance) {
 			const user = req.user;
 			const profile = (await getProfileInfo(fastify)).profile;
 			if (error instanceof ZodError) {
-				const ejsVariables = { 
+				const ejsVariables = {
 					errors: error.issues.map((element) => element.message),
 					user,
 					profile,
 				};
 				return res.status(400).view("account.ejs", ejsVariables);
 			}
-			else if (error instanceof Error && error.message === "request file too large")
-			{
+			else if (error instanceof Error && error.message === "request file too large") {
 				const ejsVariables = {
 					errors: [`Max file size is ${Math.floor(globals.maxFileSize / 1000000)} mbs`],
 					user,
 					profile,
-				}
+				};
 				return res.status(413).view("account.ejs", ejsVariables);
 			}
 			throw error;

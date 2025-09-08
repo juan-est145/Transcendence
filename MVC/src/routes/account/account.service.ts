@@ -19,6 +19,12 @@ export async function getProfileInfo(fastify: FastifyInstance) {
 	return data;
 }
 
+/**
+ * This function retrieves the name of the avatar of the user and it returns it to the user.
+ * @param fastify - The fastify instance. It is decorated with the Minio client library.
+ * @returns In case there is an error in the minio s3 server, it send's back a default image or a 404 
+ * error if that one also fails. In normal circunstances, it sends the user's image as a stream.
+ */
 export async function getProfileAvatar(fastify: FastifyInstance) {
 	const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
 	try {
@@ -38,6 +44,12 @@ export async function getProfileAvatar(fastify: FastifyInstance) {
 	}
 }
 
+/**
+ * This function searches for the avatar data associated with the user present in the session.
+ * @param fastify - The fastify instance. It is decorated with the API client.
+ * @returns It returns a JSON object that conforms with the avatar's table in the database. Else,
+ * it throws an error with the details of it.
+ */
 async function findAvatarName(fastify: FastifyInstance) {
 	const { data, error } = await fastify.apiClient.GET("/v1/account/avatar");
 	if (error)
@@ -45,10 +57,29 @@ async function findAvatarName(fastify: FastifyInstance) {
 	return data;
 }
 
+/**
+ * This function validaties that the avatar field retrieved from fastify multipart connforms to the
+ * zod object avatarBody. If the object is not valid, it throws a zod error.
+ * @param avatar - A avatar fastify multipart object to be evaluated.
+ */
 export function validateAvatar(avatar: unknown) {
 	avatarBody.parse(avatar);
 }
 
+/**
+ * This function generates a random name for a new avatar image and stores it inside the s3 server,
+ * deleting the old image as well. It also updates the information of the database through the 
+ * API of the new image, it's name and it's mime type.
+ * @param fastify - The fastify instance. It is decoreated with the minio client library.
+ * @param username - The username of the account. It is used as a directory for the image in the
+ * minio server.
+ * @param avatar - The fastify multipart file instance of the image. It contains information like
+ * a stream of the file and the original filename among other things.
+ * @param buffer - The actual image in a buffer format. It is loaded into memory and stored in the
+ * minio server.
+ * @remarks If there is an error with the API, the function will delete the uploaded image from the server.
+ * In any other case of error, it will just throw said error.
+ */
 export async function storeAvatar(fastify: FastifyInstance, username: string, avatar: MultipartFile, buffer: Buffer<ArrayBufferLike>) {
 	const { avatarBucketName } = globals;
 	const fileExtension = getFileExtension(avatar.filename);
@@ -65,11 +96,26 @@ export async function storeAvatar(fastify: FastifyInstance, username: string, av
 	}
 }
 
+/**
+ * This function finds the extension name of the name of a file and returns it. In case there
+ * isn't a extension name, it returns an empty string.
+ * @param name - The name of the file.
+ * @returns The extension name or an empty string if there isn't one.
+ */
 function getFileExtension(name: string) {
 	const index = name.lastIndexOf(".");
-	return index !== -1? name.substring(index) : "";
+	return index !== -1 ? name.substring(index) : "";
 }
 
+/**
+ * This function updates a specific record of the avatar table in the database through the API
+ * with the paramters passed to the function. It uses the user's JWT to know which record must
+ * be updated.
+ * @param fastify - The fastify instance. It is decorated with the API client.
+ * @param name - The new name for the image.
+ * @param contentType - The mime type of the image.
+ * @returns The data of the new record. In case of error, it throws that specific error.
+ */
 async function updateProfileAvatar(fastify: FastifyInstance, name: string, contentType: string) {
 	const { data, error } = await fastify.apiClient.POST("/v1/account/avatar", {
 		body: { name, contentType }
