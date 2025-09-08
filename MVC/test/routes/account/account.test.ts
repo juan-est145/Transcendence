@@ -35,8 +35,8 @@ describe("Account page", () => {
 });
 
 describe("Avatar services", () => {
+	const service = new AccountService(app);
 	it("Get profile avatar", async () => {
-		const service = new AccountService(app);
 		const stream = new Stream.Readable();
 		const avatar = {
 			id: 1,
@@ -58,8 +58,6 @@ describe("Avatar services", () => {
 	});
 
 	it("Get file extension", () => {
-		const service = new AccountService(app);
-
 		const fileExten = service.getFileExtension("prueba.pdf");
 		const noExten = service.getFileExtension("nothing");
 		const multipleExten = service.getFileExtension("otro.png.jpg.gif");

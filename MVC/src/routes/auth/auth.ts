@@ -1,12 +1,15 @@
 import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
-import { createSession, postLogin, postSignIn, validateLogInBody, validateSignInBody } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { ZodError } from "zod";
 
 /**
  * This module deals with everything relating to the login page.
  */
 export async function auth(fastify: FastifyInstance) {
+
+	const authService = new AuthService(fastify);
+
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
 	 * it redirects him.
@@ -32,10 +35,10 @@ export async function auth(fastify: FastifyInstance) {
 		try {
 			if (req.session.jwt)
 				return res.redirect("/");
-			validateLogInBody(req.body);
-			const token = await postLogin(fastify, req.body);
+			authService.validateLogInBody(req.body);
+			const token = await authService.postLogin(req.body);
 			fastify.jwt.verify(token.jwt);
-			createSession(req.session, token);
+			authService.createSession(req.session, token);
 			return res.redirect("/account");
 		} catch (error) {
 			if (error instanceof ZodError) {
@@ -88,8 +91,8 @@ export async function auth(fastify: FastifyInstance) {
 				return res.redirect("/");
 			else if (req.body.password !== req.body.repeatPasswd)
 				return res.status(400).view("/sign-in.ejs", { errors: ["Passwords do not match"] });
-			validateSignInBody(req.body);
-			await postSignIn(fastify, req.body);
+			authService.validateSignInBody(req.body);
+			await authService.postSignIn(req.body);
 			return res.status(201).view("/sign-in.ejs", { success: ["Your account was created successfully"] });
 		} catch (error) {
 			if (error instanceof ZodError) {
