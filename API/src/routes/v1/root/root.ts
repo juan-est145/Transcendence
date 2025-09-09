@@ -73,7 +73,7 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
-	fastify.register(metricsRoute, {prefix: "metrics"});
+	await fastify.register(metricsRoute);
 	fastify.register(auth, { prefix: "auth" });
 	fastify.register(account, { prefix: "account" });
 }

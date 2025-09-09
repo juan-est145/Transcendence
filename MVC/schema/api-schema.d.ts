@@ -42,7 +42,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/metrics/metrics": {
+    "/v1/metrics": {
         parameters: {
             query?: never;
             header?: never;

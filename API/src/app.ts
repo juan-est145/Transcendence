@@ -2,7 +2,6 @@ import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import fs from 'node:fs'
-import metricsPlugin from './plugins/metrics/metrics'
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
   https: {
@@ -34,8 +33,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'plugins'),
     options: opts
   })
-
-  await fastify.register(metricsPlugin);
   
   // This loads all plugins defined in routes
   // define your routes in one of these
