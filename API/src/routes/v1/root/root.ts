@@ -5,7 +5,7 @@ import { account } from "./account/account";
 import { HttpError, HttpMap } from "../v1.dto";
 import { getErrorDetails, getErrorHttpValues } from "./root.service";
 import { GeneralError } from "./root.type";
-import metricsRoute from "./metrics/metrics";
+import metrics from "./metrics/metrics";
 
 
 const rootSchema: RouteShorthandOptions = {
@@ -73,9 +73,10 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		return res.code(errorMsg.statusCode).send(errorMsg);
 	});
 
-	await fastify.register(metricsRoute);
+
 	fastify.register(auth, { prefix: "auth" });
 	fastify.register(account, { prefix: "account" });
+	fastify.register(metrics, { prefix: "metrics" });
 }
 
 export { root }
