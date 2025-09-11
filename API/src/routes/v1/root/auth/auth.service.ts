@@ -13,7 +13,6 @@ import { JwtPayload } from "./auth.type";
  */
 export async function createUser(fastify: FastifyInstance, body: SignInBody) {
 	try {
-		fastify.metrics.dbOperations.labels('create', 'users').inc();
 
 		const result = await fastify.prisma.users.create({
 			data: {
@@ -48,8 +47,6 @@ export async function createUser(fastify: FastifyInstance, body: SignInBody) {
  */
 export async function getUser(fastify: FastifyInstance, email: string) {
 	try {
-		fastify.metrics.dbOperations.labels('get', 'user').inc();
-
 		const result = await fastify.prisma.users.findUniqueOrThrow({
 			where: {
 				email

@@ -55,46 +55,6 @@ services:
     networks:
       - lan
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./Monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-storage:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    networks:
-      - lan
-    depends_on:
-      - api
-  
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    environment: 
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./Monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./Monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
-    networks:
-      - lan
-    depends_on:
-      - prometheus
-  
 networks:
   lan:
     driver: bridge
-
-volumes:
-  prometheus-storage:
-  grafana-storage:
