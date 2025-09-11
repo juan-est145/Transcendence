@@ -35,7 +35,7 @@
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
     "@fastify/type-provider-typebox": "^5.2.0",
-    "@prisma/client": "^6.12.0",
+    "@prisma/client": "^6.16.0",
     "@sinclair/typebox": "^0.34.38",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
@@ -50,7 +50,7 @@
     "concurrently": "^9.0.0",
     "fastify-tsconfig": "^3.0.0",
     "jest": "^30.1.1",
-    "prisma": "^6.12.0",
+    "prisma": "^6.16.0",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.4.0",
     "typescript": "~5.8.2"
