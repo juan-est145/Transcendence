@@ -55,7 +55,7 @@
 					<% users.forEach(function(userResult) { %>
 						<div class="bg-gray-800 p-4 rounded-md hover:bg-gray-700 transition">
 							<div class="flex items-center justify-between">
-								<a href="/user/<%= userResult.username %>" class="flex items-center space-x-4 flex-1">
+								<a href="<%= user && user.username === userResult.username ? '/account' : '/user/' + userResult.username %>" class="flex items-center space-x-4 flex-1">
 									<img 
 										src="<%= userResult.avatar || '/images/default-avatar.png' %>" 
 										alt="<%= userResult.username %>" 
@@ -71,7 +71,7 @@
 								</a>
 								
 								<!-- Add Friend Button -->
-								<% if (user && user.id !== userResult.id) { %>
+								<% if (user && user.username !== userResult.username) { %>
 									<form method="POST" action="/friends/add" class="ml-4">
 										<input type="hidden" name="friendId" value="<%= userResult.id %>" />
 										<button 
