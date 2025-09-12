@@ -19,6 +19,9 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         await request.session.destroy();
       return reply.code(error.statusCode).viewAsync("errors/401.ejs");
     }
+    else if (error.statusCode === 404) {
+      return reply.code(404).view("errors/404.ejs");
+    }
     return reply.code(500).view("errors/500.ejs");
   });
 

@@ -1,7 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { SearchService } from './search.service';
-import { SearchUsersQuery } from './search.type';
+import { SearchProfileError, SearchProfileParams, SearchUsersQuery } from './search.type';
 import { ZodError } from 'zod';
+import { httpErrors } from '@fastify/sensible';
 
 export async function search(fastify: FastifyInstance) {
 	const searchService = new SearchService(fastify);
@@ -39,73 +40,27 @@ export async function search(fastify: FastifyInstance) {
 		}
 	});
 
-	// API endpoint for user search (proxy to API)
-	// fastify.get('/api/users/search', async (request, reply) => {
-	// 	const { q } = request.query as { q?: string };
-
-	// 	if (!q || q.trim().length < 2) {
-	// 		return reply.code(400).send({ error: 'Query must be at least 2 characters' });
-	// 	}
-
-	// 	try {
-	// 		const users = await searchService.searchUsers(q.trim());
-	// 		return reply.send(users);
-	// 	} catch (error: unknown) {
-	// 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-	// 		fastify.log.error(errorMessage);
-	// 		return reply.code(500).send({ error: 'Internal server error' });
-	// 	}
-	// });
-
-	// // API endpoint to get user profile
-	// fastify.get('/api/users/:username', async (request, reply) => {
-	// 	const { username } = request.params as { username: string };
-
-	// 	try {
-	// 		const user = await searchService.getUserByUsername(username);
-	// 		return reply.send(user);
-	// 	} catch (error: unknown) {
-	// 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-	// 		if (errorMessage === 'User not found') {
-	// 			return reply.code(404).send({ error: 'User not found' });
-	// 		}
-	// 		fastify.log.error(errorMessage);
-	// 		return reply.code(500).send({ error: 'Internal server error' });
-	// 	}
-	// });
-
 	// User profile page
-	fastify.get('/user/:username', async (request, reply) => {
-		const { username } = request.params as { username: string };
-		const currentUser = (request as any).user;
+	fastify.get<{ Params: SearchProfileParams }>('/user/:username', async (request, reply) => {
+		const { username } = request.params;
+		const currentUser = request.user;
 
 		try {
+			searchService.validateSearchParam(username);
 			const userProfile = await searchService.getUserByUsername(username);
+			if (userProfile.username === currentUser?.username)
+				return reply.redirect("/account");
 			return reply.view('profile', {
 				title: `${userProfile.username}'s Profile`,
 				userProfile,
 				user: currentUser,
 			});
-		} catch (error: unknown) {
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-			if (errorMessage === 'User not found' ||
-				errorMessage.includes('404') ||
-				errorMessage.toLowerCase().includes('not found')) {
-
-				return reply.code(404).view('errors/404', {
-					title: 'User not found',
-					user: currentUser,
-					message: `User with username '${username}' not found`
-				});
+		} catch (error) {
+			if (error instanceof ZodError || (error as SearchProfileError).statusCode && (error as SearchProfileError).statusCode === 404) {
+				throw httpErrors.notFound();
+			} else {
+				throw error;
 			}
-
-			fastify.log.error(error);
-			return reply.view('errors/500', {
-				title: 'Error',
-				user: currentUser,
-				message: 'Internal server error'
-			});
 		}
 	});
 };

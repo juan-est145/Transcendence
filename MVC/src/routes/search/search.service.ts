@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
-import { queryUsersSearch } from './search.dto';
-import { SearchUserRes } from './search.type';
+import { paramSearchProfile, queryUsersSearch } from './search.dto';
+import { SearchProfileRes, SearchUserRes } from './search.type';
 
 export class SearchService {
 	private fastify: FastifyInstance;
@@ -10,57 +10,37 @@ export class SearchService {
 	}
 
 	async searchUsers(query: string): Promise<SearchUserRes> {
-		try {
-			const { data, error, response } = await this.fastify.apiClient.GET("/v1/users/search", {
-				params: {
-					query: { q: query }
-				}
-			});
-			if (error && response.status !== 404) {
-				throw new Error(`API error: ${JSON.stringify(error)}`);
-			} else if (error && response.status === 404) {
-				return [];
+		const { data, error, response } = await this.fastify.apiClient.GET("/v1/users/search", {
+			params: {
+				query: { q: query }
 			}
-			return data!;
-		} catch (error) {
-			throw error;
+		});
+		if (error && response.status !== 404) {
+			throw new Error(`API error: ${JSON.stringify(error)}`);
+		} else if (error && response.status === 404) {
+			return [];
 		}
+		return data!;
 	}
 
-	async getUserByUsername(username: string): Promise<UserProfile> {
-		try {
-			const { data, error } = await this.fastify.apiClient.GET("/v1/users/{username}", {
-				params: {
-					path: { username }
-				}
-			});
-
-			if (error) {
-				const statusCode = (error as any)?.statusCode || (error as any)?.status;
-
-				if (statusCode === 404) {
-					throw new Error('User not found');
-				}
-
-				throw new Error(`API error: ${statusCode}`);
+	async getUserByUsername(username: string): Promise<SearchProfileRes> {
+		const { data, error } = await this.fastify.apiClient.GET("/v1/users/{username}", {
+			params: {
+				path: { username }
 			}
-
-			return data;
-		} catch (error: unknown) {
-			if (error instanceof Error && error.message === 'User not found') {
-				throw error;
-			}
-
-			if (error instanceof Error && error.message.includes('404')) {
-				throw new Error('User not found');
-			}
-
-			const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-			throw new Error(`Error fetching user: ${errorMessage}`);
+		});
+		if (error) {
+			throw error;
 		}
+
+		return data;
 	}
 
 	validateUserQuery(query: unknown) {
 		queryUsersSearch.parse(query);
+	}
+
+	validateSearchParam(param: unknown) {
+		paramSearchProfile.parse(param);
 	}
 }
