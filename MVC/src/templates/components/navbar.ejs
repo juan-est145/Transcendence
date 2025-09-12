@@ -27,7 +27,7 @@
 			<!-- User search form in navbar - Hide on search page -->
 			<% if (typeof title === 'undefined' || !title.includes('Search')) { %>
 				<div class="relative">
-					<form method="GET" action="/search" class="flex items-center space-x-2">
+					<form method="GET" action="/search/users" class="flex items-center space-x-2">
 						<input 
 							type="text" 
 							name="q"

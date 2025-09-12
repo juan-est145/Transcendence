@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><%= title %></title>
+	<title>Search users</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
 </head>
@@ -14,7 +14,7 @@
 		<h1 class="text-3xl font-bold mb-6">Search Users</h1>
 		
 		<!-- Search Form -->
-		<form method="GET" action="/search" class="mb-8">
+		<form method="GET" action="/search/users" class="mb-8">
 			<div class="flex items-center space-x-4">
 				<input 
 					type="text" 
@@ -34,11 +34,7 @@
 		</form>
 		
 		<!-- Error Message -->
-		<% if (error) { %>
-			<div class="bg-red-600 text-white p-4 rounded-md mb-6">
-				<%= error %>
-			</div>
-		<% } %>
+		<%- include('components/errorPopup.ejs') %>
 		
 		<!-- Search Results -->
 		<% if (query && query.length >= 2) { %>
@@ -57,7 +53,7 @@
 							<div class="flex items-center justify-between">
 								<a href="<%= user && user.username === userResult.username ? '/account' : '/user/' + userResult.username %>" class="flex items-center space-x-4 flex-1">
 									<img 
-										src="<%= userResult.avatar || '/images/default-avatar.png' %>" 
+										src="<%= `/account/avatar/${user.username}` || '/images/default-avatar.png' %>" 
 										alt="<%= userResult.username %>" 
 										class="w-12 h-12 rounded-full"
 									/>
