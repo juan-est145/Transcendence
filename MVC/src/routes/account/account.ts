@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { AccountService } from "./account.service";
 import { ZodError } from "zod";
 import globals from "../../globals/globals";
+import { AvatarUsernameParam } from "./account.type";
 
 /**
  * This module deals with the user's account page
@@ -81,6 +82,17 @@ export async function account(fastify: FastifyInstance) {
 				};
 				return res.status(413).view("account.ejs", ejsVariables);
 			}
+			throw error;
+		}
+	});
+
+	fastify.get<{ Params: AvatarUsernameParam }>("/avatar/:username", async (req, res) => {
+		const { username } = req.params;
+		try {
+			const avatar = await accountService.getUsersAvatar(username);
+			res.type(avatar.contentType);
+			return res.send(avatar.stream);
+		} catch (error) {
 			throw error;
 		}
 	});

@@ -53,7 +53,7 @@
 							<div class="flex items-center justify-between">
 								<a href="<%= user && user.username === userResult.username ? '/account' : '/search/user/' + userResult.username %>" class="flex items-center space-x-4 flex-1">
 									<img 
-										src="<%= `/account/avatar/${user.username}` || '/images/default-avatar.png' %>" 
+										src="<%= `/account/avatar/${userResult.username}` || '/images/default-avatar.png' %>" 
 										alt="<%= userResult.username %>" 
 										class="w-12 h-12 rounded-full"
 									/>

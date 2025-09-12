@@ -1,4 +1,5 @@
 import z from "zod";
+import { username } from "../auth/auth.dto";
 
 const avatarFieldName = "avatar";
 const avatarType = "file";
@@ -11,4 +12,8 @@ export const avatarBody = z.object({
 		"image/jpeg",
 		"image/gif",
 	], { error: "The file must be either a png, jpeg or gif" }),
+});
+
+export const avatarUsernameParam = z.object({
+	username
 });

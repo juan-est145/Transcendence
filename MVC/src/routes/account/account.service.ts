@@ -41,7 +41,6 @@ export class AccountService {
 			const stream = await this.fastify.minioClient.getObject(avatarBucketName, avatar.name);
 			return { stream, contentType: avatar.contentType };
 		} catch (error) {
-			console.log(error);
 			if (error instanceof S3Error) {
 				try {
 					const defaultAvatar = await this.fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
@@ -126,6 +125,36 @@ export class AccountService {
 	async updateProfileAvatar(name: string, contentType: string) {
 		const { data, error } = await this.fastify.apiClient.POST("/v1/account/avatar", {
 			body: { name, contentType }
+		});
+		if (error)
+			throw error;
+		return data;
+	}
+
+	async getUsersAvatar(username: string) {
+		const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
+		try {
+			const avatar = await this.findUserAvatar(username);
+			const stream = await this.fastify.minioClient.getObject(avatarBucketName, avatar.name);
+			return { stream, contentType: avatar.contentType };
+		} catch (error) {
+			if (error instanceof S3Error) {
+				try {
+					const defaultAvatar = await this.fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
+					return { stream: defaultAvatar, contentType: defaultcontentType };
+				} catch (error) {
+					throw httpErrors.notFound("Avatar location was not found");
+				}
+			}
+			throw error;
+		}
+	}
+
+	async findUserAvatar(username: string) {
+		const { data, error } = await this.fastify.apiClient.GET("/v1/account/avatar/{username}", {
+			params: {
+				path: { username }
+			}
 		});
 		if (error)
 			throw error;
