@@ -4,6 +4,11 @@ import { AccountPostAvatarBody, AccountRes, GetAccntQuery } from "./account.type
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthService } from "../auth/auth.service";
 
+/**
+ * This class acepts the following parameters:
+ * @param fastify - The current fastify instance.
+ * @param authService - The Auth service class.
+ */
 export class AccountService {
 	private fastify: FastifyInstance;
 	private authService: AuthService;
@@ -16,7 +21,6 @@ export class AccountService {
 	/**
 	 * This function retrieves an user and it's profile from the database. It also modifies the object
 	 * to include the victories and defeats suffered in tournaments.
-	 * @param fastify - The fastify instance. It is decorated with the prisma client.
 	 * @param jwtPayload - An object representative of the JWT with the user credentials.
 	 * Needed to know which user is asking for the data.
 	 * @returns If successful, it returns the information of the user. In case of error,
@@ -52,7 +56,6 @@ export class AccountService {
 
 	/**
 	 * This function finds the information of the avatar related to the user and send's it back.
-	 * @param fastify - The fastify instance. It is decorated with the prisma client.
 	 * @param jwtPayload - An object representative of the JWT with the user credentials.
 	 * Needed to know which user is asking for the data.
 	 * @returns If successful, it returns the information of the user's avatar. In case of error,
@@ -82,7 +85,6 @@ export class AccountService {
 
 	/**
 	 * This function updates the user's avatar information and send's back the updated information.
-	 * @param fastify - The fastify instance. It is decorated with the prisma client.
 	 * @param email - The email of the user. It is needed for finding the profile associated with
 	 * the avatar.
 	 * @param avatar - An object with the new properties to update to the user.

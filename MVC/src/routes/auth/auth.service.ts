@@ -3,6 +3,10 @@ import { logInBody, signInBody } from "./auth.dto";
 import { JwtBody, LogInBody, SignInBody } from "./auth.type";
 import { FastifySessionObject } from "@fastify/session";
 
+/**
+ * This class acepts the following parameters:
+ * @param fastify - The current fastify instance.
+ */
 export class AuthService {
 	private fastify: FastifyInstance;
 
@@ -22,7 +26,6 @@ export class AuthService {
 	/**
 	 * This function sends the user's credential to the REST API for loggin in. If the response
 	 * code is between 400 or 500 it throws an exception.
-	 * @param fastify - The fastify instance. It is decorated with the API client.
 	 * @param body - A fastify request body with a username and password.
 	 * @returns If successful it returns a JWT with some user data.
 	 */
@@ -63,7 +66,6 @@ export class AuthService {
 	/**
 	 * This function sends the user's credential to the REST API for signin in. If the response
 	 * code is between 400 and 500 it throws an exception.
-	 * @param fastify - The fastify instance. It is decorated with the API client.
 	 * @param body - A fastify request body with a username, password, email and a repeat password field.
 	 * 				With the exception of the repeat password field, the rest of them are sent to the API.
 	 * @returns If successful it returns some JSON with the email and username of the new user.

@@ -6,6 +6,10 @@ import crypto from "crypto";
 import globals from "../../globals/globals";
 import { avatarBody } from "./account.dto";
 
+/**
+ * This class acepts the following parameters:
+ * @param fastify - The current fastify instance.
+ */
 export class AccountService {
 	private fastify: FastifyInstance;
 
@@ -16,7 +20,6 @@ export class AccountService {
 	/**
 	 * This function sends a GET request using a JWT to get the account and profile information.
 	 * If the response is between 400 and 500 it throws an exception.
-	 * @param fastify - The fastify instance. It is decorated with the API client.
 	 * @returns If successful, it returns a JSON object with the profile info of the user.
 	 */
 	async getProfileInfo() {
@@ -28,7 +31,6 @@ export class AccountService {
 
 	/**
 	 * This function retrieves the name of the avatar of the user and it returns it to the user.
-	 * @param fastify - The fastify instance. It is decorated with the Minio client library.
 	 * @returns In case there is an error in the minio s3 server, it send's back a default image or a 404 
 	 * error if that one also fails. In normal circunstances, it sends the user's image as a stream.
 	 */
@@ -54,7 +56,6 @@ export class AccountService {
 
 	/**
 	 * This function searches for the avatar data associated with the user present in the session.
-	 * @param fastify - The fastify instance. It is decorated with the API client.
 	 * @returns It returns a JSON object that conforms with the avatar's table in the database. Else,
 	 * it throws an error with the details of it.
 	 */
@@ -78,7 +79,6 @@ export class AccountService {
 	 * This function generates a random name for a new avatar image and stores it inside the s3 server,
 	 * deleting the old image as well. It also updates the information of the database through the 
 	 * API of the new image, it's name and it's mime type.
-	 * @param fastify - The fastify instance. It is decoreated with the minio client library.
 	 * @param username - The username of the account. It is used as a directory for the image in the
 	 * minio server.
 	 * @param avatar - The fastify multipart file instance of the image. It contains information like
@@ -119,7 +119,6 @@ export class AccountService {
 	 * This function updates a specific record of the avatar table in the database through the API
 	 * with the paramters passed to the function. It uses the user's JWT to know which record must
 	 * be updated.
-	 * @param fastify - The fastify instance. It is decorated with the API client.
 	 * @param name - The new name for the image.
 	 * @param contentType - The mime type of the image.
 	 * @returns The data of the new record. In case of error, it throws that specific error.
