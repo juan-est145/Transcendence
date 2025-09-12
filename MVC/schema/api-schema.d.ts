@@ -809,6 +809,74 @@ export interface paths {
                         };
                     };
                 };
+                /** @description If the jwt is not present, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If the user does not exist, it sends a 404 response */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
             };
         };
         put?: never;
