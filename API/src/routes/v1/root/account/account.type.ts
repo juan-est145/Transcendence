@@ -1,7 +1,8 @@
 import { type Static } from "@sinclair/typebox";
-import { accountRes } from "./account.dto";
+import { accountRes, accountPostAvatarBody} from "./account.dto";
 
 export type AccountRes = Static<typeof accountRes>;
+export type AccountPostAvatarBody = Static<typeof accountPostAvatarBody>;
 
 export interface GetAccntQuery {
 	username: string;
@@ -11,7 +12,6 @@ export interface GetAccntQuery {
 		id: number;
 		createdAt: Date;
 		updatedAt: Date;
-		avatar: string;
 		online: boolean;
 	} | null;
 };

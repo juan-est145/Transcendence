@@ -1,5 +1,5 @@
 import { RouteShorthandOptions } from "fastify";
-import { accountRes } from "./account.dto";
+import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes } from "./account.dto";
 import { generalError } from "../root.dto";
 
 const accountTag = "Account";
@@ -26,6 +26,14 @@ export const getAccountSchema: RouteShorthandOptions = {
 					}
 				}
 			},
+			404: {
+				description: "In the rare instance that the user in the jwt no longer exists, it will send a 404 response",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
 			401: {
 				description: "It returns an error message if the credentials are not correct.",
 				content: {
@@ -45,3 +53,104 @@ export const getAccountSchema: RouteShorthandOptions = {
 		}
 	}
 }
+
+export const getAvatarSchema: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This endpoint returns the avatar information of the logged in user",
+		response: {
+			200: {
+				description: "It returns data non-confidential data of the user's profile and user table",
+				content: {
+					"application/json": {
+						schema: accountAvatarRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "In the rare instance that the user in the jwt no longer exists, it will send a 404 response",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const postAvatarSchema: RouteShorthandOptions = {
+	schema: {
+		body: accountPostAvatarBody,
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This endpoint updates the avatar information of the logged in user",
+		response: {
+			201: {
+				description: "Returns the new values of the avatar instance",
+				content: {
+					"application/json": {
+						schema: accountPostAvatarRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "In the rare instance that the user in the jwt no longer exists, it will send a 404 response",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};

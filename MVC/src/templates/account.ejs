@@ -7,6 +7,7 @@
 	<title>Profile</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+	<script defer src="/scripts/dist/account.js"></script>
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
@@ -17,8 +18,17 @@
 
 				<article
 					class="flex flex-col items-center gap-2 px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<img src="<%= profile.avatar || '/images/default-avatar.png' %>" alt="Avatar"
-						class="w-32 h-32 rounded-full border-4 border-blue-500 bg-gray-700 mb-4 shadow-lg">
+
+					<form action="/account/avatar" , method="POST" enctype="multipart/form-data">
+						<label for="avatar" class="cursor-pointer flex flex-col justify-center items-center">
+							<%- include('components/errorPopup.ejs') %>
+							<img src="/account/avatar" alt="Avatar"
+								class="w-32 h-32 rounded-full border-4 border-blue-500 bg-gray-700 mb-1 shadow-lg">
+							<span class="text-sm italic">Change avatar (jpeg, gif or png).</span>
+							<input type="file" id="avatar" name="avatar" class="hidden">
+						</label>
+					</form>
+
 					<h1 class="text-3xl font-extrabold text-center">Welcome
 						back,
 						<span class="text-blue-500">
@@ -30,11 +40,15 @@
 
 				<article
 					class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Play time</h1>
+					<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Play time
+					</h1>
 					<div class="flex justify-evenly items-center">
 						<!-- Here, we could probably use a modal for the options once the user clicks in either of the buttons -->
-						<button class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Friendly match</button>
-						<button class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Tournament</button>
+						<button
+							class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Friendly
+							match</button>
+						<button
+							class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Tournament</button>
 					</div>
 				</article>
 
@@ -45,11 +59,15 @@
 					<div class="flex justify-evenly m-2">
 						<div class="text-center">
 							<p class="text-2xl font-medium">Wins</p>
-							<p class="text-2xl font-medium"><%= profile.victories %></p>
+							<p class="text-2xl font-medium">
+								<%= profile.victories %>
+							</p>
 						</div>
 						<div class="text-center">
 							<p class="text-2xl font-medium">Losses</p>
-							<p class="text-2xl font-medium"><%= profile.defeats %></p>
+							<p class="text-2xl font-medium">
+								<%= profile.defeats %>
+							</p>
 						</div>
 					</div>
 				</article>

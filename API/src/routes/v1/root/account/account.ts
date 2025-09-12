@@ -1,12 +1,16 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, postAvatarSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
-import { getAccount } from "./account.service";
+import { AccountService } from "./account.service";
+import { AccountPostAvatarBody } from "./account.type";
+import { AuthService } from "../auth/auth.service";
 
 /**
  * This module deals with the user's account
  */
 export async function account(fastify: FastifyInstance) {
+	const accountService = new AccountService(fastify, new AuthService(fastify));
+
 	/**
 	 * This entire module requires the user to be logged in in order to be able to access and
 	 * interact with it.
@@ -23,8 +27,45 @@ export async function account(fastify: FastifyInstance) {
 	fastify.get("/", getAccountSchema, async (req, res) => {
 		try {
 			const jwtPayload: JwtPayload = await req.jwtDecode();
-			const account = await getAccount(fastify, jwtPayload);
+			const account = await accountService.getAccount(jwtPayload);
 			return res.send(account);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	/**
+	 * This route returns the avatar information of a user profile.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with
+	 * the user's avatar data from the avatar table in the db. Else, it throws
+	 * an error and send's a JSON with the details.
+	 */
+	fastify.get("/avatar", getAvatarSchema, async (req, res) => {
+		try {
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const avatar = await accountService.getAvatar(jwtPayload);
+			return res.send(avatar);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	/**
+	 * This route allows to update the avatar information related to a user profile.
+	 * @param req - The fastify request instance. It must have a body that conforms
+	 * to the AccountPostAvatarBody type.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 JSON resposnse with the new
+	 * information of the user's avatar. Else, it throws
+	 * an error and send's a JSON with the details.
+	 */
+	fastify.post<{ Body: AccountPostAvatarBody }>("/avatar", postAvatarSchema, async (req, res) => {
+		try {
+			const { email }: JwtPayload = await req.jwtDecode();
+			const result = await accountService.updateAvatar(email, req.body);
+			return res.status(201).send(result);
 		} catch (error) {
 			throw error;
 		}
