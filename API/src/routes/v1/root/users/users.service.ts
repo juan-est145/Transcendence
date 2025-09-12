@@ -1,11 +1,16 @@
-import { PrismaClient } from '@prisma/client';
+import { Avatar } from '@prisma/client';
 import { SearchUsersResponse, GetUserResponse } from './users.type';
+import { FastifyInstance } from 'fastify';
+import { AccountService } from '../account/account.service';
 
 export class UsersService {
-	constructor(private prisma: PrismaClient) {}
+	constructor(
+		private fastify: FastifyInstance,
+		private account: AccountService,
+	) {}
 	
-	async searchUsers(query: string): Promise<SearchUsersResponse[]> {
-		const users = await this.prisma.users.findMany({
+	async searchUsers(query: string): Promise<SearchUsersResponse> {
+		const users = await this.fastify.prisma.users.findMany({
 			where: {
 				username: {
 					contains: query
@@ -28,17 +33,19 @@ export class UsersService {
 			}
 		});
 		
-		return users.map(user => ({
-			id: user.id,
-			username: user.username,
-			email: user.email,
-			avatar: user.profile?.avatar || null,
-			createdAt: user.profile?.createdAt.toISOString() || new Date().toISOString()
-		}));
+		return users.map((user) => {
+			return {
+				id: user.id,
+				username: user.username,
+				email: user.email,
+				avatar: user.profile!.avatar as Avatar,
+				createdAt: user.profile!.createdAt.toISOString(),
+			}
+		});
 	}
 	
 	async getUserByUsername(username: string): Promise<GetUserResponse | null> {
-		const user = await this.prisma.users.findUnique({
+		const user = await this.fastify.prisma.users.findUnique({
 			where: {
 				username: username
 			},
@@ -47,10 +54,12 @@ export class UsersService {
 				username: true,
 				email: true,
 				profile: {
-					select: {
+					include: {
+						tournaments: {
+							select: { rank: true }
+						},
 						avatar: true,
-						createdAt: true
-					}
+					},
 				}
 			}
 		});
@@ -59,16 +68,15 @@ export class UsersService {
 			return null;
 		}
 
-		// Add game statistics
+		const { victories, defeats } = this.account.addTourResults(user).profile;
+
 		return {
-			id: user.id,
-			username: user.username,
-			email: user.email,
-			avatar: user.profile?.avatar || null,
-			createdAt: user.profile?.createdAt.toISOString() || new Date().toISOString(),
-			gamesPlayed: 0, // Not implemented
-			wins: 0,        // Not implemented
-			losses: 0       // Not implemented
+			...user,
+			avatar: user.profile?.avatar as Avatar,
+			createdAt: user.profile!.createdAt.toISOString(),
+			gamesPlayed: user.profile!.tournaments.length,
+			wins: victories,
+			losses: defeats,
 		};
 	}
 }

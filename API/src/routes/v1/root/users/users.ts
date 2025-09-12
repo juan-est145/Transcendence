@@ -1,46 +1,43 @@
 import { FastifyInstance } from "fastify";
 import { UsersService } from "./users.service";
 import { searchUsersSchema, getUserSchema } from "./users.swagger";
+import { GetUserParams, SearchUsersQuery } from "./users.type";
+import { httpErrors } from "@fastify/sensible";
+import { AccountService } from "../account/account.service";
+import { AuthService } from "../auth/auth.service";
 
-async function users(fastify: FastifyInstance): Promise<void> {
-	const usersService = new UsersService(fastify.prisma);
+export async function users(fastify: FastifyInstance): Promise<void> {
+	const usersService = new UsersService(fastify, new AccountService(fastify, new AuthService(fastify)));
+
+	/**
+	 * This entire module requires the user to be logged in in order to be able to access and
+	 * interact with it.
+	 */
+	fastify.addHook("preHandler", fastify.auth([fastify.verifyJwt]));
 	
-	fastify.get('/search', searchUsersSchema, async (request, reply) => {
-		const { q } = request.query as { q: string };
-		
+	fastify.get<{ Querystring: SearchUsersQuery }>('/search', searchUsersSchema, async (request, reply) => {
+		const { q } = request.query;
+
 		try {
 			const users = await usersService.searchUsers(q.trim());
-			return reply.send(users);
+			return users.length > 0 ? reply.send(users) : reply.code(404).send(users);
 		} catch (error) {
-			fastify.log.error(error);
-			throw new Error('Internal server error');
+			throw error;
 		}
 	});
 	
-	fastify.get('/:username', getUserSchema, async (request, reply) => {
-		const { username } = request.params as { username: string };
-		
+	fastify.get<{ Params: GetUserParams }>('/:username', getUserSchema, async (request, reply) => {
+		const { username } = request.params
 		try {
 			const user = await usersService.getUserByUsername(username);
 			
 			if (!user) {
-				return reply.code(404).send({ 
-					statusCode: 404,
-					error: 'Not Found',
-					message: `User with username '${username}' not found`
-				});
+				throw httpErrors.notFound(`Username ${username} was not found`);
 			}
 			
 			return reply.send(user);
 		} catch (error) {
-			fastify.log.error(`Error fetching user '${username}':`, error);
-			return reply.code(500).send({ 
-				statusCode: 500,
-				error: 'Internal Server Error',
-				message: 'Internal server error'
-			});
+			throw error;
 		}
 	});
 }
-
-export { users };

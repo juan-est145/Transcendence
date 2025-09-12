@@ -1,6 +1,7 @@
 import { Type } from '@sinclair/typebox';
+import { accountPostAvatarRes } from '../account/account.dto';
 
-export const SearchUsersQuery = Type.Object({
+export const searchUsersQuery = Type.Object({
 	q: Type.String({ 
 		minLength: 2, 
 		maxLength: 50,
@@ -8,7 +9,7 @@ export const SearchUsersQuery = Type.Object({
 	})
 });
 
-export const GetUserParams = Type.Object({
+export const getUserParams = Type.Object({
 	username: Type.String({
 		minLength: 1,
 		maxLength: 50,
@@ -17,23 +18,23 @@ export const GetUserParams = Type.Object({
 	})
 });
 
-export const SearchUsersResponse = Type.Array(
+export const searchUsersResponse = Type.Array(
 	Type.Object({
 		id: Type.Number(),
 		username: Type.String(),
 		email: Type.String(),
-		avatar: Type.Union([Type.String(), Type.Null()]),
+		avatar: accountPostAvatarRes,
 		createdAt: Type.String()
 	})
 );
 
-export const GetUserResponse = Type.Object({
+export const getUserResponse = Type.Object({
 	id: Type.Number(),
 	username: Type.String(),
 	email: Type.String(),
-	avatar: Type.Union([Type.String(), Type.Null()]),
+	avatar: accountPostAvatarRes,
 	createdAt: Type.String(),
 	gamesPlayed: Type.Number(),
 	wins: Type.Number(),
-	losses: Type.Number()
+	losses: Type.Number(),
 });
