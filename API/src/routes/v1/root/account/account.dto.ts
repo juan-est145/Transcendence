@@ -31,3 +31,7 @@ export const accountPostAvatarRes = Type.Intersect([
 		id: Type.Number(),
 	}),
 ]);
+
+export const accountGetAvatarParam = Type.Object({
+	username,
+});

@@ -135,4 +135,23 @@ export class AccountService {
 		};
 		return result;
 	}
+
+	async getUserAvatar(username: string) {
+		try {
+			const result = await this.fastify.prisma.avatar.findFirstOrThrow({
+				where: {
+					profile: {
+						user: {
+							username
+						}
+					}
+				}
+			});
+			return result;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code === "P2025")
+				throw this.fastify.httpErrors.notFound();
+			throw error;
+		}
+	}
 }

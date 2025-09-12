@@ -52,7 +52,7 @@ export class AuthService {
 	}
 
 	/**
-	 * This function finds a user by username.
+	 * This function finds a user by email.
 	 * @param email - A string representing the email of the user to search.
 	 * @returns If successful, it returns the data of the user and it's profile. In case
 	 * of error, if the email does not exist it returns a fastify http 401 error.
