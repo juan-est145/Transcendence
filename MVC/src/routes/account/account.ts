@@ -86,10 +86,19 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route loads the avatar associated with searched user's account. It checks the database
+	 * through the API to find the the name of the avatar and then retrieves it and send's it to the
+	 * user from the minio s3 store.
+	 * @param req - The fastify request instance. It has a username url parameter to know which
+	 * user's avatar it should search for.
+	 * @param res - The fastify response instance.
+	 * @returns The avatar image alongise it's content type in the header.
+	 */
 	fastify.get<{ Params: AvatarUsernameParam }>("/avatar/:username", async (req, res) => {
 		const { username } = req.params;
 		try {
-			const avatar = await accountService.getUsersAvatar(username);
+			const avatar = await accountService.getProfileAvatar(username);
 			res.type(avatar.contentType);
 			return res.send(avatar.stream);
 		} catch (error) {

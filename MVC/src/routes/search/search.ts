@@ -13,7 +13,16 @@ export async function search(fastify: FastifyInstance) {
 	 */
 	fastify.addHook("onRequest", fastify.auth([fastify.verifyLoggedIn]));
 
-	// Search page
+	
+	/**
+	 * This route sends to the client the search page. It takes a query parameter to know
+	 * which users it should look for.
+	 * @param req - The fastify request instance. It has a q query string property.
+	 * @param res - The fastify response instance.
+	 * @returns The search page.
+	 * @remarks The page requires a user property for avoiding that the user add's himself
+	 * as a friend or tries to see his account page as an external user.
+	 */
 	fastify.get<{ Querystring: SearchUsersQuery }>('/users', async (request, reply) => {
 		const { q } = request.query;
 		const currentUser = request.user;
@@ -40,7 +49,16 @@ export async function search(fastify: FastifyInstance) {
 		}
 	});
 
-	// User profile page
+	/**
+	 * This route sends to the client the account page of another user. It takes a dynamic
+	 * path parameter of type string to know which user it should search for.
+	 * @param req - The fastify request instance. It has a username url parameter to know
+	 * which user's page it should search for.
+	 * @param res - The fastify response instance.
+	 * @returns The searched user's account page.
+	 * @remarks The route will redirect to the user's account page if it tries to access his account
+	 * page as if it where a different user.
+	 */
 	fastify.get<{ Params: SearchProfileParams }>('/user/:username', async (request, reply) => {
 		const { username } = request.params;
 		const currentUser = request.user;

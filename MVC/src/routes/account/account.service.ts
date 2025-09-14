@@ -34,10 +34,10 @@ export class AccountService {
 	 * @returns In case there is an error in the minio s3 server, it send's back a default image or a 404 
 	 * error if that one also fails. In normal circunstances, it sends the user's image as a stream.
 	 */
-	async getProfileAvatar() {
+	async getProfileAvatar(username?: string) {
 		const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
 		try {
-			const avatar = await this.findAvatarName();
+			const avatar = username? await this.findUserAvatar(username) : await this.findAvatarName();
 			const stream = await this.fastify.minioClient.getObject(avatarBucketName, avatar.name);
 			return { stream, contentType: avatar.contentType };
 		} catch (error) {
@@ -66,7 +66,7 @@ export class AccountService {
 	}
 
 	/**
-	 * This function validaties that the avatar field retrieved from fastify multipart connforms to the
+	 * This function validaties that the avatar field retrieved from fastify multipart conforms to the
 	 * zod object avatarBody. If the object is not valid, it throws a zod error.
 	 * @param avatar - A avatar fastify multipart object to be evaluated.
 	 */
@@ -131,25 +131,13 @@ export class AccountService {
 		return data;
 	}
 
-	async getUsersAvatar(username: string) {
-		const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
-		try {
-			const avatar = await this.findUserAvatar(username);
-			const stream = await this.fastify.minioClient.getObject(avatarBucketName, avatar.name);
-			return { stream, contentType: avatar.contentType };
-		} catch (error) {
-			if (error instanceof S3Error) {
-				try {
-					const defaultAvatar = await this.fastify.minioClient.getObject(avatarBucketName, defaultAvatarName);
-					return { stream: defaultAvatar, contentType: defaultcontentType };
-				} catch (error) {
-					throw httpErrors.notFound("Avatar location was not found");
-				}
-			}
-			throw error;
-		}
-	}
-
+	/**
+	 * This function sends a GET request with a username string paramater as a parameter to the
+	 * API to get the avatar information of a user whose username is equal to the url parameter.
+	 * If the response is not a 200 response it throws an error.
+	 * @param username - A string of the username of the user whose avatar we want.
+	 * @returns The avatar information of the searched user.
+	 */
 	async findUserAvatar(username: string) {
 		const { data, error } = await this.fastify.apiClient.GET("/v1/account/avatar/{username}", {
 			params: {
