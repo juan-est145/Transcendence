@@ -271,7 +271,7 @@ window.addEventListener('keyup', function (event) {
 		paddleTwoDir = 0;
 });
 
-function isColliding(ball, paddle) {
+function isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh) {
     const paddleHalfWidth = 0.1 / 2;
 	const paddleHalfHeight = 0.6 / 2;
 	const paddleHalfDepth = 0.4 / 2;
