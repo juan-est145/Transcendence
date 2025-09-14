@@ -23,6 +23,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babylonjs/core": "^8.27.0",
+    "@babylonjs/gui": "^8.27.0",
     "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.0.0",
     "@fastify/cookie": "^11.0.2",
@@ -37,7 +39,9 @@
     "@fastify/view": "^11.1.0",
     "@tailwindcss/cli": "^4.1.13",
     "@types/ejs": "^3.1.5",
+    "babylonjs": "^8.27.0",
     "connect-session-knex": "^5.0.0",
+    "earcut": "^3.0.2",
     "ejs": "^3.1.10",
     "express-session": "^1.18.2",
     "fastify": "^5.0.0",
@@ -51,6 +55,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@types/earcut": "^3.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
     "autoprefixer": "^10.4.21",
@@ -61,6 +66,7 @@
     "openapi-typescript": "^7.9.1",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.4.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
   }
 }
