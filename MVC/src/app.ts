@@ -43,6 +43,12 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: opts
   })
 
+  fastify.after(async () => {
+    if (fastify.vite) {
+      await fastify.vite.ready();
+    }
+  });
+
 }
 
 export default app
