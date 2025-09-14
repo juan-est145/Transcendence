@@ -8,11 +8,7 @@ import { FastifySessionObject } from "@fastify/session";
  * @param fastify - The current fastify instance.
  */
 export class AuthService {
-	private fastify: FastifyInstance;
-
-	constructor(fastify: FastifyInstance) {
-		this.fastify = fastify;
-	}
+	constructor(private fastify: FastifyInstance) {	}
 
 	/**
 	 * This function validates that the request body conforms to the zod object logInBody. If

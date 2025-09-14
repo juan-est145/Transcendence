@@ -9,11 +9,7 @@ import { JwtPayload } from "./auth.type";
  * @param fastify - The current fastify instance.
  */
 export class AuthService {
-	private fastify: FastifyInstance;
-
-	constructor(fastify: FastifyInstance) {
-		this.fastify = fastify;
-	}
+	constructor(private fastify: FastifyInstance) { }
 
 	/**
 	 * This function allows for the creation of a new user in the database, alongside it's profile.

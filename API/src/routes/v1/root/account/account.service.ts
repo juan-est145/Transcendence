@@ -10,13 +10,10 @@ import { AuthService } from "../auth/auth.service";
  * @param authService - The Auth service class.
  */
 export class AccountService {
-	private fastify: FastifyInstance;
-	private authService: AuthService;
-
-	constructor(fastify: FastifyInstance, authService: AuthService) {
-		this.fastify = fastify;
-		this.authService = authService;
-	}
+	constructor(
+		private fastify: FastifyInstance,
+		private authService: AuthService
+	) { }
 
 	/**
 	 * This function retrieves an user and it's profile from the database. It also modifies the object
@@ -136,6 +133,11 @@ export class AccountService {
 		return result;
 	}
 
+	/**
+	 * This function finds the searched user's avatar information.
+	 * @param username - The username of the user whose avatar information we want.
+	 * @returns The avatar information.
+	 */
 	async getUserAvatar(username: string) {
 		try {
 			const result = await this.fastify.prisma.avatar.findFirstOrThrow({

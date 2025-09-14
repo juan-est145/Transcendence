@@ -7,11 +7,7 @@ import { SearchProfileRes, SearchUserRes } from './search.type';
  * @param fastify - The current fastify instance
  */
 export class SearchService {
-	private fastify: FastifyInstance;
-
-	constructor(fastify: FastifyInstance) {
-		this.fastify = fastify;
-	}
+	constructor(private fastify: FastifyInstance) { }
 
 	/**
 	 * This function sends a GET request with a query string as a parameter to the API

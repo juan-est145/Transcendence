@@ -3,12 +3,24 @@ import { SearchUsersResponse, GetUserResponse } from './users.type';
 import { FastifyInstance } from 'fastify';
 import { AccountService } from '../account/account.service';
 
+/**
+ * This class accepts the following parameters:
+ * @param fastify - The current fastify instance.
+ * @param account - The Account service class.
+ */
 export class UsersService {
 	constructor(
 		private fastify: FastifyInstance,
 		private account: AccountService,
-	) {}
-	
+	) { }
+
+	/**
+	 * This function searches all users whose username contains the string found in the
+	 * query parameter and returns an array with all the matches.
+	 * @param query - The username to use to find the users.
+	 * @returns If successful, it returns an array with all the found users inside an array.
+	 * In case of an error, it throws it, for it to be catched elsewhere
+	 */
 	async searchUsers(query: string): Promise<SearchUsersResponse> {
 		const users = await this.fastify.prisma.users.findMany({
 			where: {
@@ -32,7 +44,7 @@ export class UsersService {
 				username: 'asc'
 			}
 		});
-		
+
 		return users.map((user) => {
 			return {
 				id: user.id,
@@ -43,7 +55,14 @@ export class UsersService {
 			}
 		});
 	}
-	
+
+	/**
+	 * This function searches a user by it's username from the database and send's back it's
+	 * profile and avatar information.
+	 * @param username - The username associated to the user to search for.
+	 * @returns If successful, it returns the information of the searched user. In case of error,
+	 * it throws it, for it to be catched elsewhere.
+	 */
 	async getUserByUsername(username: string): Promise<GetUserResponse | null> {
 		const user = await this.fastify.prisma.users.findUnique({
 			where: {
@@ -63,7 +82,7 @@ export class UsersService {
 				}
 			}
 		});
-		
+
 		if (!user) {
 			return null;
 		}

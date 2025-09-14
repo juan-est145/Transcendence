@@ -71,6 +71,10 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route returns a user's avatar information whose username is equal to the url parameter.
+	 * @param req - The fastify request instance
+	 */
 	fastify.get<{ Params: AccountGetAvatarParam }>("/avatar/:username", getUserAvatarSchema, async (req, res) => {
 		try {
 			const { username } = req.params;

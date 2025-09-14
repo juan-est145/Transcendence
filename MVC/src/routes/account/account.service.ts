@@ -11,11 +11,7 @@ import { avatarBody } from "./account.dto";
  * @param fastify - The current fastify instance.
  */
 export class AccountService {
-	private fastify: FastifyInstance;
-
-	constructor(fastify: FastifyInstance) {
-		this.fastify = fastify;
-	}
+	constructor(private fastify: FastifyInstance) { }
 
 	/**
 	 * This function sends a GET request using a JWT to get the account and profile information.
@@ -37,7 +33,7 @@ export class AccountService {
 	async getProfileAvatar(username?: string) {
 		const { avatarBucketName, defaultAvatarName, defaultcontentType } = globals;
 		try {
-			const avatar = username? await this.findUserAvatar(username) : await this.findAvatarName();
+			const avatar = username ? await this.findUserAvatar(username) : await this.findAvatarName();
 			const stream = await this.fastify.minioClient.getObject(avatarBucketName, avatar.name);
 			return { stream, contentType: avatar.contentType };
 		} catch (error) {
