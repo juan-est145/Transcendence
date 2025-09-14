@@ -3,6 +3,7 @@ import { auth } from './auth/auth';
 import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
 import { search } from './search/search';
+import { pong } from './pong/pong';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // 404 - Not Found handler
@@ -53,7 +54,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.register(auth, { prefix: "/auth" });
   fastify.register(account, { prefix: "/account" });
   fastify.register(search, { prefix: "/search" });
-
+  fastify.register(pong, { prefix: "/pong" });
 }
 
 export default root
