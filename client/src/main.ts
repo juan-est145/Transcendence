@@ -1,6 +1,6 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
-import { createScene } from './scene';
+import { createScene } from './scene/scene';
 
 const canvasEl = document.getElementById('renderCanvas');
 if (!(canvasEl instanceof HTMLCanvasElement)) {
