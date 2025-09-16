@@ -1,7 +1,7 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
 import { createScene } from './scene/scene';
-import { incrementScoreOne, incrementScoreTwo } from './scene/scores';
+import { setupScores, incrementScoreOne, incrementScoreTwo } from './scene/scores';
 
 /**
  * + Sets up the BabylonJS engine, creates the scene and contains the game loop with all the game logic
@@ -18,6 +18,7 @@ window.addEventListener('resize', function () {
 });
 
 export const { scene, paddleOne, paddleTwo, ball } = createScene(engine);
+setupScores(scene);
 
 let ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
 let paddleSpeed = 0.1;
@@ -104,8 +105,6 @@ engine.runRenderLoop(function () {
 			const paddleHalfDepth = 0.4 / 2;
 			const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
 			const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-			const ballCenterY = ball.position.y;
-			const relativeIntersect = (ballCenterY - paddleMin.y) / (paddleMax.y - paddleMin.y);
 
 			let inertiaY = 0, inertiaZ = 0;
 			if (paddle === paddleOne) {
@@ -117,10 +116,9 @@ engine.runRenderLoop(function () {
 			}
 
 			//Have to check if 0.2 is good or if it needs more
-			const direction = (relativeIntersect < 0.5 ? -1 : 1);
-			ballVelocity.y = direction * Math.abs(ballVelocity.y) + inertiaY * 0.2;
+			ballVelocity.y += inertiaY * 0.2;
+			ballVelocity.z += inertiaZ * 0.2;
 
-			ballVelocity.z += inertiaZ * 0.5;
 			if (paddle === paddleOne) {
 				ballVelocity.x = Math.abs(ballVelocity.x) * 1.1;
 				ball.position.x = paddleMax.x + 0.11;
