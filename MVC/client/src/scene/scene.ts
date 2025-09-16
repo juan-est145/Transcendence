@@ -9,7 +9,7 @@ import type { PaddleConstructor } from './scene.type';
 export function createScene (engine: BABYLON.Engine) {
 	const scene = new BABYLON.Scene(engine);
 	
-	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -8), scene);
+	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -5), scene);
 	camera.setTarget(new BABYLON.Vector3(0, 1, 0));
 	camera.fov = 1.1;
 
