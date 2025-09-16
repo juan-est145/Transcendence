@@ -11,24 +11,35 @@ export async function oauth42(fastify: FastifyInstance) {
     return res.redirect(url);
   });
 
-  fastify.get<{ Querystring: { code?: string } }>("/auth/42/callback", async (req, res) => {
-    const code = req.query.code as string;
-    if (!code) {
-      return res.status(400).send("Missing code");
-    }
+fastify.get<{ Querystring: { code?: string } }>("/auth/42/callback", async (req, res) => {
+  const code = req.query.code;
+  if (!code) {
+    return res.status(400).send("Missing code");
+  }
 
-    try {
-      const tokenRes = await axios.post("https://api.intra.42.fr/oauth/token", null, {
-        params: {
-          grant_type: "authorization_code",
-          client_id: OAUTH42_CLIENT_ID,
-          client_secret: OAUTH42_CLIENT_SECRET,
-          code,
-          redirect_uri: OAUTH42_REDIRECT_URI,
-        },
-      });
-      const accessToken = tokenRes.data.access_token;
-      return res.send({ accessToken });
+  try {
+    const tokenRes = await axios.post("https://api.intra.42.fr/oauth/token", null, {
+      params: {
+        grant_type: "authorization_code",
+        client_id: OAUTH42_CLIENT_ID,
+        client_secret: OAUTH42_CLIENT_SECRET,
+        code,
+        redirect_uri: OAUTH42_REDIRECT_URI,
+      },
+    });
+    const accessToken = tokenRes.data.access_token;
+
+    const userRes = await axios.get("https://api.intra.42.fr/v2/me", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const user = userRes.data;
+
+    return res.send({
+      accessToken,
+      id: user.id,
+      username: user.login,
+      email: user.email
+    });
     } catch (err) {
       return res.status(500).send("OAuth2 error");
     }
