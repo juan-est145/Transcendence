@@ -1,7 +1,11 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
 import { createScene } from './scene/scene';
+import { incrementScoreOne, incrementScoreTwo } from './scene/scores';
 
+/**
+ * + Sets up the BabylonJS engine, creates the scene and contains the game loop with all the game logic
+ */
 const canvasEl = document.getElementById('renderCanvas');
 if (!(canvasEl instanceof HTMLCanvasElement)) {
     throw new Error("Canvas element not found or not a canvas");
@@ -9,57 +13,24 @@ if (!(canvasEl instanceof HTMLCanvasElement)) {
 const canvas: HTMLCanvasElement = canvasEl;
 const engine = new BABYLON.Engine(canvas, true);
 (window as any).earcut = earcut; 
-
 window.addEventListener('resize', function () {
 	engine.resize();
 });
-const { scene, paddleOne, paddleTwo, ball } = createScene(engine);
 
-let scoreOne = 0;
-let scoreTwo = 0;
-
-const scoreOneDT = new BABYLON.DynamicTexture("scoreOneDT", {width:256, height:128}, scene, false);
-scoreOneDT.hasAlpha = true;
-scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-const scoreTwoDT = new BABYLON.DynamicTexture("scoreTwoDT", {width:256, height:128}, scene, false);
-scoreTwoDT.hasAlpha = true;
-scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-const scoreOnePlane = BABYLON.MeshBuilder.CreatePlane("scoreOnePlane", {width:2, height:1}, scene);
-scoreOnePlane.position = new BABYLON.Vector3(-2.5, 1.8, 0.2);
-scoreOnePlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
-const scoreOneMat = new BABYLON.StandardMaterial("scoreOneMat", scene);
-scoreOneMat.diffuseTexture = scoreOneDT;
-scoreOneMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-scoreOneMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
-scoreOneMat.backFaceCulling = false;
-scoreOneMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
-scoreOnePlane.material = scoreOneMat;
-
-const scoreTwoPlane = BABYLON.MeshBuilder.CreatePlane("scoreTwoPlane", {width:2, height:1}, scene);
-scoreTwoPlane.position = new BABYLON.Vector3(2.5, 1.8, 0.2);
-scoreTwoPlane.scaling = new BABYLON.Vector3(0.7, 0.7, 1);
-const scoreTwoMat = new BABYLON.StandardMaterial("scoreTwoMat", scene);
-scoreTwoMat.diffuseTexture = scoreTwoDT;
-scoreTwoMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-scoreTwoMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.3);
-scoreTwoMat.backFaceCulling = false;
-scoreTwoMat.transparencyMode = BABYLON.Material.MATERIAL_ALPHABLEND;
-scoreTwoPlane.material = scoreTwoMat;
-
-function updateScores() {
-    scoreOneDT.clear();
-    scoreOneDT.drawText(scoreOne.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-
-    scoreTwoDT.clear();
-    scoreTwoDT.drawText(scoreTwo.toString(), 80, 90, "bold 64px 'Press Start 2P', Courier New", "lightgrey", "#010123ff", true);
-}
+export const { scene, paddleOne, paddleTwo, ball } = createScene(engine);
 
 let ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
 let paddleSpeed = 0.1;
 let paddleOneDir = 0;
 let paddleTwoDir = 0;
+let lastPaddleOneY = paddleOne.position.y;
+let lastPaddleTwoY = paddleTwo.position.y;
+let lastPaddleOneZ = paddleOne.position.z;
+let lastPaddleTwoZ = paddleTwo.position.z;
+let paddleOneVelocityY = 0;
+let paddleTwoVelocityY = 0;
+let paddleOneVelocityZ = 0;
+let paddleTwoVelocityZ = 0;
 
 window.addEventListener('keydown', function (event) {
 	if (event.key == "w")
@@ -79,6 +50,12 @@ window.addEventListener('keyup', function (event) {
 		paddleTwoDir = 0;
 });
 
+/**
+ * Checks for ball collision with paddles, walls and checks if it has crossed the scoring borders
+ * @param ball 
+ * @param paddle 
+ * @returns 
+ */
 function isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh) {
     const paddleHalfWidth = 0.1 / 2;
 	const paddleHalfHeight = 0.6 / 2;
@@ -95,15 +72,9 @@ function isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh) {
     );
 }
 
-let lastPaddleOneY = paddleOne.position.y;
-let lastPaddleTwoY = paddleTwo.position.y;
-let lastPaddleOneZ = paddleOne.position.z;
-let lastPaddleTwoZ = paddleTwo.position.z;
-let paddleOneVelocityY = 0;
-let paddleTwoVelocityY = 0;
-let paddleOneVelocityZ = 0;
-let paddleTwoVelocityZ = 0;
-
+/**
+ * Main game loop, updates positions, checks for collisions and scores and renders the scene
+ */
 engine.runRenderLoop(function () {
     const paddleMargin = 0.05;
     paddleOneVelocityY = paddleOne.position.y - lastPaddleOneY;
@@ -122,6 +93,10 @@ engine.runRenderLoop(function () {
     if (ball.position.y < 0.2 || ball.position.y > 2.8) 
         ballVelocity.y *= -1;
 
+	/** 
+	 * Handles ball collision with paddles, including paddle inertia effect
+	 * and increases ball speed slightly on each hit calling isColliding to check and then updating ballVelocity accordingly
+	 */
     [paddleOne, paddleTwo].forEach(paddle => {
 		if (isColliding(ball, paddle)) {
 			const paddleHalfWidth = 0.1 / 2;
@@ -157,15 +132,13 @@ engine.runRenderLoop(function () {
 	});
 
 	if (ball.position.x < -4.8) {
-        scoreTwo++;
-        updateScores();
+        incrementScoreTwo();
         ball.position.x = 0;
         ball.position.y = 1;
         ball.position.z = 0;
         ballVelocity = new BABYLON.Vector3(0.05 * (Math.random() > 0.5 ? 1 : -1), 0.05 * (Math.random() > 0.5 ? 1 : -1), 0);
     } else if (ball.position.x > 4.8) {
-        scoreOne++;
-        updateScores();
+        incrementScoreOne();
         ball.position.x = 0;
         ball.position.y = 1;
         ball.position.z = 0;

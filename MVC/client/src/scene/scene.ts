@@ -1,6 +1,11 @@
 import * as BABYLON from '@babylonjs/core';
 import type { PaddleConstructor } from './scene.type';
 
+/**
+ * Creates the main scene with paddles, enviroment and ball, renders it and returns the scene object
+ * @param engine 
+ * @returns 
+ */
 export function createScene (engine: BABYLON.Engine) {
 	const scene = new BABYLON.Scene(engine);
 	
