@@ -11,7 +11,8 @@ export function createScene (engine: BABYLON.Engine) {
 	
 	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -5), scene);
 	camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-	camera.fov = 1.1;
+	camera.fov = 1.5;
+	camera.mode = BABYLON.Camera.PERSPECTIVE_CAMERA
 
 	const paddleOne = createPaddle(scene, {
 		paddleName: "paddleOne",

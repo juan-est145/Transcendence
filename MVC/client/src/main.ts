@@ -66,6 +66,15 @@ function isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh) {
     const ballMin = ball.position.subtract(new BABYLON.Vector3(0.1, 0.1, 0.1));
     const ballMax = ball.position.add(new BABYLON.Vector3(0.1, 0.1, 0.1));
 
+	if (ball.position.y < 0.22) {
+        ball.position.y = 0.22;
+        ballVelocity.y = Math.abs(ballVelocity.y);
+    } else if (ball.position.y > 2.78) {
+        ball.position.y = 2.78;
+        ballVelocity.y = -Math.abs(ballVelocity.y);
+    }
+
+
     return (
         ballMin.x <= paddleMax.x && ballMax.x >= paddleMin.x &&
         ballMin.y <= paddleMax.y && ballMax.y >= paddleMin.y &&
@@ -98,36 +107,54 @@ engine.runRenderLoop(function () {
 	 * Handles ball collision with paddles, including paddle inertia effect
 	 * and increases ball speed slightly on each hit calling isColliding to check and then updating ballVelocity accordingly
 	 */
-    [paddleOne, paddleTwo].forEach(paddle => {
-		if (isColliding(ball, paddle)) {
-			const paddleHalfWidth = 0.1 / 2;
-			const paddleHalfHeight = 0.6 / 2;
-			const paddleHalfDepth = 0.4 / 2;
-			const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
-			const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+    [ paddleOne, paddleTwo ].forEach(paddle => {
+    if (isColliding(ball, paddle)) {
+        const paddleHalfWidth = 0.1 / 2;
+        const paddleHalfHeight = 0.6 / 2;
+        const paddleHalfDepth = 0.4 / 2;
+        const paddleMin = paddle.position.subtract(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+        const paddleMax = paddle.position.add(new BABYLON.Vector3(paddleHalfWidth, paddleHalfHeight, paddleHalfDepth));
+		const maxVerSpeed = 0.18;
 
-			let inertiaY = 0, inertiaZ = 0;
-			if (paddle === paddleOne) {
-				inertiaY = paddleOneVelocityY;
-				inertiaZ = paddleOneVelocityZ;
-			} else {
-				inertiaY = paddleTwoVelocityY;
-				inertiaZ = paddleTwoVelocityZ;
-			}
+        let inertiaY = 0, inertiaZ = 0;
+        if (paddle === paddleOne) {
+            inertiaY = paddleOneVelocityY;
+            inertiaZ = paddleOneVelocityZ;
+        } else {
+            inertiaY = paddleTwoVelocityY;
+            inertiaZ = paddleTwoVelocityZ;
+        }
 
-			//Have to check if 0.2 is good or if it needs more
-			ballVelocity.y += inertiaY * 0.2;
-			ballVelocity.z += inertiaZ * 0.2;
+        const hitPointY = (ball.position.y - paddle.position.y) / paddleHalfHeight;
 
-			if (paddle === paddleOne) {
-				ballVelocity.x = Math.abs(ballVelocity.x) * 1.1;
-				ball.position.x = paddleMax.x + 0.11;
-			} else {
-				ballVelocity.x = -Math.abs(ballVelocity.x) * 1.1;
-				ball.position.x = paddleMin.x - 0.11;
-			}
+        if (hitPointY < 0 && inertiaY > 0) {
+            ballVelocity.y = Math.abs(ballVelocity.y) + inertiaY * 0.2;
+        } else if (hitPointY > 0 && inertiaY < 0) {
+            ballVelocity.y = -Math.abs(ballVelocity.y) + inertiaY * 0.2;
+        } else {
+            ballVelocity.y += hitPointY * 0.05 + inertiaY * 0.2;
+        }
+        ballVelocity.z += inertiaZ * 0.2;
+		if (Math.abs(ballVelocity.y) > maxVerSpeed) {
+			ballVelocity.y = (ballVelocity.y >= 0 ? 1 : -1) * maxVerSpeed;
 		}
-	});
+		if (Math.abs(ballVelocity.z) > maxVerSpeed) {
+			ballVelocity.z = (ballVelocity.z >= 0 ? 1 : -1) * maxVerSpeed;
+		}
+
+        if (paddle === paddleOne) {
+            ballVelocity.x = Math.abs(ballVelocity.x) * 1.1;
+            ball.position.x = paddleMax.x + 0.11;
+        } else {
+            ballVelocity.x = -Math.abs(ballVelocity.x) * 1.1;
+            ball.position.x = paddleMin.x - 0.11;
+        }
+
+		if (Math.abs(ballVelocity.y) < 0.01) {
+			ballVelocity.y = (ballVelocity.y >= 0 ? 1 : -1) * 0.02;
+		}
+    }
+});
 
 	if (ball.position.x < -4.8) {
         incrementScoreTwo();
