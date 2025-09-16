@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyInstance, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import fs from 'node:fs'
+import { oauth42 } from './routes/auth/oauth42'
 
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
@@ -25,6 +26,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
 ): Promise<void> => {
   // Place here your custom code!
 
+  // Register OAuth2 pluging
+  await oauth42(fastify);
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
