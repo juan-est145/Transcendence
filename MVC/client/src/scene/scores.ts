@@ -64,10 +64,16 @@ export function setupScores(scene: BABYLON.Scene) {
 
 function updateScores() {
 	scoreOneDT.clear();
-	scoreOneDT.drawText(scoreOne.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+    if (scoreOne < 10)
+	    scoreOneDT.drawText(scoreOne.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+    else
+        scoreOneDT.drawText(scoreOne.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
 
 	scoreTwoDT.clear();
-	scoreTwoDT.drawText(scoreTwo.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+    if (scoreTwo < 10)
+        scoreTwoDT.drawText(scoreTwo.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+    else
+        scoreTwoDT.drawText(scoreTwo.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
 }
 
 export function incrementScoreOne() {
