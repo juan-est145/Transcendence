@@ -22,15 +22,17 @@ setupScores(scene);
 
 let ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
 let paddleSpeed = 0.1;
-let paddleOneDir = 0;
-let paddleTwoDir = 0;
+
 let lastPaddleOneY = paddleOne.position.y;
-let lastPaddleTwoY = paddleTwo.position.y;
 let lastPaddleOneZ = paddleOne.position.z;
-let lastPaddleTwoZ = paddleTwo.position.z;
+let paddleOneDir = 0;
 let paddleOneVelocityY = 0;
-let paddleTwoVelocityY = 0;
 let paddleOneVelocityZ = 0;
+
+let lastPaddleTwoY = paddleTwo.position.y;
+let lastPaddleTwoZ = paddleTwo.position.z;
+let paddleTwoDir = 0;
+let paddleTwoVelocityY = 0;
 let paddleTwoVelocityZ = 0;
 
 window.addEventListener('keydown', function (event) {
@@ -87,16 +89,17 @@ function isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh) {
  */
 engine.runRenderLoop(function () {
     const paddleMargin = 0.05;
-    paddleOneVelocityY = paddleOne.position.y - lastPaddleOneY;
-    paddleTwoVelocityY = paddleTwo.position.y - lastPaddleTwoY;
-    paddleOneVelocityZ = paddleOne.position.z - lastPaddleOneZ;
-    paddleTwoVelocityZ = paddleTwo.position.z - lastPaddleTwoZ;
-    lastPaddleOneY = paddleOne.position.y;
-    lastPaddleTwoY = paddleTwo.position.y;
-    lastPaddleOneZ = paddleOne.position.z;
-    lastPaddleTwoZ = paddleTwo.position.z;
 
+    paddleOneVelocityY = paddleOne.position.y - lastPaddleOneY;
+    paddleOneVelocityZ = paddleOne.position.z - lastPaddleOneZ;
+    lastPaddleOneY = paddleOne.position.y;
+    lastPaddleOneZ = paddleOne.position.z;
     paddleOne.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleOne.position.y + paddleSpeed * paddleOneDir));
+
+    paddleTwoVelocityY = paddleTwo.position.y - lastPaddleTwoY;
+    paddleTwoVelocityZ = paddleTwo.position.z - lastPaddleTwoZ;
+    lastPaddleTwoY = paddleTwo.position.y;
+    lastPaddleTwoZ = paddleTwo.position.z;
     paddleTwo.position.y = Math.max(0.4 + paddleMargin, Math.min(2.6 - paddleMargin, paddleTwo.position.y + paddleSpeed * paddleTwoDir));
 
     ball.position.addInPlace(ballVelocity);

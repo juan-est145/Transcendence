@@ -8,11 +8,12 @@ import type { PaddleConstructor } from './scene.type';
  */
 export function createScene (engine: BABYLON.Engine) {
 	const scene = new BABYLON.Scene(engine);
-	
 	const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -5), scene);
 	camera.setTarget(new BABYLON.Vector3(0, 1, 0));
 	camera.fov = 1.5;
 	camera.mode = BABYLON.Camera.PERSPECTIVE_CAMERA
+	const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+	light.intensity = 0.9;
 
 	const paddleOne = createPaddle(scene, {
 		paddleName: "paddleOne",
@@ -51,10 +52,6 @@ export function createScene (engine: BABYLON.Engine) {
 	ballMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
 	ballMat.backFaceCulling = false;
 	ball.material = ballMat;
-
-
-	const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-	light.intensity = 0.9;
 
 	const ground = BABYLON.MeshBuilder.CreateGround("ground", {
 		width: 20,
