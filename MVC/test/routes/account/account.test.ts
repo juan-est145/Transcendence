@@ -1,18 +1,19 @@
 import { build } from "../../helper";
-import * as accountService from "../../../src/routes/account/account.service";
+import { AccountService } from "../../../src/routes/account/account.service";
+import Stream from "node:stream";
 
 const app = build();
 
 describe("Account page", () => {
+	const service = new AccountService(app);
 	beforeAll(() => {
-		jest.spyOn(accountService, "getProfileInfo").mockResolvedValue({
+		jest.spyOn(service, "getProfileInfo").mockResolvedValue({
 			username: "Somebody",
 			email: "somebody@email.com",
 			profile: {
 				id: 1,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
-				avatar: "xd",
 				online: true,
 				victories: 20,
 				defeats: 10
@@ -21,7 +22,7 @@ describe("Account page", () => {
 	});
 
 	afterAll(() => {
-		jest.spyOn(accountService, "getProfileInfo").mockRestore();
+		jest.spyOn(service, "getProfileInfo").mockRestore();
 	});
 
 	it("Render account page", async () => {
@@ -30,5 +31,39 @@ describe("Account page", () => {
 			method: "GET"
 		});
 		expect(res.statusCode).toBe(401);
+	});
+});
+
+describe("Avatar services", () => {
+	const service = new AccountService(app);
+	it("Get profile avatar", async () => {
+		const stream = new Stream.Readable();
+		const avatar = {
+			id: 1,
+			contentType: "image/png",
+			name: "prueba.png",
+		};
+
+		jest.spyOn(service, "findAvatarName").mockImplementation(() => {
+			return Promise.resolve(avatar);
+		});
+
+		jest.spyOn(app.minioClient, "getObject").mockResolvedValue(stream);
+
+		const res = await service.getProfileAvatar();
+		expect(res).toEqual({ stream, contentType: avatar.contentType });
+
+		jest.spyOn(service, "findAvatarName").mockRestore();
+		jest.spyOn(app.minioClient, "getObject").mockRestore();
+	});
+
+	it("Get file extension", () => {
+		const fileExten = service.getFileExtension("prueba.pdf");
+		const noExten = service.getFileExtension("nothing");
+		const multipleExten = service.getFileExtension("otro.png.jpg.gif");
+
+		expect(fileExten).toBe(".pdf");
+		expect(noExten).toBe("");
+		expect(multipleExten).toBe(".gif");
 	});
 });

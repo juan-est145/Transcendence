@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>
+		<%= title %>
+	</title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen">
+	<%- include("components/navbar.ejs") %>
+
+		<div class="container mx-auto px-6 py-8">
+			<!-- Profile Header -->
+			<div class="bg-gray-800 rounded-lg p-6 mb-8">
+				<div class="flex items-center justify-between">
+					<div class="flex items-center space-x-6">
+						<img src="<%= `/account/avatar/${userProfile.username}` || '/images/default-avatar.png' %>"
+							alt="<%= userProfile.username %>" class="w-24 h-24 rounded-full border-4 border-blue-500" />
+						<div>
+							<h1 class="text-3xl font-bold">
+								<%= userProfile.username %>
+							</h1>
+							<p class="text-gray-400">
+								<%= userProfile.email %>
+							</p>
+							<p class="text-sm text-gray-500">
+								Member since: <%= new Date(userProfile.createdAt).toLocaleDateString() %>
+							</p>
+						</div>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="flex space-x-4">
+						<% if (user) { %>
+							<form method="POST" action="/friends/add" class="inline">
+								<input type="hidden" name="friendUsername" value="<%= userProfile.username %>" />
+								<button type="submit"
+									class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+											d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+										</path>
+									</svg>
+									<span>Add Friend</span>
+								</button>
+							</form>
+							<% } %>
+					</div>
+				</div>
+			</div>
+
+			<!-- Stats Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<div class="bg-gray-800 rounded-lg p-6 text-center">
+					<h3 class="text-2xl font-bold text-blue-400">
+						<%= userProfile.gamesPlayed || 0 %>
+					</h3>
+					<p class="text-gray-400">Games Played</p>
+				</div>
+				<div class="bg-gray-800 rounded-lg p-6 text-center">
+					<h3 class="text-2xl font-bold text-green-400">
+						<%= userProfile.wins || 0 %>
+					</h3>
+					<p class="text-gray-400">Wins</p>
+				</div>
+				<div class="bg-gray-800 rounded-lg p-6 text-center">
+					<h3 class="text-2xl font-bold text-red-400">
+						<%= userProfile.losses || 0 %>
+					</h3>
+					<p class="text-gray-400">Losses</p>
+				</div>
+			</div>
+
+			<!-- Win Rate -->
+			<% const winRateNum=userProfile.gamesPlayed> 0
+				? (userProfile.wins / userProfile.gamesPlayed) * 100
+				: 0;
+				const winRate = winRateNum.toFixed(1);
+				%>
+				<div class="bg-gray-800 rounded-lg p-6 mb-8">
+					<h3 class="text-xl font-semibold mb-4">Win Rate</h3>
+					<div class="bg-gray-700 rounded-full h-4 mb-2">
+						<div class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-500"
+							style="width: <%= winRate %>%">
+						</div>
+					</div>
+					<p class="text-center text-lg font-semibold">
+						<%= winRate %>%
+					</p>
+				</div>
+
+				<!-- Recent Games Section -->
+				<div class="bg-gray-800 rounded-lg p-6">
+					<h3 class="text-xl font-semibold mb-4">Recent Games</h3>
+					<div class="text-center text-gray-400 py-8">
+						<p>No recent games to display</p>
+					</div>
+				</div>
+		</div>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 # Mine
 MVC/db
+minio/data
 
 # Keys
 private.key
@@ -59,7 +60,9 @@ profile-*
 *code-workspace
 
 # clinic
-profile*
+profile*.log
+profile*.json
+profile*.html
 *clinic*
 *flamegraph*
 

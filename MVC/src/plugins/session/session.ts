@@ -34,3 +34,10 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 	fastify.register(fastifyCookie);
 	fastify.register(fastifySession, sessionOpts);
 });
+
+declare module 'fastify' {
+  interface Session {
+    jwt?: string;
+    refreshJwt?: string,
+  }
+}
