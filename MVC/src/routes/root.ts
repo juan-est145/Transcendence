@@ -51,6 +51,12 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     return reply.view("index.ejs", { user });
   });
 
+  fastify.get('/ws', { websocket: true }, (connection, req) => {
+    connection.on("message", (message) => {
+      connection.send(`You said ${message}`);
+    });
+  });
+
   fastify.register(auth, { prefix: "/auth" });
   fastify.register(account, { prefix: "/account" });
   fastify.register(search, { prefix: "/search" });

@@ -176,7 +176,7 @@ engine.runRenderLoop(function () {
     scene.render();
 });
 
-const ws = new WebSocket('ws://localhost:8443/ws');
+const ws = new WebSocket('wss://localhost:8443/ws');
 ws.onmessage = (event) => {
   console.log('Received:', event.data);
 };
