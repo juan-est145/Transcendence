@@ -33,7 +33,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'plugins'),
     options: opts
   })
-
+  
   // This loads all plugins defined in routes
   // define your routes in one of these
   // eslint-disable-next-line no-void

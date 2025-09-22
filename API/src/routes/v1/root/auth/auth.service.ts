@@ -11,41 +11,38 @@ import { JwtPayload } from "./auth.type";
 export class AuthService {
 	constructor(private fastify: FastifyInstance) { }
 
-	/**
-	 * This function allows for the creation of a new user in the database, alongside it's profile.
-	 * @param body - An object containing the values of the POST request. Must have the type SignInBody
-	 * @returns If successful, it returns the username and email of the new user. In case of error,
-	 * it throws a fastify http 409 error if there is already a user with that username or email
-	 * registered. Otherwise, it just sends the default prisma error.
-	 */
-	async createUser(body: SignInBody) {
-		try {
-			const result = await this.fastify.prisma.users.create({
-				data: {
-					username: body.username,
-					password: body.password,
-					email: body.email,
-					profile: {
-						create: {
-							avatar: {
-								create: {}
-							}
-						}
-					}
-				},
-				select: {
-					username: true,
-					email: true,
+/**
+ * This function allows for the creation of a new user in the database, alongside it's profile.
+ * @param fastify - The fastify instance. It is decorated with the prisma client. 
+ * @param body - An object containing the values of the POST request. Must have the type SignInBody
+ * @returns If successful, it returns the username and email of the new user. In case of error,
+ * it throws a fastify http 409 error if there is already a user with that username or email
+ * registered. Otherwise, it just sends the default prisma error.
+ */
+export async function createUser(fastify: FastifyInstance, body: SignInBody) {
+	try {
+		const result = await fastify.prisma.users.create({
+			data: {
+				username: body.username,
+				password: body.password,
+				email: body.email,
+				profile: {
+					create: {}
 				}
-			});
-			return result;
-		} catch (error) {
-			if (error instanceof PrismaClientKnownRequestError && error.code == "P2002") {
-				throw this.fastify.httpErrors.conflict("Username or email already exits");
+			},
+			select: {
+				username: true,
+				email: true,
 			}
-			throw error;
+		});
+		return result;
+	} catch (error) {
+		if (error instanceof PrismaClientKnownRequestError && error.code == "P2002") {
+			throw fastify.httpErrors.conflict("Username or email already exits");
 		}
+		throw error;
 	}
+}
 
 	/**
 	 * This function finds a user by email.
