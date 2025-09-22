@@ -18,13 +18,14 @@ services:
       target: dev
     volumes:
       - ./API:/app
+    hostname: api
     ports:
       - '4343:4343'
       - '9320:9320'
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:4343/docs/json"]
+      test: ["CMD", "curl", "-Ifk", "https://localhost:4343/docs/json"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -41,7 +42,7 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:4343/"]
+      test: ["CMD", "curl", "-Ifk", "https://localhost:4343/"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -52,8 +53,6 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    networks:
-      - lan
 
 networks:
   lan:

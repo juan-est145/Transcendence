@@ -1,5 +1,5 @@
 import { build } from "../../helper";
-import * as authService from "../../../src/routes/auth/auth.service";
+import { AuthService } from "../../../src/routes/auth/auth.service";
 import { SigInError } from "../../../src/routes/auth/auth.type";
 
 const app = build();
@@ -7,14 +7,14 @@ const app = build();
 describe("Login tests", () => {
 	beforeAll(() => {
 		jest.spyOn(app.jwt, "verify").mockReturnValue();
-		jest.spyOn(authService, "createSession").mockImplementation(() => { });
-		jest.spyOn(authService, "postLogin").mockResolvedValue({ jwt: "xd", refreshJwt: "xd" });
+		jest.spyOn(AuthService.prototype, "createSession").mockImplementation(() => { });
+		jest.spyOn(AuthService.prototype, "postLogin").mockResolvedValue({ jwt: "xd", refreshJwt: "xd" });
 	});
 
 	afterAll(() => {
 		jest.spyOn(app.jwt, "verify").mockRestore();
-		jest.spyOn(authService, "createSession").mockRestore();
-		jest.spyOn(authService, "postLogin").mockRestore();
+		jest.spyOn(AuthService.prototype, "createSession").mockRestore();
+		jest.spyOn(AuthService.prototype, "postLogin").mockRestore();
 	});
 
 	it("Get log-in page", async () => {
@@ -50,7 +50,7 @@ describe("Login tests", () => {
 	});
 
 	it("API broke and can't log in", async () => {
-		jest.spyOn(authService, "postLogin").mockImplementationOnce(() => {
+		jest.spyOn(AuthService.prototype, "postLogin").mockImplementationOnce(() => {
 			const error: SigInError = {
 				statusCode: 500,
 				httpError: "Internal server error",
@@ -85,11 +85,11 @@ describe("Login tests", () => {
 
 describe("Sign in tests", () => {
 	beforeAll(() => {
-		jest.spyOn(authService, "postSignIn").mockResolvedValue({ username: "xd", email: "xd" });
+		jest.spyOn(AuthService.prototype, "postSignIn").mockResolvedValue({ username: "xd", email: "xd" });
 	});
 
 	afterAll(() => {
-		jest.spyOn(authService, "postSignIn").mockRestore();
+		jest.spyOn(AuthService.prototype, "postSignIn").mockRestore();
 	})
 
 	it("Get sign-in page", async () => {
@@ -113,7 +113,7 @@ describe("Sign in tests", () => {
 	});
 
 	it("Sign in failure from API", async () => {
-		jest.spyOn(authService, "postSignIn").mockImplementationOnce(() => {
+		jest.spyOn(AuthService.prototype, "postSignIn").mockImplementationOnce(() => {
 			const error: SigInError = {
 				statusCode: 409,
 				httpError: "Conflict",

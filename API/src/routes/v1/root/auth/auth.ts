@@ -1,5 +1,5 @@
 import { FastifyInstance, } from "fastify";
-import { createUser, getUser, signJwt } from "./auth.service";
+import { AuthService } from "./auth.service";
 import { logInSchema, refreshSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody } from "./auth.type";
@@ -8,6 +8,8 @@ import { LogInBody, SignInBody } from "./auth.type";
  * All auth endpoints are processed here.
  */
 export async function auth(fastify: FastifyInstance) {
+	const authService = new AuthService(fastify);
+
 	/**
 	 * This route allows for the creation of new users
 	 * @param req - The fastify request instance. It must have a body property according to the SignInBody type
@@ -22,7 +24,7 @@ export async function auth(fastify: FastifyInstance) {
 	fastify.post<{ Body: SignInBody }>("/sign-in", signInSchema, async (req, res) => {
 		try {
 			req.body.password = await bcrypt.hash(req.body.password, 10);
-			const response = await createUser(fastify, req.body);
+			const response = await authService.createUser(req.body);
 			return res.code(201).send(response);
 		} catch (error) {
 			throw error;
@@ -38,10 +40,10 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.post<{ Body: LogInBody }>("/log-in", logInSchema, async (req, res) => {
 		try {
-			const user = await getUser(fastify, req.body.email);
+			const user = await authService.getUser(req.body.email);
 			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid email or password");
-			const jwt = signJwt(fastify, { username: user.username, email: user.email });
+			const jwt = authService.signJwt({ username: user.username, email: user.email });
 			return res.code(201).send(jwt);
 		} catch (error) {
 			throw error;
@@ -61,8 +63,8 @@ export async function auth(fastify: FastifyInstance) {
 		preHandler: fastify.auth([fastify.verifyRefreshJwt])
 	}, async (req, res) => {
 		try {
-			const user = await getUser(fastify, (req.user as any).email);
-			const jwt = signJwt(fastify, { username: user.username, email: user.email });
+			const user = await authService.getUser((req.user as any).email);
+			const jwt = authService.signJwt({ username: user.username, email: user.email });
 			return res.code(201).send(jwt);
 		} catch (error) {
 			throw error;
