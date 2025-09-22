@@ -175,3 +175,11 @@ engine.runRenderLoop(function () {
 
     scene.render();
 });
+
+const ws = new WebSocket('ws://localhost:8443/ws');
+ws.onmessage = (event) => {
+  console.log('Received:', event.data);
+};
+ws.onopen = () => {
+  ws.send('Hello from client!');
+};

@@ -39,6 +39,7 @@
     "@fastify/swagger-ui": "^5.2.3",
     "@fastify/view": "^11.1.0",
     "@fastify/vite": "^8.2.0",
+    "@fastify/websocket": "^11.2.0",
     "@tailwindcss/cli": "^4.1.13",
     "@types/ejs": "^3.1.5",
     "babylonjs": "^8.27.0",
