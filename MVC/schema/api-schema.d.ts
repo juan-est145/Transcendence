@@ -911,7 +911,7 @@ export interface paths {
                                 updatedAt: string;
                                 online: boolean;
                             };
-                        };
+                        }[];
                     };
                 };
                 /** @description If the jwt is not present or you try to befriend yourself, it will send a 400 response. */

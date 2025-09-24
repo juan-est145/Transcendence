@@ -27,7 +27,8 @@ export async function account(fastify: FastifyInstance) {
 	 */
 	fastify.get("/", async (req, res) => {
 		const profile = await accountService.getProfileInfo();
-		return res.view("account.ejs", { user: req.user, profile: profile.profile });
+		const friends = await accountService.getFriends();
+		return res.view("account.ejs", { user: req.user, profile: profile.profile, friends });
 	});
 
 	/**

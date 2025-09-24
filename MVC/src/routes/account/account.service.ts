@@ -144,4 +144,11 @@ export class AccountService {
 			throw error;
 		return data;
 	}
+
+	async getFriends() {
+		const { data, error } = await this.fastify.apiClient.GET("/v1/account/friends");
+		if (error)
+			throw error;
+		return data;
+	}
 }
