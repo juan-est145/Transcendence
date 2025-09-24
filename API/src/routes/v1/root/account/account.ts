@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getUserAvatarSchema, makeFriend, postAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
 import { AccountGetAvatarParam, AccountPostAvatarBody } from "./account.type";
@@ -95,8 +95,8 @@ export async function account(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
-	
-	fastify.post<{ Params: GetUserParams }>("/friends/:username", makeFriend ,async (req, res) => {
+
+	fastify.post<{ Params: GetUserParams }>("/friends/:username", makeFriendSchema, async (req, res) => {
 		try {
 			Value.Assert(getUserParams, req.params);
 			const { username } = req.params;

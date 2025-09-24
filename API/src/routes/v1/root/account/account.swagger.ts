@@ -205,7 +205,7 @@ export const getUserAvatarSchema: RouteShorthandOptions = {
 	}
 };
 
-export const makeFriend: RouteShorthandOptions = {
+export const makeFriendSchema: RouteShorthandOptions = {
 	schema: {
 		security: [{ bearerAuth: [] }],
 		tags: [accountTag],
