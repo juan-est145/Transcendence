@@ -172,6 +172,8 @@ export class AccountService {
 		try {
 			const userAccount = await this.getAccount(jwtPayload);
 			const newFriend = await this.usersService?.getUserByUsername(username);
+			if (!newFriend)
+				throw this.fastify.httpErrors.notFound("Username does not exist");
 			const userId = userAccount.profile.id;
 			const newFriendId = newFriend!.id;
 			if (userId === newFriendId)

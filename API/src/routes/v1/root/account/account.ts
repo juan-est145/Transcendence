@@ -1,11 +1,15 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getUserAvatarSchema, postAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getUserAvatarSchema, makeFriend, postAvatarSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
 import { AccountGetAvatarParam, AccountPostAvatarBody } from "./account.type";
 import { AuthService } from "../auth/auth.service";
 import { GetUserParams } from "../users/users.type";
 import { UsersService } from "../users/users.service";
+import { Value } from "@sinclair/typebox/value";
+import { accountGetAvatarParam } from "./account.dto";
+import { TypeBoxError } from "@sinclair/typebox";
+import { getUserParams } from "../users/users.dto";
 
 /**
  * This module deals with the user's account
@@ -80,23 +84,30 @@ export async function account(fastify: FastifyInstance) {
 	 */
 	fastify.get<{ Params: AccountGetAvatarParam }>("/avatar/:username", getUserAvatarSchema, async (req, res) => {
 		try {
+			Value.Assert(accountGetAvatarParam, req.params);
 			const { username } = req.params;
 			const result = await accountService.getUserAvatar(username);
 			return res.send(result);
 		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
 			throw error;
 		}
 	});
 	
-	fastify.post<{ Params: GetUserParams }>("/friends/:username", async (req, res) => {
+	fastify.post<{ Params: GetUserParams }>("/friends/:username", makeFriend ,async (req, res) => {
 		try {
+			Value.Assert(getUserParams, req.params);
 			const { username } = req.params;
 			const jwtPayload: JwtPayload = await req.jwtDecode();
 			const result = await accountService.makeFriend(jwtPayload, username);
-			return res.send(result);
+			return res.status(201).send(result);
 		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
 			throw error;
 		}
-		
 	});
 }

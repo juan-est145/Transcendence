@@ -35,3 +35,12 @@ export const accountPostAvatarRes = Type.Intersect([
 export const accountGetAvatarParam = Type.Object({
 	username,
 });
+
+export const makeFriendRes = Type.Object({
+	user1Id: Type.Number({ minimum: 0 }),
+	user2Id: Type.Number({ minimum: 0 }),
+	status: Type.Enum({
+		FIRST_PENDING: "FIRST_PENDING",
+		SECOND_PENDING: "SECOND_PENDING",
+	}),
+})
