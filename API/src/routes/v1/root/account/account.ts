@@ -4,12 +4,15 @@ import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
 import { AccountGetAvatarParam, AccountPostAvatarBody } from "./account.type";
 import { AuthService } from "../auth/auth.service";
+import { GetUserParams } from "../users/users.type";
+import { UsersService } from "../users/users.service";
 
 /**
  * This module deals with the user's account
  */
 export async function account(fastify: FastifyInstance) {
 	const accountService = new AccountService(fastify, new AuthService(fastify));
+	accountService.setUsersService(new UsersService(fastify, accountService));
 
 	/**
 	 * This entire module requires the user to be logged in in order to be able to access and
@@ -83,5 +86,17 @@ export async function account(fastify: FastifyInstance) {
 		} catch (error) {
 			throw error;
 		}
+	});
+	
+	fastify.post<{ Params: GetUserParams }>("/friends/:username", async (req, res) => {
+		try {
+			const { username } = req.params;
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const result = await accountService.makeFriend(jwtPayload, username);
+			return res.send(result);
+		} catch (error) {
+			throw error;
+		}
+		
 	});
 }

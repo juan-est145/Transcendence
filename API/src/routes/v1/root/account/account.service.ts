@@ -3,6 +3,7 @@ import { JwtPayload } from "../auth/auth.type";
 import { AccountPostAvatarBody, AccountRes, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthService } from "../auth/auth.service";
+import { UsersService } from "../users/users.service";
 
 /**
  * This class acepts the following parameters:
@@ -10,9 +11,10 @@ import { AuthService } from "../auth/auth.service";
  * @param authService - The Auth service class.
  */
 export class AccountService {
+	private usersService?: UsersService;
 	constructor(
 		private fastify: FastifyInstance,
-		private authService: AuthService
+		private authService: AuthService,
 	) { }
 
 	/**
@@ -155,5 +157,39 @@ export class AccountService {
 				throw this.fastify.httpErrors.notFound();
 			throw error;
 		}
+	}
+
+	/**
+	 * This function creates a new friendship relation between two users.
+	 * @param jwtPayload - A JWT payload that identifies the person that send's the request first.
+	 * @param username - The username of the friend he wishes to befriend.
+	 * @returns A JSON object representing the status of the new relation.
+	 * @remarks It is IMPERATIVE, that in this kind of relations, the smallest id is always the one
+	 * that must be placed at user1Id in order to avoid duplicates. That it is why at inserting the
+	 * data, it checks the smallest number to set the values appropietly
+	 */
+	async makeFriend(jwtPayload: JwtPayload, username: string) {
+		try {
+			const userAccount = await this.getAccount(jwtPayload);
+			const newFriend = await this.usersService?.getUserByUsername(username);
+			const userId = userAccount.profile.id;
+			const newFriendId = newFriend!.id;
+			if (userId === newFriendId)
+				throw this.fastify.httpErrors.badRequest("Can't make a friend of yourself");
+			const result = this.fastify.prisma.friends.create({
+				data: {
+					user1Id: userId < newFriendId ? userId: newFriendId,
+					user2Id: userId < newFriendId? newFriendId: userId,
+					status: userId < newFriendId ? "SECOND_PENDING" : "FIRST_PENDING",
+				}
+			});
+			return result;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	setUsersService(usersService: UsersService) {
+		this.usersService = usersService;
 	}
 }
