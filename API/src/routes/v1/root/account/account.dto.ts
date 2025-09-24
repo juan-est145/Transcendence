@@ -36,11 +36,29 @@ export const accountGetAvatarParam = Type.Object({
 	username,
 });
 
+const status = Type.Enum({
+	FIRST_PENDING: "FIRST_PENDING",
+	SECOND_PENDING: "SECOND_PENDING",
+	FRIENDS: "FRIENDS",
+});
+
 export const makeFriendRes = Type.Object({
 	user1Id: Type.Number({ minimum: 0 }),
 	user2Id: Type.Number({ minimum: 0 }),
-	status: Type.Enum({
-		FIRST_PENDING: "FIRST_PENDING",
-		SECOND_PENDING: "SECOND_PENDING",
+	status,
+});
+
+export const getFriendsRes = Type.Array(
+	Type.Object({
+		id: Type.Number({ minimum: 0 }),
+		status,
+		profile: Type.Object({
+			username,
+			id: Type.Number(),
+			createdAt: Type.String({ format: "date-time" }),
+			updatedAt: Type.String({ format: "date-time" }),
+			online: Type.Boolean(),
+		}),
 	}),
-})
+);
+

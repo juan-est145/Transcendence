@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
-import { AccountPostAvatarBody, AccountRes, GetAccntQuery } from "./account.type";
+import { AccountPostAvatarBody, AccountRes, FriendWithProfiles, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
@@ -26,7 +26,6 @@ export class AccountService {
 	 * it throws it, for it to be catched elsewhere.
 	 */
 	async getAccount(jwtPayload: JwtPayload) {
-		// TO DO: Later on, we must include friends.
 		try {
 			const query = await this.fastify.prisma.users.findUniqueOrThrow({
 				where: {
@@ -180,8 +179,8 @@ export class AccountService {
 				throw this.fastify.httpErrors.badRequest("Can't make a friend of yourself");
 			const result = this.fastify.prisma.friends.create({
 				data: {
-					user1Id: userId < newFriendId ? userId: newFriendId,
-					user2Id: userId < newFriendId? newFriendId: userId,
+					user1Id: userId < newFriendId ? userId : newFriendId,
+					user2Id: userId < newFriendId ? newFriendId : userId,
 					status: userId < newFriendId ? "SECOND_PENDING" : "FIRST_PENDING",
 				}
 			});
@@ -193,5 +192,59 @@ export class AccountService {
 
 	setUsersService(usersService: UsersService) {
 		this.usersService = usersService;
+	}
+
+	async getFriends(jwtPayload: JwtPayload) {
+		try {
+			const { profile } = await this.getAccount(jwtPayload);
+			const friendIds = await this.fastify.prisma.friends.findMany({
+				where: {
+					OR: [
+						{ user1Id: profile.id },
+						{ user2Id: profile.id },
+					],
+				},
+				include: {
+					user1: {
+						include: {
+							user: {
+								select: {
+									username: true
+								}
+							}
+						}
+					},
+					user2: {
+						include: {
+							user: {
+								select: {
+									username: true
+								}
+							}
+						}
+					}
+				}
+			});
+			return this.filterFriendInfo(friendIds, profile.id);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	filterFriendInfo(friends: FriendWithProfiles[], userId: number) {
+		const result = friends.map((elements) => {
+			const id = elements.user1Id === userId ? elements.user2Id : elements.user1Id;
+			const profile = elements.user1Id === userId ? elements.user2 : elements.user1;
+			const { user, ...restProfile } = profile;
+			return {
+				id,
+				status: elements.status,
+				profile: {
+					...restProfile,
+					username: user.username
+				},
+			};
+		});
+		return result;
 	}
 }

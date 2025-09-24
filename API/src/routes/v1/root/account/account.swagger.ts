@@ -1,5 +1,5 @@
 import { RouteShorthandOptions } from "fastify";
-import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes, makeFriendRes } from "./account.dto";
+import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes, getFriendsRes, makeFriendRes } from "./account.dto";
 import { generalError } from "../root.dto";
 
 const accountTag = "Account";
@@ -229,6 +229,48 @@ export const makeFriendSchema: RouteShorthandOptions = {
 			},
 			404: {
 				description: "If the username does not exist, it returns a 404 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const getFriendsSchema: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This route returns a list of friends and friend requests of the logged in user",
+		response: {
+			200: {
+				description: "It returns an array with all friends and friend requet's of the logged in user",
+				content: {
+					"application/json": {
+						schema: getFriendsRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to befriend yourself, it will send a 400 response.",
 				content: {
 					"application/json": {
 						schema: generalError,
