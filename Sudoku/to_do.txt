@@ -1,0 +1,2 @@
+Puzzles estarem dentro da DB
+O resultado do sudoku colocar na DB gerando puzzles infinitos
