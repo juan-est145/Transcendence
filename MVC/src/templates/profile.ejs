@@ -37,7 +37,7 @@
 					<!-- Action Buttons -->
 					<div class="flex space-x-4">
 						<% if (user) { %>
-							<form method="POST" action="/friends/add" class="inline">
+							<form method="POST" action=<%= `/friends/add/${userProfile.username}` %>  class="inline">
 								<input type="hidden" name="friendUsername" value="<%= userProfile.username %>" />
 								<button type="submit"
 									class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
