@@ -3,18 +3,21 @@
 	<li class="text-gray-400 list-none text-center">No friends yet.</li>
 	<% } else { %>
 			<% friends.forEach(element => { %>
-				<li class="flex items-center gap-3 list-none text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
-					<img src="<%= `/account/avatar/${element.profile.username}` || '/images/default-avatar.png' %>"  alt="Friend Avatar"
-						class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
-					<span class="text-lg"><%= element.profile.username %></span>
-					<% if (element.status === "FRIENDS" && element.profile.online) { %>
-						<span class="bg-blue-600 p-2 rounded-full font-semibold ml-2">Online</span>
-					<% } else if (element.status === "FRIENDS" && !element.profile.online) { %>
-						<span class="bg-black p-2 rounded-full font-semibold ml-2">Offline</span>
-					<% } else { %>
-						<span class="bg-indigo-600 p-2 rounded-full font-semibold ml-2">Pending</span>
-					<% }%>
-				</li>
+				<a href=<%= `/search/user/${element.profile.username}` %>>
+					<li class="flex items-center gap-3 list-none text-ellipsis overflow-x-auto rounded-md border-b-1 hover:bg-gray-600 border-gray-500 transition p-2">
+						<img src="<%= `/account/avatar/${element.profile.username}` || '/images/default-avatar.png' %>"  alt="Friend Avatar"
+							class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
+						<span class="text-lg"><%= element.profile.username %></span>
+						<% if (element.status === "FRIENDS" && element.profile.online) { %>
+							<span class="bg-blue-600 p-2 rounded-full font-semibold ml-2">Online</span>
+						<% } else if (element.status === "FRIENDS" && !element.profile.online) { %>
+							<span class="bg-black p-2 rounded-full font-semibold ml-2">Offline</span>
+						<% } else { %>
+							<span class="bg-indigo-600 p-2 rounded-full font-semibold ml-2">Pending</span>
+						<% }%>
+					</li>
+				</a>
+				
 			<% }); %>
 	<% } %>
 </ul>
