@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
 import { AccountGetAvatarParam, AccountPostAvatarBody } from "./account.type";
@@ -117,6 +117,20 @@ export async function account(fastify: FastifyInstance) {
 			const result = await accountService.getFriends(jwtPayload);
 			return res.send(result);
 		} catch (error) {
+			throw error;
+		}
+	});
+
+	fastify.get<{ Params: GetUserParams }>("/friendship/:username", getFriendRelation, async (req, res) => {
+		try {
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const { username } = req.params;
+			const result = await accountService.checkFriendRelation(jwtPayload, username);
+			return res.send(result);
+		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
 			throw error;
 		}
 	});

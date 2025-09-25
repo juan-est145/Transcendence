@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
-import { AccountPostAvatarBody, AccountRes, FriendWithProfiles, GetAccntQuery } from "./account.type";
+import { AccountPostAvatarBody, AccountRes, FriendRelation, FriendWithProfiles, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
@@ -249,5 +249,73 @@ export class AccountService {
 			};
 		});
 		return result;
+	}
+
+	async checkFriendRelation(jwtPayload: JwtPayload, username: string): Promise<FriendRelation> {
+		try {
+			const { profile } = await this.getAccount(jwtPayload);
+			const otherUser = await this.usersService?.getUserByUsername(username);
+			if (!otherUser)
+				throw this.fastify.httpErrors.notFound(`The searched username: ${username}, does not exist`);
+			else if (profile.id === otherUser.id)
+				throw this.fastify.httpErrors.badRequest("You cannot search yourself as friend");
+			const smallerId = profile.id > otherUser.id ? otherUser.id : profile.id;
+			const biggerId = profile.id > otherUser.id ? profile.id : otherUser.id;
+			const query = await this.fastify.prisma.friends.findUnique({
+				where: {
+					user1Id_user2Id: {
+						user1Id: smallerId,
+						user2Id: biggerId
+					}
+				},
+				select: {
+					status: true,
+					user1: {
+						select: {
+							user: {
+								select: {
+									username: true,
+									id: true,
+								}
+							}
+						}
+					},
+					user2: {
+						select: {
+							user: {
+								select: {
+									username: true,
+									id: true,
+								}
+							}
+						}
+					}
+				}
+			});
+			if (!query) {
+				return {
+					user1: {
+						id: smallerId,
+						username: smallerId === profile.id ? jwtPayload.username : otherUser.username,
+					},
+					user2: {
+						id: biggerId,
+						username: biggerId === profile.id ? jwtPayload.username : otherUser.username,
+					},
+					status: "NOT_FRIENDS"
+				}
+			}
+			return {
+				user1: {
+					...query.user1.user
+				},
+				user2: {
+					...query.user2.user,
+				},
+				status: query.status,
+			};
+		} catch (error) {
+			throw error;
+		}
 	}
 }

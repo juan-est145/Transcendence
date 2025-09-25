@@ -42,6 +42,13 @@ const status = Type.Enum({
 	FRIENDS: "FRIENDS",
 });
 
+const extendedStatus = Type.Enum({
+	FIRST_PENDING: "FIRST_PENDING",
+	SECOND_PENDING: "SECOND_PENDING",
+	FRIENDS: "FRIENDS",
+	NOT_FRIENDS: "NOT_FRIENDS",
+});
+
 export const makeFriendRes = Type.Object({
 	user1Id: Type.Number({ minimum: 0 }),
 	user2Id: Type.Number({ minimum: 0 }),
@@ -62,3 +69,14 @@ export const getFriendsRes = Type.Array(
 	}),
 );
 
+export const getRelationRes = Type.Object({
+	user1: Type.Object({
+		id: Type.Number({ minimum: 0 }),
+		username
+	}),
+	user2: Type.Object({
+		id: Type.Number({ minimum: 0 }),
+		username
+	}),
+	status: extendedStatus
+});
