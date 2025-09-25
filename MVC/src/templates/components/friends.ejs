@@ -1,9 +1,9 @@
 <ul class="space-y-3"></ul>
 <% if (friends.length <=0) { %>
-	<li class="text-gray-400 text-center">No friends yet.</li>
+	<li class="text-gray-400 list-none text-center">No friends yet.</li>
 	<% } else { %>
 			<% friends.forEach(element => { %>
-				<li class="flex items-center gap-3 text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
+				<li class="flex items-center gap-3 list-none text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
 					<img src="<%= `/account/avatar/${element.profile.username}` || '/images/default-avatar.png' %>"  alt="Friend Avatar"
 						class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
 					<span class="text-lg"><%= element.profile.username %></span>

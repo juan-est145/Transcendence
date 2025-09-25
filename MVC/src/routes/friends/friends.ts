@@ -27,10 +27,14 @@ export async function friends(fastify: FastifyInstance) {
 			};
 			if (error instanceof ZodError) {
 				ejsVariables.errors = error.issues.map((element) => element.message);
-				return res.send(400).view("search", ejsVariables);
+				return res.status(400).view("search", ejsVariables);
 			}
 			else if ((error as AddFriendsError).statusCode && (error as AddFriendsError).statusCode === 404)
 				throw httpErrors.notFound();
+			else if ((error as AddFriendsError).statusCode && (error as AddFriendsError).statusCode === 409) {
+				ejsVariables.errors = ["You are trying to add an established friendship or a pending one"];
+				return res.status(409).view("search", ejsVariables);
+			}
 			throw error;
 		}
 	});

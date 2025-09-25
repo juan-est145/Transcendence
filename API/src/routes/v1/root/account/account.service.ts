@@ -177,7 +177,7 @@ export class AccountService {
 			const newFriendId = newFriend!.id;
 			if (userId === newFriendId)
 				throw this.fastify.httpErrors.badRequest("Can't make a friend of yourself");
-			const result = this.fastify.prisma.friends.create({
+			const result = await this.fastify.prisma.friends.create({
 				data: {
 					user1Id: userId < newFriendId ? userId : newFriendId,
 					user2Id: userId < newFriendId ? newFriendId : userId,
@@ -186,6 +186,9 @@ export class AccountService {
 			});
 			return result;
 		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+				throw this.fastify.httpErrors.conflict("You already sent a friendship request or you are friends");
+			}
 			throw error;
 		}
 	}

@@ -26,6 +26,14 @@ export const getAccountSchema: RouteShorthandOptions = {
 					}
 				}
 			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
 			404: {
 				description: "In the rare instance that the user in the jwt no longer exists, it will send a 404 response",
 				content: {
@@ -34,8 +42,8 @@ export const getAccountSchema: RouteShorthandOptions = {
 					}
 				}
 			},
-			401: {
-				description: "It returns an error message if the credentials are not correct.",
+			409: {
+				description: "If there is already an established friendship or a pending one, it will send a 409 response",
 				content: {
 					"application/json": {
 						schema: generalError,

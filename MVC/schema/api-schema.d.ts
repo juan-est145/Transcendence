@@ -421,6 +421,23 @@ export interface paths {
                         };
                     };
                 };
+                /** @description If there is already an established friendship or a pending one, it will send a 409 response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
                 /** @description If something else went wrong with the server, it sends back this response. */
                 500: {
                     headers: {

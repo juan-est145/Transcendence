@@ -68,7 +68,7 @@
 								
 								<!-- Add Friend Button -->
 								<% if (user && user.username !== userResult.username) { %>
-									<form method="POST" action=<%= `/friends/add/${userResult.username}` %> "/friends/add" class="ml-4">
+									<form method="POST" action=<%= `/friends/add/${userResult.username}` %> class="ml-4">
 										<input type="hidden" name="friendId" value="<%= userResult.id %>" />
 										<button 
 											type="submit"
