@@ -9,9 +9,9 @@ const context = cnvs.getContext('2d')!;
 cnvs.width = 800;
 cnvs.height = 400;
  */
-type puzzleCell = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 //solo acepta numeros de 0 a 9
-type puzzleLine = [puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell,]
-type puzzleBoard = [ //board 9 x 9 
+export type puzzleCell = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 //solo acepta numeros de 0 a 9
+export type puzzleLine = [puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell,]
+export type puzzleBoard = [ //board 9 x 9 
 	puzzleLine,
 	puzzleLine,
 	puzzleLine,
@@ -114,7 +114,8 @@ const shuffleRow = (puzzle: puzzleBoard) => //cambiar orden de las lineas
 	return puzzle
 }
 
-//solve the board
+//PUZZLE SOLUTION
+
 const findNextEmpty = (board: puzzleBoard) => {
 	for (let i = 0; i < 9; i++)
 	{
@@ -177,5 +178,9 @@ const solveBoard = (board: puzzleBoard) => {
 	return false;
 }
 
-const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(puzzle)))
-console.log(solveBoard(fixed)) 
+export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
+let board = structuredClone(fixed);
+export const solution = solveBoard(board) as puzzleBoard
+console.log(fixed);
+console.log("\n");
+console.log(solution);
