@@ -68,4 +68,41 @@ export class SearchService {
 	validateSearchParam(param: unknown) {
 		paramSearchProfile.parse(param);
 	}
+
+	async determineRelation(username: string) {
+		try {
+			const result = await this.getFriendShipStatus(username);
+			let status: "PENDING" | "NOT_FRIENDS" | "FRIENDS" | "AWAITING" = 'NOT_FRIENDS';
+			if (result.status === "FRIENDS") {
+				status = "FRIENDS";
+			} else if (
+				result.status === "FIRST_PENDING" && result.user1.username === username ||
+				result.status === "SECOND_PENDING" && result.user2.username === username
+			) {
+				status = "AWAITING";
+			} else if (
+				result.status === "FIRST_PENDING" && result.user1.username !== username ||
+				result.status === "SECOND_PENDING" && result.user2.username !== username
+			) {
+				status = "PENDING";
+			}
+			return status;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async getFriendShipStatus(username: string) {
+		const { data, error } = await this.fastify.apiClient.GET("/v1/account/friendship/{username}", {
+			params: {
+				path: {
+					username
+				}
+			}
+		});
+		if (error) {
+			throw error;
+		}
+		return data;
+	}
 }

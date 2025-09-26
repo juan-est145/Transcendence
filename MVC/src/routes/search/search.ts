@@ -68,10 +68,12 @@ export async function search(fastify: FastifyInstance) {
 			const userProfile = await searchService.getUserByUsername(username);
 			if (userProfile.username === currentUser?.username)
 				return reply.redirect("/account");
+			const status = await searchService.determineRelation(username);
 			return reply.view('profile', {
 				title: `${userProfile.username}'s Profile`,
 				userProfile,
 				user: currentUser,
+				status,
 			});
 		} catch (error) {
 			if (error instanceof ZodError || (error as SearchProfileError).statusCode && (error as SearchProfileError).statusCode === 404) {
