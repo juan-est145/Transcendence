@@ -4,7 +4,10 @@ import { relationShipBody } from "./friends.dto";
 import { RelationShipBody } from "./friends.type";
 
 export class FriendsService {
-	constructor(private fastify: FastifyInstance, private searchService: SearchService) {}
+	constructor(
+		private fastify: FastifyInstance, 
+		private searchService: SearchService,
+	) {}
 
 	validateUserParam(param: unknown) {
 		this.searchService.validateSearchParam(param);

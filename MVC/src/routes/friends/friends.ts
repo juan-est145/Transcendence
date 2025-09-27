@@ -5,12 +5,14 @@ import { SearchService } from "../search/search.service";
 import { ZodError } from "zod";
 import { AddFriendsError, RelationShipBody } from "./friends.type";
 import { httpErrors } from "@fastify/sensible";
+import { AccountService } from "../account/account.service";
 
 
 export async function friends(fastify: FastifyInstance) {
 	fastify.addHook("onRequest", fastify.auth([fastify.verifyLoggedIn]));
 
 	const friendsService = new FriendsService(fastify, new SearchService(fastify));
+	const accountService = new AccountService(fastify);
 
 	fastify.post<{ Params: SearchProfileParams }>("/add/:username", async (req, res) => {
 		const { username } = req.params;
@@ -45,10 +47,19 @@ export async function friends(fastify: FastifyInstance) {
 			friendsService.validateUserParam(username);
 			friendsService.validateRelationShipBody(req.body);
 			await friendsService.handleFriendShip(username, req.body);
-			// This is temporal, only to see it in action. Might need to change it.
 			return res.redirect("/account");
-			} catch (error) {
-			// TO DO: Make sure to display the appropiate error message if validation fails.
+		} catch (error) {
+			if (error instanceof ZodError) {
+				const { profile } = await accountService.getProfileInfo();
+				const ejsVariables = {
+					errors: error.issues.map((element) => element.message),
+					user: req.user,
+					profile,
+				};
+				return res.view("account.ejs", ejsVariables);
+			} else if ((error as AddFriendsError).statusCode && (error as AddFriendsError).statusCode === 404)
+				throw httpErrors.notFound();
+			throw error;
 		}
 	});
 }

@@ -26,9 +26,9 @@ export async function account(fastify: FastifyInstance) {
 	 * property for adding data like victories.
 	 */
 	fastify.get("/", async (req, res) => {
-		const profile = await accountService.getProfileInfo();
+		const { profile } = await accountService.getProfileInfo();
 		const friends = await accountService.getFriends();
-		return res.view("account.ejs", { user: req.user, profile: profile.profile, friends });
+		return res.view("account.ejs", { user: req.user, profile, friends });
 	});
 
 	/**
