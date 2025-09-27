@@ -69,6 +69,17 @@ export class SearchService {
 		paramSearchProfile.parse(param);
 	}
 
+	/**
+	 * This function takes a response object from the API with the relation between two 
+	 * users and it use's the information in it to determine the status between the two user's.
+	 * Depending on which user is pending in accepting the friend request, we compare the result's
+	 * to know what value to return.
+	 * @param username - A string of the username to whose relation is going to be compared to the
+	 * logged in user.
+	 * @returns A string literal. PENDING means that the other user must accept or reject the friend request.
+	 * FRIENDS mean that both user's are friends. AWAITING means that the logged in user sent the request
+	 * and is waiting for a response. NOT_FRIENDS mean that they have no relation.
+	 */
 	async determineRelation(username: string) {
 		try {
 			const result = await this.getFriendShipStatus(username);
@@ -88,10 +99,19 @@ export class SearchService {
 			}
 			return status;
 		} catch (error) {
+			if (error instanceof Error && Object.hasOwn(error, "statusCode") && (error as any).statusCode === 404)
+				return "NOT_FRIENDS";
 			throw error;
 		}
 	}
 
+	/**
+	 * This function makes a GET request to the API to get the relationship between the
+	 * logged in user and a username to be searched. If the response it is not a 200 response,
+	 * it throws an error.
+	 * @param username - The user's username to be compared with the logged in user and check their relation.
+	 * @returns Both user's id's and usernames and their relation.
+	 */
 	async getFriendShipStatus(username: string) {
 		const { data, error } = await this.fastify.apiClient.GET("/v1/account/friendship/{username}", {
 			params: {

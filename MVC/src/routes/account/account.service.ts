@@ -145,6 +145,11 @@ export class AccountService {
 		return data;
 	}
 
+	/**
+	 * This function sends a GET request without parameters to the API to get a collection of all the friends
+	 * and friendship requests of the logged in user.
+	 * @returns An array with all the relations of the user.
+	 */
 	async getFriends() {
 		const { data, error } = await this.fastify.apiClient.GET("/v1/account/friends");
 		if (error)
