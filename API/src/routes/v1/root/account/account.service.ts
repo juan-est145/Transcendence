@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { JwtPayload } from "../auth/auth.type";
-import { AccountPostAvatarBody, AccountRes, FriendRelation, FriendWithProfiles, GetAccntQuery } from "./account.type";
+import { AccountPostAvatarBody, AccountRes, FriendRelation, FriendShipStatusBody, FriendWithProfiles, GetAccntQuery } from "./account.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthService } from "../auth/auth.service";
 import { UsersService } from "../users/users.service";
@@ -315,6 +315,63 @@ export class AccountService {
 				status: query.status,
 			};
 		} catch (error) {
+			throw error;
+		}
+	}
+
+	async handleFriendRelation(jwtPayload: JwtPayload, username: string, body: FriendShipStatusBody) {
+		try {
+			const { profile } = await this.getAccount(jwtPayload);
+			const otherUser = await this.usersService?.getUserByUsername(username);
+			if (!otherUser)
+				throw this.fastify.httpErrors.notFound(`The searched username: ${username}, does not exist`);
+			else if (profile.id === otherUser.id)
+				throw this.fastify.httpErrors.badRequest("You can't be friends with yourself");
+			const smallerId = profile.id > otherUser.id ? otherUser.id : profile.id;
+			const biggerId = profile.id > otherUser.id ? profile.id : otherUser.id;
+			return body.action === "ACCEPT" ? await this.acceptFriend(smallerId, biggerId) : await this.deleteFriendRelation(smallerId, biggerId);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	async deleteFriendRelation(user1Id: number, user2Id: number) {
+		try {
+			const result = await this.fastify.prisma.friends.delete({
+				where: {
+					user1Id_user2Id : {
+						user1Id,
+						user2Id
+					}
+				}
+			});
+			return result;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+				throw this.fastify.httpErrors.notFound("The friendship does not exist");
+			}
+			throw error;
+		}
+	}
+
+	async acceptFriend(user1Id: number, user2Id: number) {
+		try {
+			const result = await this.fastify.prisma.friends.update({
+				data: {
+					status: "FRIENDS",
+				},
+				where: {
+					user1Id_user2Id: {
+						user1Id,
+						user2Id,
+					}
+				}
+			});
+			return result;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+				throw this.fastify.httpErrors.notFound("The friendship does not exist");
+			}
 			throw error;
 		}
 	}

@@ -80,3 +80,10 @@ export const getRelationRes = Type.Object({
 	}),
 	status: extendedStatus
 });
+
+export const friendShipStatusBody = Type.Object({
+	action: Type.Union([
+		Type.Literal("ACCEPT"),
+		Type.Literal("DELETE"),
+	]),
+});
