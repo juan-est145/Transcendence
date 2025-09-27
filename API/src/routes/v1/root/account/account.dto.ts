@@ -82,8 +82,8 @@ export const getRelationRes = Type.Object({
 });
 
 export const friendShipStatusBody = Type.Object({
-	action: Type.Union([
-		Type.Literal("ACCEPT"),
-		Type.Literal("DELETE"),
-	]),
+	action: Type.Enum({
+		ACCEPT: "ACCEPT",
+		DELETE: "DELETE",
+	}),
 });

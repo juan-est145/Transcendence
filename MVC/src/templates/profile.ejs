@@ -50,9 +50,9 @@
 								</button>
 							</form>
 							<% } else if (status === "FRIENDS") { %>
-								<form method="POST" action=<%= `/friends/delete/${userProfile.username}` %>  class="inline">
-									<button type="submit"
-										class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+								<form id="friendRequestForm" method="POST" action=<%= `/friends/friendRequest/${userProfile.username}` %>  class="inline">
+									<button id="rejectBtn" type="submit"
+										class="bg-red-600 hover:bg-red-800 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
 										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 												d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">

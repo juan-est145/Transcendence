@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema, putFriendShipSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
 import { AccountGetAvatarParam, AccountPostAvatarBody, FriendShipStatusBody } from "./account.type";
@@ -136,7 +136,7 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
-	fastify.put<{ Params: GetUserParams, Body: FriendShipStatusBody }>("/friendship/:username", async (req, res) => {
+	fastify.put<{ Params: GetUserParams, Body: FriendShipStatusBody }>("/friendship/:username", putFriendShipSchema, async (req, res) => {
 		try {
 			Value.Assert(getUserParams, req.params);
 			const jwtPayload: JwtPayload = await req.jwtDecode();

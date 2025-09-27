@@ -3,7 +3,7 @@ import { SearchProfileParams } from "../search/search.type";
 import { FriendsService } from "./friends.service";
 import { SearchService } from "../search/search.service";
 import { ZodError } from "zod";
-import { AddFriendsError } from "./friends.type";
+import { AddFriendsError, RelationShipBody } from "./friends.type";
 import { httpErrors } from "@fastify/sensible";
 
 
@@ -36,6 +36,19 @@ export async function friends(fastify: FastifyInstance) {
 				return res.status(409).view("search", ejsVariables);
 			}
 			throw error;
+		}
+	});
+
+	fastify.post<{ Params: SearchProfileParams, Body: RelationShipBody }>("/friendRequest/:username", async (req, res) => {
+		const { username } = req.params;
+		try {
+			friendsService.validateUserParam(username);
+			friendsService.validateRelationShipBody(req.body);
+			await friendsService.handleFriendShip(username, req.body);
+			// This is temporal, only to see it in action. Might need to change it.
+			return res.redirect("/account");
+			} catch (error) {
+			// TO DO: Make sure to display the appropiate error message if validation fails.
 		}
 	});
 }

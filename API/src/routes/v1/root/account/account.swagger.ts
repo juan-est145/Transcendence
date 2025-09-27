@@ -1,5 +1,5 @@
 import { RouteShorthandOptions } from "fastify";
-import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes, getFriendsRes, getRelationRes, makeFriendRes } from "./account.dto";
+import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes, friendShipStatusBody, getFriendsRes, getRelationRes, makeFriendRes } from "./account.dto";
 import { generalError } from "../root.dto";
 
 const accountTag = "Account";
@@ -328,7 +328,58 @@ export const getFriendRelation: RouteShorthandOptions = {
 				}
 			},
 			404: {
-				description: "If the username does not exist, it returns a 404 response.",
+				description: "If the username does not exist or there was no previous relation, it returns a 404 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const putFriendShipSchema: RouteShorthandOptions = {
+	schema: {
+		body: friendShipStatusBody,
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This route allows for deleting friendships, rejecting friend requests or accepting them",
+		response: {
+			200: {
+				description: "It returns an object with the new relation if a request was accepted, or the old one if it has been deleted",
+				content: {
+					"application/json": {
+						schema: makeFriendRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to search yourself, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "If the username does not exist or there was no prior relation, it returns a 404 response.",
 				content: {
 					"application/json": {
 						schema: generalError,

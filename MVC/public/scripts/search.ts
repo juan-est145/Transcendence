@@ -16,17 +16,17 @@ function addInputAndSubmit(e: SubmitEvent) {
 	const submitter = e.submitter as HTMLButtonElement | null;
 	if (submitter) {
 		if (submitter.id === 'acceptBtn') {
-			alert("Accept button clicked");
-			input.value = "accept";
+			input.value = "ACCEPT";
 
 		} else if (submitter.id === 'rejectBtn') {
-			alert("Reject button clicked");
-			input.value = "reject";
+			input.value = "DELETE";
+		} else {
+			throw new Error("There can only be two buttons with id's of acceptBtn and rejectBtn");
 		}
 	}
-	
-	
-	
-	// form.appendChild(input);
-	// form.submit();
+	if (!form) {
+		throw new Error("A form with an action of '/friends/friendRequest/:username' is required");
+	}
+	form.appendChild(input);
+	form.submit();
 }
