@@ -25,7 +25,7 @@ model Profile {
   id          Int                  @id
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt()
-  // This value stores the route to the avatar's location, so that later the MVC or an nginx instance can send it to the user.
+  // This value stores the route to the avatar's location
   avatar      Avatar?
   online      Boolean              @default(false)
   user        Users                @relation(fields: [id], references: [id])

@@ -193,10 +193,20 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function is used as a setter in order to inject the UsersService class. The reason we can't do that in the
+	 * constructor directly is because it results in a circular dependency.
+	 * @param usersService The UsersService instance to be injected.
+	 */
 	setUsersService(usersService: UsersService) {
 		this.usersService = usersService;
 	}
 
+	/**
+	 * This function returns an array of all friendship's and friend requests associated with the logged in user.
+	 * @param jwtPayload - A JWT of the logged in user with it's username and email.
+	 * @returns An array contains a JSON object with the id's, relation status and profile info associated with the user.
+	 */
 	async getFriends(jwtPayload: JwtPayload) {
 		try {
 			const { profile } = await this.getAccount(jwtPayload);
@@ -234,6 +244,13 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function filters out the information of querying for the friends table and only leaves
+	 * the information pertaining to the searched user's, not the logged in user.
+	 * @param friends - An array of friend relations to be searched on
+	 * @param userId - The id of the logged in user. Used for filtering out it's values.
+	 * @returns - An array with cleaned up and filtered results.
+	 */
 	filterFriendInfo(friends: FriendWithProfiles[], userId: number) {
 		const result = friends.map((elements) => {
 			const id = elements.user1Id === userId ? elements.user2Id : elements.user1Id;
@@ -251,6 +268,14 @@ export class AccountService {
 		return result;
 	}
 
+	/**
+	 * This function checks if the logged in user and another searched user either are friends,
+	 * have a pending friendship request or they have no relation at all.
+	 * @param jwtPayload - A JWT that has the username and email of the logged in user.
+	 * @param username - The username of the user to be searched for.
+	 * @returns A friend relation object that includes the relation status and both user's id's and 
+	 * usernames.
+	 */
 	async checkFriendRelation(jwtPayload: JwtPayload, username: string): Promise<FriendRelation> {
 		try {
 			const { profile } = await this.getAccount(jwtPayload);
@@ -319,6 +344,17 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function modifies the existing relation between two users, either creating one or deleting
+	 * one, depending on the values inside the body parameter.
+	 * @param jwtPayload - A JWT that has the username and email of the logged in user.
+	 * @param username - The username of the user to be searched for.
+	 * @param body - An object that has an action property with a union type between the literal
+	 * types "ACCEPT" and "DELETE". Depending on the value, either action will be taken on the relationship
+	 * @returns In all cases, it returns an object with the user's id's and their status. However, if the
+	 * request was to accept the relation, the object will represent the updated relation, but if the request
+	 * was to delete the relation, the object will represent the previous relation.
+	 */
 	async handleFriendRelation(jwtPayload: JwtPayload, username: string, body: FriendShipStatusBody) {
 		try {
 			const { profile } = await this.getAccount(jwtPayload);
@@ -335,6 +371,12 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function performs a query in the database to delete the records of a friendship.
+	 * @param user1Id - The lowest number user id.
+	 * @param user2Id - The highest number user id.
+	 * @returns An object containing both user's id's and their relation status previous to being deleted.
+	 */
 	async deleteFriendRelation(user1Id: number, user2Id: number) {
 		try {
 			const result = await this.fastify.prisma.friends.delete({
@@ -354,6 +396,12 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function accepts a friend request between two users and updates the record in the database.
+	 * @param user1Id - The lowest number user id.
+	 * @param user2Id - The highest number user id.
+	 * @returns An object containing both user's id's and their new relation status.
+	 */
 	async acceptFriend(user1Id: number, user2Id: number) {
 		try {
 			const result = await this.fastify.prisma.friends.update({
