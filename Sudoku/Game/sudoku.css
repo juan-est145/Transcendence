@@ -71,7 +71,7 @@ hr {
 }
 
 .selected-tile {
-	background-color: aquamarine;
+	background-color: rgb(181, 216, 255);
 }
 
 .tile.correct {

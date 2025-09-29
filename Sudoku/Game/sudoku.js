@@ -24,6 +24,7 @@ function setGame() {
              {
                 tile.innerText = fixed[i][x].toString();
                 tile.classList.add("tile-fixed"); //rellena con los numeros iniciales
+                tile.classList.add("correct");
             }
             if (i == 2 || i == 5)
                 tile.classList.add("horizontal-line"); //lineas mas gruesas para separar el 3x3
@@ -71,7 +72,7 @@ function selectNumber() {
 function selectTile() {
     if (numSelected) //si un numero esta seleccionado
      {
-        if (this.innerHTML != "")
+        if (this.classList.contains("correct"))
             return;
         //0-1, 0-2
         let coords = this.id.split('-');
@@ -101,7 +102,7 @@ function selectTile() {
             return;
         }
         tileSelected = this;
-        if (tileSelected.innerText != "") //si la tile no es vacia no si puede seleccionar
+        if (tileSelected.classList.contains("correct")) //si la tile no es vacia no si puede seleccionar
          {
             tileSelected = null;
             return;
