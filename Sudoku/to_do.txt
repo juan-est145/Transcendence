@@ -1,7 +1,12 @@
 Puzzles estarem dentro da DB
 O resultado do sudoku colocar na DB gerando puzzles infinitos
 
-Implementar cronometro, saber quando o jogo acaba, se o numero ja esta todo preenchido sumir da barra 
+Implementar cronometro
+eleger dificuldade 
+telinha bonita escrito COMPLETE
+fixed esta como
 
 npx tsc Sudoku/Game/algo.ts --outDir dist --target ES2019 --module commonjs
 node dist/algo.js 1
+
+npx tsc Sudoku/Game/algo.ts Sudoku/Game/sudoku.ts --outDir Sudoku/Game --target ES2019 --module ES2020 --lib DOM,ES2020 --moduleResolution bundler

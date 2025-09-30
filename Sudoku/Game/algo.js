@@ -123,6 +123,7 @@ const solveBoard = (board) => {
 export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))));
 let board = structuredClone(fixed);
 export const solution = solveBoard(board);
-console.log(fixed);
+/* console.log(fixed);
 console.log("\n");
 console.log(solution);
+ */ 

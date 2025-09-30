@@ -68,6 +68,12 @@ function selectNumber(this: HTMLDivElement) {
 		if (solution[i][x] == parseInt(this.id))//checkea si el numero encaja ahi
 		{
 			tileSelected.innerText = this.id;
+			fixed[i][x] = solution[i][x];
+		 	if (check_number(solution[i][x]))
+			{
+				const done = document.getElementById(solution[i][x].toString()) as HTMLElement;
+				done.classList.add("done");
+			}
 			tileSelected.classList.remove("incorrect");
 			tileSelected.classList.add("correct");
 		}
@@ -93,6 +99,11 @@ function selectTile(this: HTMLDivElement) {
 		let x = parseInt(coords[1]);
 		if (solution[i][x]== parseInt(numSelected.id))
 		{
+			fixed[i][x] = solution[i][x];//use fixed as my board with all the correct numbers //maybe a problem due to pointers
+			 if (check_number(solution[i][x]))
+			{
+				numSelected.classList.add("done");
+			}
 			this.innerText = numSelected.id;
 			this.classList.remove("incorrect");
 			this.classList.add("correct");
@@ -126,4 +137,36 @@ function selectTile(this: HTMLDivElement) {
 		}
 		tileSelected.classList.add("selected-tile");
 	}
+}
+
+function check_number(target: puzzleCell) {//function para checkear si un numero ya esta lleno
+	let appearces = 0;
+	for (let i = 0; i < 9; i++)
+	{
+		for (let x = 0; x < 9; x++)
+			{
+				if (fixed[i][x] == target )
+					appearces++;
+			}
+	}
+	if (appearces != 9)
+		return false;
+	console.log("target " + target + " is done");
+	isComplete()//funcion para checkear si el board ya esta completo
+	return true;
+}
+
+function isComplete ()
+{
+	for (let i = 0; i < 9; i++)
+	{
+		for (let x = 0; x < 9; x++)
+		{
+			if (fixed[i][x] != solution[i][x])
+				return false;
+		}
+	}
+	console.log("acabouuu")
+	let board = document.getElementById("board");
+	board?.classList.add("finished");
 }

@@ -20,6 +20,15 @@ hr {
 	flex-wrap: wrap;
 }
 
+#board.finished {
+	color: green;
+}
+
+#board.finished .tile{
+	color: green;
+	border-color: light rgb(66, 238, 24);
+}
+
 .tile {
 	width: 48px;
 	height: 49px;
@@ -52,6 +61,10 @@ hr {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.number.done {
+	visibility: hidden;
 }
 
 .selected-number {
