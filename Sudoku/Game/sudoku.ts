@@ -1,16 +1,23 @@
-import { solution, fixed } from "./algo.js";
+import { solution, fixed, selectDifficult } from "./algo.js";
 import type {puzzleBoard, puzzleCell} from "./algo.js";
 
 let numSelected: HTMLDivElement | null = null;
 let tileSelected: HTMLDivElement | null = null;
 let errors = 0;
 
-window.onload = function() {
-	setGame();
-}
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btn-easy")?.addEventListener("click", () => selectDifficult("easy"))
+  document.getElementById("btn-medium")?.addEventListener("click", () => selectDifficult("medium"))
+  document.getElementById("btn-hard")?.addEventListener("click", () => selectDifficult("hard"))
+})
 
-function setGame()
+
+export function setGame()
 {	//crear los numeros para seleccionar
+	(document.getElementById("difficult-screen") as HTMLElement).style.display = "none";
+	(document.getElementById("game-screen") as HTMLElement).style.display = "block";
+	
+
 	for (let i = 1; i <= 9; i++)
 	{
 		let number = document.createElement("div"); //crea una div para cada numero

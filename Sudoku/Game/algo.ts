@@ -1,14 +1,10 @@
+import {setGame} from "./sudoku.js";
+import { easy, medium, hard, difficult_board} from "./puzzles.js";
+
+
+
+
 //Set types of the board
-
-/* const cnvsEl = document.getElementById('sudoku')
-if (!(cnvsEl instanceof HTMLCanvasElement))
-		throw Error ("Canvas element not found or not a canvas")
-
-const cnvs: HTMLCanvasElement = cnvsEl;
-const context = cnvs.getContext('2d')!;
-cnvs.width = 800;
-cnvs.height = 400;
- */
 export type puzzleCell = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 //solo acepta numeros de 0 a 9
 export type puzzleLine = [puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell,]
 export type puzzleBoard = [ //board 9 x 9 
@@ -23,29 +19,52 @@ export type puzzleBoard = [ //board 9 x 9
 	puzzleLine
 ]
 
-const puzzle: puzzleBoard = [
-	[2, 9, 0, 0, 4, 5, 8, 0, 1],
-	[0, 8, 0, 0, 2, 6, 3, 0, 0],
-	[0, 4, 0, 8, 9, 0, 0, 0, 6],
-	[0, 0, 8, 0, 0, 3, 0, 0, 7],
-	[4, 3, 2, 0, 0, 0, 0, 0, 0],
-	[0, 1, 0, 0, 0, 0, 6, 0, 0],
-	[0, 0, 5, 0, 7, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 2, 0, 0, 8],
-	[1, 0, 0, 5, 3, 0, 0, 0, 4],
-]
+export let solution:puzzleBoard;
+export let fixed:puzzleBoard;
 
+//MAIN FUNCTION
+export function selectDifficult (mode: string)
+{
+	console.log("olaa tudo bem");
+	switch (mode)
+	{
+		case "easy":
+			fixed = createPuzzle(easy, randomInt(0, 2))
+			break;
+		case "medium":
+			fixed = createPuzzle(medium, randomInt(0, 2))
+			break;
+		case "hard":
+			fixed = createPuzzle(hard, randomInt(0, 2))
+	}
+	solution = structuredClone(fixed);
+	solveBoard(solution);
+	setGame();
+}
+
+
+export function createPuzzle(difficult: difficult_board , num: number)
+{
+	
+	let board = structuredClone(difficult[num]);
+	shufflePuzzle(shuffleRow(board));
+	let rotate = randomInt(1, 4)
+	for (let i = 0; i < rotate; i++)
+		rotatePuzzle(board);
+	return board;
+}
 
 //Rotate and shuffle the board to create new puzzles
+
 const rotatePuzzle = (puzzle: puzzleBoard) => { //rota hacia derecha toda la tabla
 	const n = puzzle.length
 	const rotated = Array.from({ length: n }, () =>
-    Array.from({ length: n }, () => 0 as puzzleCell)
-  ) as puzzleBoard //inicializa el array como un puzzleBoard con puzzleCells en 0
+		Array.from({ length: n }, () => 0 as puzzleCell)
+) as puzzleBoard //inicializa el array como un puzzleBoard con puzzleCells en 0
 
-	for(let i = 0; i < n; i++) //rotate entre lines y columnas
-	{
-		for(let j = 0; j < n; j++)
+for(let i = 0; i < n; i++) //rotate entre lines y columnas
+{
+	for(let j = 0; j < n; j++)
 		{
 			let temp = puzzle[i][j]
 			let pos = n - (i + 1)
@@ -87,7 +106,7 @@ const shufflePuzzle = (puzzle: puzzleBoard) => {//cambia los numeros del juego
 	return puzzle
 }
 
-const swap = (index: puzzleBoard, piece: number[], orig: number, dest: number) => //funcion que hace un swap
+const swap = (puzzle: puzzleBoard, piece: number[], orig: number, dest: number) => //funcion que hace un swap
 {
 	let temp :puzzleLine = puzzle[0]
 	temp = puzzle[piece[orig]]
@@ -178,10 +197,14 @@ const solveBoard = (board: puzzleBoard) => {
 	return false;
 }
 
-export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
+function randomInt(min: number, max: number): number {
+	return Math.floor(Math.random() * (max - min)) + min;
+}
+
+/*export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
 let board = structuredClone(fixed);
 export const solution = solveBoard(board) as puzzleBoard
-/* console.log(fixed);
-console.log("\n");
+ console.log(fixed);
+console.log("\n");. 
 console.log(solution);
  */

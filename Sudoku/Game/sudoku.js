@@ -1,12 +1,17 @@
-import { solution, fixed } from "./algo.js";
+import { solution, fixed, selectDifficult } from "./algo.js";
 let numSelected = null;
 let tileSelected = null;
 let errors = 0;
-window.onload = function () {
-    setGame();
-};
-function setGame() {
+window.addEventListener("DOMContentLoaded", () => {
+    var _a, _b, _c;
+    (_a = document.getElementById("btn-easy")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => selectDifficult("easy"));
+    (_b = document.getElementById("btn-medium")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => selectDifficult("medium"));
+    (_c = document.getElementById("btn-hard")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => selectDifficult("hard"));
+});
+export function setGame() {
     var _a, _b;
+    document.getElementById("difficult-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "block";
     for (let i = 1; i <= 9; i++) {
         let number = document.createElement("div"); //crea una div para cada numero
         number.id = i.toString(); //anande id como el numero tal cual

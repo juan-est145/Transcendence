@@ -1,15 +1,34 @@
-//Set types of the board
-const puzzle = [
-    [2, 9, 0, 0, 4, 5, 8, 0, 1],
-    [0, 8, 0, 0, 2, 6, 3, 0, 0],
-    [0, 4, 0, 8, 9, 0, 0, 0, 6],
-    [0, 0, 8, 0, 0, 3, 0, 0, 7],
-    [4, 3, 2, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 6, 0, 0],
-    [0, 0, 5, 0, 7, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 2, 0, 0, 8],
-    [1, 0, 0, 5, 3, 0, 0, 0, 4],
-];
+import { setGame } from "./sudoku.js";
+import { easy, medium, hard } from "./puzzles.js";
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+export let solution;
+export let fixed;
+export function selectDifficult(mode) {
+    console.log("olaa tudo bem");
+    switch (mode) {
+        case "easy":
+            fixed = createPuzzle(easy, randomInt(0, 2));
+            break;
+        case "medium":
+            fixed = createPuzzle(medium, randomInt(0, 2));
+            break;
+        case "hard":
+            fixed = createPuzzle(hard, randomInt(0, 2));
+    }
+    solution = structuredClone(fixed);
+    solveBoard(solution);
+    setGame();
+}
+export function createPuzzle(difficult, num) {
+    let board = structuredClone(difficult[num]);
+    shufflePuzzle(shuffleRow(board));
+    let rotate = randomInt(1, 4);
+    for (let i = 0; i < rotate; i++)
+        rotatePuzzle(board);
+    return board;
+}
 //Rotate and shuffle the board to create new puzzles
 const rotatePuzzle = (puzzle) => {
     const n = puzzle.length;
@@ -48,7 +67,7 @@ const shufflePuzzle = (puzzle) => {
     }
     return puzzle;
 };
-const swap = (index, piece, orig, dest) => //funcion que hace un swap
+const swap = (puzzle, piece, orig, dest) => //funcion que hace un swap
  {
     let temp = puzzle[0];
     temp = puzzle[piece[orig]];
@@ -120,10 +139,10 @@ const solveBoard = (board) => {
     } //si falla vuelve a 0 en la posicion y busca otro video
     return false;
 };
-export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))));
+/*export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
 let board = structuredClone(fixed);
-export const solution = solveBoard(board);
-/* console.log(fixed);
-console.log("\n");
+export const solution = solveBoard(board) as puzzleBoard
+ console.log(fixed);
+console.log("\n");.
 console.log(solution);
  */ 
