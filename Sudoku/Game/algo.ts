@@ -2,8 +2,6 @@ import {setGame} from "./sudoku.js";
 import { easy, medium, hard, difficult_board} from "./puzzles.js";
 
 
-
-
 //Set types of the board
 export type puzzleCell = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 //solo acepta numeros de 0 a 9
 export type puzzleLine = [puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell, puzzleCell,]
@@ -25,7 +23,6 @@ export let fixed:puzzleBoard;
 //MAIN FUNCTION
 export function selectDifficult (mode: string)
 {
-	console.log("olaa tudo bem");
 	switch (mode)
 	{
 		case "easy":
@@ -201,10 +198,3 @@ function randomInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
-/*export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
-let board = structuredClone(fixed);
-export const solution = solveBoard(board) as puzzleBoard
- console.log(fixed);
-console.log("\n");. 
-console.log(solution);
- */

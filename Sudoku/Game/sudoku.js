@@ -12,6 +12,7 @@ export function setGame() {
     var _a, _b;
     document.getElementById("difficult-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "block";
+    timeStart();
     for (let i = 1; i <= 9; i++) {
         let number = document.createElement("div"); //crea una div para cada numero
         number.id = i.toString(); //anande id como el numero tal cual
@@ -148,4 +149,27 @@ function isComplete() {
     console.log("acabouuu");
     let board = document.getElementById("board");
     board === null || board === void 0 ? void 0 : board.classList.add("finished");
+    stopTimer();
+}
+//TIMER 
+let timeInterval = null;
+let startTime = 0;
+function timeStart() {
+    startTime = Date.now();
+    if (timeInterval)
+        clearInterval(timeInterval);
+    timeInterval = window.setInterval(() => //funcion que se repite a cada x tiempo (1000ms -> 1s)
+     {
+        const rawTime = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(rawTime / 60).toString().padStart(2, "0");
+        const seconds = Math.floor(rawTime % 60).toString().padStart(2, "0");
+        const timeEl = document.getElementById("timer");
+        timeEl.innerText = `${minutes}:${seconds}`;
+    }, 1000);
+}
+function stopTimer() {
+    if (timeInterval) {
+        clearInterval(timeInterval);
+        timeInterval = null;
+    }
 }

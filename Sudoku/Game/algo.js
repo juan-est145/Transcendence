@@ -1,12 +1,9 @@
 import { setGame } from "./sudoku.js";
 import { easy, medium, hard } from "./puzzles.js";
-function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
 export let solution;
 export let fixed;
+//MAIN FUNCTION
 export function selectDifficult(mode) {
-    console.log("olaa tudo bem");
     switch (mode) {
         case "easy":
             fixed = createPuzzle(easy, randomInt(0, 2));
@@ -139,10 +136,6 @@ const solveBoard = (board) => {
     } //si falla vuelve a 0 en la posicion y busca otro video
     return false;
 };
-/*export const fixed = rotatePuzzle(shufflePuzzle(shuffleRow(rotatePuzzle(puzzle))))
-let board = structuredClone(fixed);
-export const solution = solveBoard(board) as puzzleBoard
- console.log(fixed);
-console.log("\n");.
-console.log(solution);
- */ 
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}

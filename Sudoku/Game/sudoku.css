@@ -8,7 +8,14 @@ hr {
 }
 
 #errors {
-	color:crimson
+	color:crimson;
+	
+}
+
+
+#game-screen > h2 {
+	display: inline-block;
+	margin: 0 150px 8px;
 }
 
 #board {
@@ -26,7 +33,6 @@ hr {
 
 #board.finished .tile{
 	color: green;
-	border-color: light rgb(66, 238, 24);
 }
 
 .tile {

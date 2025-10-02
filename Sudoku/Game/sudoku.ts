@@ -1,5 +1,5 @@
 import { solution, fixed, selectDifficult } from "./algo.js";
-import type {puzzleBoard, puzzleCell} from "./algo.js";
+import type {puzzleCell} from "./algo.js";
 
 let numSelected: HTMLDivElement | null = null;
 let tileSelected: HTMLDivElement | null = null;
@@ -16,7 +16,7 @@ export function setGame()
 {	//crear los numeros para seleccionar
 	(document.getElementById("difficult-screen") as HTMLElement).style.display = "none";
 	(document.getElementById("game-screen") as HTMLElement).style.display = "block";
-	
+	timeStart();
 
 	for (let i = 1; i <= 9; i++)
 	{
@@ -176,4 +176,35 @@ function isComplete ()
 	console.log("acabouuu")
 	let board = document.getElementById("board");
 	board?.classList.add("finished");
+	stopTimer();
+}
+
+//TIMER 
+let timeInterval: number | null = null;
+let startTime: number = 0;
+
+function timeStart(){
+	startTime = Date.now();
+
+	if (timeInterval) 
+		clearInterval(timeInterval);
+
+	timeInterval = window.setInterval(() =>//funcion que se repite a cada x tiempo (1000ms -> 1s)
+	{
+		const rawTime = Math.floor((Date.now() - startTime) / 1000);
+
+		const minutes = Math.floor(rawTime/60).toString().padStart(2, "0");
+		const seconds = Math.floor (rawTime % 60).toString().padStart(2, "0");
+
+		const timeEl = document.getElementById("timer") as HTMLElement;
+		timeEl.innerText =`${minutes}:${seconds}`;
+	}, 1000)
+}
+
+function stopTimer() {
+	if (timeInterval)
+	{
+		clearInterval(timeInterval);
+		timeInterval = null;
+	}
 }
