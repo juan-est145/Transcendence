@@ -2,6 +2,8 @@ import { FastifyInstance } from "fastify";
 import { type SignInBody } from "./auth.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtPayload } from "./auth.type";
+import { authenticator } from "otplib";
+import bcrypt from "bcrypt";
 
 
 /**
@@ -74,13 +76,146 @@ export class AuthService {
 	}
 
 	/**
+	 * Login with 2FA support.
+	 * @param email - User email.
+	 * @param password - User password.
+	 * @returns JWT tokens or temp token if 2FA is enabled.
+	 */
+	async login(email: string, password: string) {
+		try {
+			const user = await this.fastify.prisma.users.findUniqueOrThrow({
+				where: { email },
+				select: {
+					id: true,
+					username: true,
+					email: true,
+					password: true,
+					twoFactorEnabled: true,
+					twoFactorSecret: true
+				}
+			});
+
+			// Verify password
+			const isValidPassword = await bcrypt.compare(password, user.password);
+			if (!isValidPassword) {
+				throw this.fastify.httpErrors.unauthorized("Invalid email or password");
+			}
+
+			// Check if 2FA is enabled
+			if (user.twoFactorEnabled && user.twoFactorSecret) {
+				// Generate a temporary token for 2FA verification
+				const tempToken = this.fastify.jwt.sign(
+					{ 
+						id: user.id,
+						username: user.username,
+						email: user.email,
+						temp: true,
+						requires2FA: true
+					},
+					{ expiresIn: '5m' }
+				);
+
+				return {
+					requires2FA: true,
+					tempToken,
+					message: 'Please provide 2FA code'
+				};
+			}
+
+			// No 2FA, return normal tokens
+			const tokens = this.signJwt({ username: user.username, email: user.email, id: user.id });
+			return {
+				requires2FA: false,
+				...tokens,
+				user: {
+					username: user.username,
+					email: user.email
+				}
+			};
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
+				throw this.fastify.httpErrors.unauthorized("Invalid email or password");
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * Verify 2FA token and complete login.
+	 * @param tempToken - Temporary token from initial login.
+	 * @param code - 6-digit 2FA code.
+	 * @returns JWT tokens.
+	 */
+	async verify2FALogin(tempToken: string, code: string) {
+		try {
+			// Verify the temporary token
+			const decoded = this.fastify.jwt.verify(tempToken) as {
+				id: number;
+				username: string;
+				email: string;
+				temp: boolean;
+				requires2FA: boolean;
+			};
+
+			// Validate token type
+			if (!decoded.temp || !decoded.requires2FA) {
+				throw this.fastify.httpErrors.badRequest("Invalid token type");
+			}
+
+			// Get user with 2FA secret
+			const user = await this.fastify.prisma.users.findUniqueOrThrow({
+				where: { id: decoded.id },
+				select: {
+					id: true,
+					username: true,
+					email: true,
+					twoFactorEnabled: true,
+					twoFactorSecret: true
+				}
+			});
+
+			if (!user.twoFactorEnabled || !user.twoFactorSecret) {
+				throw this.fastify.httpErrors.badRequest("2FA not configured");
+			}
+
+			// Verify the 2FA code
+			const isValid = authenticator.verify({
+				token: code,
+				secret: user.twoFactorSecret
+			});
+
+			if (!isValid) {
+				throw this.fastify.httpErrors.unauthorized("Invalid 2FA code");
+			}
+
+			// Generate final tokens
+			const tokens = this.signJwt({ username: user.username, email: user.email, id: user.id });
+			return {
+				...tokens,
+				user: {
+					username: user.username,
+					email: user.email
+				}
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	/**
 	 * This function creates a JWT.
 	 * @param payload - An object containing the payload to pass to sign into the jwt. It
 	 * must have the JwtPayload type.
 	 * @returns It returns the JWT as a string.
 	 */
 	signJwt(payload: JwtPayload) {
-		const jwt = this.fastify.jwt.sign(payload, {
+		const jwt = this.fastify.jwt.sign(
+		{
+			id: payload.id,
+			username: payload.username,
+			email: payload.email
+		},
+		{
 			expiresIn: "1h",
 			iss: "https://api:4343"
 		});

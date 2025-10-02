@@ -176,8 +176,19 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @enum {boolean} */
+                            requires2FA: false;
                             jwt: string;
                             refreshJwt: string;
+                            user: {
+                                username: string;
+                                email: string;
+                            };
+                        } | {
+                            /** @enum {boolean} */
+                            requires2FA: true;
+                            tempToken: string;
+                            message: string;
                         };
                     };
                 };
@@ -216,6 +227,107 @@ export interface paths {
                     };
                 };
                 /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/verify-2fa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** This endpoint verifies a 2FA token and completes the login process */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        tempToken: string;
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description It returns JWT tokens after successful 2FA verification */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            jwt: string;
+                            refreshJwt: string;
+                            user: {
+                                username: string;
+                                email: string;
+                            };
+                        };
+                    };
+                };
+                /** @description If the token is invalid or 2FA is not configured. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If the 2FA token is incorrect. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server. */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -1426,6 +1538,313 @@ export interface paths {
                                 field?: string;
                                 msg?: string[];
                             }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate 2FA secret and QR code
+         * @description Generates a new secret for 2FA setup and returns a QR code
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            secret: string;
+                            /** @description Base64 encoded QR code image */
+                            qrCode: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enable 2FA for user account
+         * @description Enables 2FA after verifying the token from authenticator app
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        secret: string;
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify 2FA token
+         * @description Verifies a 2FA token from authenticator app
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disable 2FA for user account
+         * @description Disables 2FA after password verification
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        password: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get 2FA status
+         * @description Returns whether 2FA is enabled for the current user
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            enabled: boolean;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
                         };
                     };
                 };

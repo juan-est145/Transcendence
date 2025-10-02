@@ -1,6 +1,7 @@
-import { signInBody, singInRes, logInBody, jwt } from "./auth.dto";
+import { signInBody, singInRes, logInBody, jwt, verify2FALoginBody } from "./auth.dto";
 import { RouteShorthandOptions } from "fastify";
 import { generalError } from "../root.dto";
+import { Type } from "@sinclair/typebox";
 
 const authTag = "Auth"
 
@@ -56,7 +57,22 @@ export const logInSchema: RouteShorthandOptions = {
 				description: "It returns an object with a jwt and a refresh token.",
 				content: {
 					"application/json": {
-						schema: jwt,
+						schema: Type.Union([
+							Type.Object({
+								requires2FA: Type.Literal(false),
+								jwt: Type.String(),
+								refreshJwt: Type.String(),
+								user: Type.Object({
+									username: Type.String(),
+									email: Type.String()
+								})
+							}),
+							Type.Object({
+								requires2FA: Type.Literal(true),
+								tempToken: Type.String(),
+								message: Type.String()
+							})
+						])
 					}
 				}
 			},
@@ -78,6 +94,55 @@ export const logInSchema: RouteShorthandOptions = {
 			},
 			500: {
 				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	},
+}
+
+export const verify2FALoginSchema: RouteShorthandOptions = {
+	schema: {
+		body: verify2FALoginBody,
+		tags: [authTag],
+		summary: "This endpoint verifies a 2FA token and completes the login process",
+		response: {
+			201: {
+				description: "It returns JWT tokens after successful 2FA verification",
+				content: {
+					"application/json": {
+						schema: Type.Object({
+							jwt: Type.String(),
+							refreshJwt: Type.String(),
+							user: Type.Object({
+								username: Type.String(),
+								email: Type.String()
+							})
+						}),
+					}
+				}
+			},
+			400: {
+				description: "If the token is invalid or 2FA is not configured.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "If the 2FA token is incorrect.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server.",
 				content: {
 					"application/json": {
 						schema: generalError,
