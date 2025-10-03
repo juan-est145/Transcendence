@@ -6,10 +6,44 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <link rel="stylesheet" href="/styles/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pong</title>
+    <title>3D Pong Game</title>
   </head>
   <body>
-    <canvas id="renderCanvas" style="background-color: black;"></canvas>
+    <!-- Game Mode Selection Screen -->
+    <div id="gameMode" class="menu-screen">
+      <div class="menu-container">
+        <h1 class="game-title">3D PONG</h1>
+        <div class="menu-options">
+          <button id="localMode" class="menu-button">LOCAL MULTIPLAYER</button>
+          <button id="remoteMode" class="menu-button">REMOTE MULTIPLAYER</button>
+        </div>
+        <div class="game-info">
+          <div class="mode-description">
+            <p><strong>Local:</strong> Two players on the same computer</p>
+            <p><strong>Remote:</strong> Play against others online</p>
+          </div>
+          <div class="controls-info">
+            <p><strong>Controls:</strong></p>
+            <p>Player 1: W/S keys</p>
+            <p>Player 2: Arrow Up/Down keys</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="renderCanvas" style="background-color: black; display: none;"></canvas>
+    
+    <!-- Game UI -->
+    <div id="gameUI" style="display: none;">
+      <div id="scoreDisplay">
+        <div id="scoreOne">0</div>
+        <div id="scoreTwo">0</div>
+      </div>
+      <div id="gameStatus"></div>
+      <button id="backToMenu" class="back-button">Back to Menu</button>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -58,6 +58,11 @@ export function setupScores(scene: BABYLON.Scene) {
 }
 
 function updateScores() {
+	if (!scoreOneDT || !scoreTwoDT) {
+		console.warn('Score textures not initialized, skipping update');
+		return;
+	}
+	
 	scoreOneDT.clear();
     if (scoreOne < 10)
 	    scoreOneDT.drawText(scoreOne.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
@@ -79,4 +84,35 @@ export function incrementScoreOne() {
 export function incrementScoreTwo() {
 	scoreTwo++;
 	updateScores();
+}
+
+export function updateScoreDisplay(leftScore: number, rightScore: number) {
+	scoreOne = leftScore;
+	scoreTwo = rightScore;
+	updateScores();
+}
+
+export function resetScores() {
+	scoreOne = 0;
+	scoreTwo = 0;
+	updateScores();
+}
+
+export function cleanupScores() {
+	if (scoreOneDT) {
+		scoreOneDT.dispose();
+		scoreOneDT = null as any;
+	}
+	if (scoreTwoDT) {
+		scoreTwoDT.dispose();
+		scoreTwoDT = null as any;
+	}
+	if (scoreOneCube) {
+		scoreOneCube.dispose();
+		scoreOneCube = null as any;
+	}
+	if (scoreTwoCube) {
+		scoreTwoCube.dispose();
+		scoreTwoCube = null as any;
+	}
 }
