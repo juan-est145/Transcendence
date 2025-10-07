@@ -7,6 +7,7 @@ import type { PlayerInput } from './websocket/pong.types';
 
 /**
  * Class representing a remote multiplayer Pong game using Babylon.js and WebSocket for real-time communication.
+ * Handles rendering, user input, and game state synchronization with the server.
  */
 export class RemotePongGame {
   private engine: BABYLON.Engine;
@@ -20,10 +21,14 @@ export class RemotePongGame {
   private keysPressed: { [key: string]: boolean } = {};
   private gameStatusElement: HTMLElement | null = null;
 
+  //Initialize the game with the provided canvas element
   constructor(canvas: HTMLCanvasElement) {
+    //Create Babylon.js engine and scene
     this.engine = new BABYLON.Engine(canvas, true);
+    //Make earcut available globally for Babylon.js.
     (window as any).earcut = earcut;
     
+    //Create the scene and game objects
     const sceneData = createScene(this.engine);
     this.scene = sceneData.scene;
     this.paddleOne = sceneData.paddleOne;
@@ -34,15 +39,18 @@ export class RemotePongGame {
     
     this.gameStatusElement = document.getElementById('gameStatus');
     
+    //Initialize WebSocket client and setup event handlers
     this.wsClient = new PongWebSocketClient();
     this.setupWebSocketCallbacks();
     this.setupInputHandlers();
     
+    //Handle window resize events
     window.addEventListener('resize', () => {
       this.engine.resize();
     });
   }
 
+  //Setup WebSocket event callbacks. Handles connection status, game state updates, and player assignment.
   private setupWebSocketCallbacks(): void {
     this.wsClient.onConnectionChanged((connected) => {
       console.log('Connection status:', connected);
@@ -51,6 +59,7 @@ export class RemotePongGame {
       }
     });
 
+    //Update game objects based on server-sent game state
     this.wsClient.onGameStateUpdate((gameState) => {
       if (gameState.ball) {
         this.ball.position.set(gameState.ball.position.x, gameState.ball.position.y, gameState.ball.position.z);
@@ -74,6 +83,7 @@ export class RemotePongGame {
       
       updateScoreDisplay(gameState.scores.left, gameState.scores.right);
       
+      //Update game status display. Shows waiting, playing, or finished status.
       if (this.gameStatusElement) {
         switch (gameState.gameStatus) {
           case 'waiting':
@@ -92,6 +102,7 @@ export class RemotePongGame {
       }
     });
 
+    //Handle player assignment from the server
     this.wsClient.onPlayerAssigned((position) => {
       this.playerPosition = position;
       console.log('Assigned to:', position, 'paddle');
@@ -101,6 +112,7 @@ export class RemotePongGame {
     });
   }
 
+  //Setup keyboard input handlers for player controls. Sends input events to the server.
   private setupInputHandlers(): void {
     window.addEventListener('keydown', (event) => {
       if (!this.playerPosition || !this.wsClient.isConnected()) return;
@@ -130,6 +142,7 @@ export class RemotePongGame {
       }
     });
 
+    //Handle keyup events to stop paddle movement
     window.addEventListener('keyup', (event) => {
       if (!this.playerPosition || !this.wsClient.isConnected()) return;
       

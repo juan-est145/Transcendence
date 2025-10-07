@@ -1,5 +1,10 @@
 import type { GameState, WebSocketMessage, PlayerInput } from './pong.types';
 
+/**
+ * PongWebSocketClient manages the WebSocket connection to the Pong game server.
+ * It handles connection states, message sending/receiving, and game state updates.
+ * It provides methods to connect, disconnect, send player inputs, and register callbacks for various events.
+ */
 export class PongWebSocketClient {
   private ws: WebSocket | null = null;
   private gameId: string = 'default-game';
@@ -104,6 +109,11 @@ export class PongWebSocketClient {
     };
   }
 
+  /**
+   * Sends player input to the server.
+   * @param direction 'up' | 'down' | 'stop'
+   * @returns 
+   */
   public sendInput(direction: 'up' | 'down' | 'stop'): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !this.playerPosition) {
       return;
@@ -150,6 +160,10 @@ export class PongWebSocketClient {
     });
   }
 
+  /**
+   * Handles incoming WebSocket messages. 
+   * @param message The incoming WebSocket message to handle.
+   */
   private handleMessage(message: WebSocketMessage): void {
     switch (message.type) {
       case 'game_state':
@@ -170,20 +184,26 @@ export class PongWebSocketClient {
     }
   }
 
+  /**
+   * Handles the current game state received from the server. 
+   * @param state The current game state received from the server.
+   */
   private handleGameState(state: GameState): void {
     this.gameState = state;
     
+    //Assign player position if not already assigned
     if (state.playerPosition && !this.playerPosition) {
       this.playerPosition = state.playerPosition;
       console.log('Assigned as player:', this.playerPosition);
       this.connectionStatus = 'connected';
       this.notifyConnectionStatus('connected', `Playing as Player ${this.playerPosition === 'left' ? '1' : '2'}`);
-      
+      //Notify position assigned
       if (this.playerPositionAssignedCallback && this.playerPosition) {
         this.playerPositionAssignedCallback(this.playerPosition);
       }
     }
 
+    //Update connection status based on game status
     if (state.gameStatus === 'waiting') {
       this.notifyConnectionStatus('waiting', 'Waiting for another player...');
     } else if (state.gameStatus === 'playing') {
@@ -193,11 +213,13 @@ export class PongWebSocketClient {
       this.notifyConnectionStatus('finished', `Game Over! ${winner} wins!`);
     }
 
+    //Notify game state update
     if (this.gameStateUpdateCallback) {
       this.gameStateUpdateCallback(state);
     }
   }
 
+  //Notify connection status change
   private notifyConnectionStatus(status: string, message: string): void {
     if (this.connectionStatusChangeCallback) {
       this.connectionStatusChangeCallback(status, message);

@@ -1,12 +1,17 @@
 import { LocalPongGame } from './local-pong';
 import { RemotePongGame } from './remote-pong';
 
+/**
+ * Manages the overall game state, including switching between local and remote multiplayer modes.
+ * Handles UI interactions and initializes the appropriate game mode based on user selection.
+ */
 class PongGameManager {
   private currentGame: LocalPongGame | RemotePongGame | null = null;
   private canvas: HTMLCanvasElement;
   private gameMode: HTMLElement;
   private gameUI: HTMLElement;
 
+  //Initialize the game manager and setup event listeners for UI buttons
   constructor() {
     this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
     this.gameMode = document.getElementById('gameMode') as HTMLElement;
@@ -19,6 +24,7 @@ class PongGameManager {
     this.setupEventListeners();
   }
 
+  //Setup event listeners for UI buttons to switch game modes and return to the main menu
   private setupEventListeners(): void {
     const localModeBtn = document.getElementById('localMode');
     if (localModeBtn) {
@@ -48,6 +54,9 @@ class PongGameManager {
     });
   }
 
+  /**
+   * Start a local multiplayer game. Hides the main menu and shows the game canvas and UI.
+   */
   private startLocalGame(): void {
     console.log('Starting local multiplayer game');
     

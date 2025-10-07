@@ -3,6 +3,10 @@ import earcut from 'earcut';
 import { createScene } from './scene/scene';
 import { setupScores, incrementScoreOne, incrementScoreTwo, cleanupScores, resetScores } from './scene/scores';
 
+/**
+ * Class representing a local multiplayer Pong game using Babylon.js.
+ * Handles rendering, user input, and game logic for two players on the same machine.
+ */
 export class LocalPongGame {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
@@ -25,10 +29,14 @@ export class LocalPongGame {
   private paddleTwoVelocityY = 0;
   private paddleTwoVelocityZ = 0;
 
+  //Initialize the game with the provided canvas element
   constructor(canvas: HTMLCanvasElement) {
+    //Create Babylon.js engine and scene
     this.engine = new BABYLON.Engine(canvas, true);
+    //Make earcut available globally for Babylon.js.
     (window as any).earcut = earcut;
     
+    //Create the scene and game objects.
     const sceneData = createScene(this.engine);
     this.scene = sceneData.scene;
     this.paddleOne = sceneData.paddleOne;
@@ -49,6 +57,9 @@ export class LocalPongGame {
     });
   }
 
+  /**
+   * Setup keyboard input handlers for player controls. Sends input events to the server.
+   */
   private setupInputHandlers(): void {
     window.addEventListener('keydown', (event) => {
       if (event.key === 'w' || event.key === 'W') {
@@ -71,6 +82,12 @@ export class LocalPongGame {
     });
   }
 
+  /**
+   * Check for collision between the ball and a paddle. Adjust ball position and velocity if a collision is detected.
+   * @param ball 
+   * @param paddle 
+   * @returns 
+   */
   private isColliding(ball: BABYLON.Mesh, paddle: BABYLON.Mesh): boolean {
     const paddleHalfWidth = 0.1 / 2;
     const paddleHalfHeight = 0.6 / 2;
@@ -95,6 +112,9 @@ export class LocalPongGame {
     );
   }
 
+  /**
+   * Update game state, including paddle and ball positions, handle collisions, and render the scene.
+   */
   private updateGame(): void {
     const paddleMargin = 0.05;
 
@@ -151,7 +171,8 @@ export class LocalPongGame {
         }
         
         this.ballVelocity.z += inertiaZ * 0.2;
-        
+
+        //Clamp vertical and depth speeds to prevent excessive velocity
         if (Math.abs(this.ballVelocity.y) > maxVerSpeed) {
           this.ballVelocity.y = (this.ballVelocity.y >= 0 ? 1 : -1) * maxVerSpeed;
         }
@@ -159,6 +180,7 @@ export class LocalPongGame {
           this.ballVelocity.z = (this.ballVelocity.z >= 0 ? 1 : -1) * maxVerSpeed;
         }
 
+        //Reverse horizontal direction and increase speed, reposition ball outside paddle
         if (paddle === this.paddleOne) {
           this.ballVelocity.x = Math.abs(this.ballVelocity.x) * 1.1;
           this.ball.position.x = paddleMax.x + 0.11;

@@ -1,5 +1,9 @@
 import { GameState, Ball, Paddle, PlayerInput } from './pong.types';
 
+/**
+ * Class representing a Pong game instance.
+ * Manages game state, player interactions, and game loop.
+ */
 export class PongGame {
   private gameState: GameState;
   private gameLoop: NodeJS.Timeout | null = null;
@@ -11,7 +15,12 @@ export class PongGame {
   constructor(gameId: string) {
     this.gameState = this.initializeGameState(gameId);
   }
-
+ 
+  /**
+   * Initializes the game state. Sets up paddles, ball, scores, and game status.
+   * @param gameId The ID of the game.
+   * @returns The initial game state.
+   */
   private initializeGameState(gameId: string): GameState {
     return {
       id: gameId,
@@ -50,6 +59,11 @@ export class PongGame {
     return { ...this.gameState };
   }
 
+  /**
+   * Adds a player to the game. Assigns them to the left or right paddle if available.
+   * @param playerId The ID of the player.
+   * @returns The side the player was assigned to, or null if the game is full.
+   */
   public addPlayer(playerId: string): 'left' | 'right' | null {
     if (!this.gameState.players.left) {
       this.gameState.players.left = playerId;
@@ -61,6 +75,10 @@ export class PongGame {
     return null;
   }
 
+  /**
+   * Removes a player from the game. If both players leave, the game resets to waiting state.
+   * @param playerId The ID of the player.
+   */
   public removePlayer(playerId: string): void {
     if (this.gameState.players.left === playerId) {
       this.gameState.players.left = undefined;
@@ -74,6 +92,11 @@ export class PongGame {
     }
   }
 
+  /**
+   * Handles player input for paddle movement.
+   * @param input The player input containing playerId and direction.
+   * @returns True if the input was handled successfully, false otherwise.
+   */
   public handlePlayerInput(input: PlayerInput): boolean {
     const isLeftPlayer = this.gameState.players.left === input.playerId;
     const isRightPlayer = this.gameState.players.right === input.playerId;
@@ -111,6 +134,10 @@ export class PongGame {
     this.stopGameLoop();
   }
 
+  /**
+   * Starts the game loop, which updates the game state at a fixed interval.
+   * The loop runs at the defined GAME_SPEED (frames per second).
+   */
   private startGameLoop(): void {
     if (this.gameLoop) {
       clearInterval(this.gameLoop);
@@ -129,6 +156,10 @@ export class PongGame {
     }
   }
 
+  /**
+   * Updates the game state by processing player inputs, moving paddles and the ball.
+   * @returns void
+   */
   private updateGame(): void {
     const now = Date.now();
     const deltaTime = (now - this.gameState.lastUpdate) / 1000;
@@ -148,6 +179,11 @@ export class PongGame {
     this.checkGoals();
   }
 
+  /**
+   * Updates the paddle's position based on its velocity and the elapsed time.
+   * @param paddle The paddle to update.
+   * @param deltaTime The time elapsed since the last update.
+   */
   private updatePaddle(paddle: Paddle, deltaTime: number): void {
     if (paddle.velocity !== 0) {
       const movementScale = Math.min(deltaTime * 60, 2);
@@ -156,6 +192,10 @@ export class PongGame {
     }
   }
 
+  /**
+   * Updates the ball's position based on its velocity and the elapsed time.
+   * @param deltaTime The time elapsed since the last update.
+   */
   private updateBall(deltaTime: number): void {
     const ball = this.gameState.ball;
     const movementScale = 1.0;
@@ -174,8 +214,10 @@ export class PongGame {
       });
     }
 
+    //Check for wall collisions
     const ballRadius = ball.size / 2;
 
+    //Bounce off top and bottom walls
     if (ball.position.y - ballRadius <= 0.3 || ball.position.y + ballRadius >= 2.7) {
       ball.velocity.y *= -1;
       ball.position.y = Math.max(0.3 + ballRadius, Math.min(2.7 - ballRadius, ball.position.y));
@@ -183,11 +225,16 @@ export class PongGame {
     }
   }
 
+  /**
+   * Checks for collisions between the ball and paddles.
+   * If a collision is detected, updates the ball's velocity and position accordingly.
+   */
   private checkCollisions(): void {
     const ball = this.gameState.ball;
     const leftPaddle = this.gameState.paddles.left;
     const rightPaddle = this.gameState.paddles.right;
 
+    //Check for paddle collisions
     if (Math.abs(ball.position.x - leftPaddle.position.x) < 0.5 && Math.abs(ball.velocity.x) > 0) {
       console.log(`Ball approaching left paddle: ballX=${ball.position.x.toFixed(2)}, distance=${Math.abs(ball.position.x - leftPaddle.position.x).toFixed(2)}`);
     }
@@ -195,8 +242,9 @@ export class PongGame {
       console.log(`Ball approaching right paddle: ballX=${ball.position.x.toFixed(2)}, distance=${Math.abs(ball.position.x - rightPaddle.position.x).toFixed(2)}`);
     }
 
+    //Check collision with left paddle
     if (this.checkBallPaddleCollision(ball, leftPaddle)) {
-      console.log('LEFT PADDLE COLLISION DETECTED!', { 
+      console.log('LEFT PADDLE COLLISION DETECTED', { 
         ballPos: ball.position, 
         ballVel: ball.velocity, 
         paddlePos: leftPaddle.position,
@@ -205,8 +253,9 @@ export class PongGame {
       this.addSpinToBall(ball, leftPaddle);
     }
 
+    //Check collision with right paddle
     if (this.checkBallPaddleCollision(ball, rightPaddle)) {
-      console.log('RIGHT PADDLE COLLISION DETECTED!', { 
+      console.log('RIGHT PADDLE COLLISION DETECTED', { 
         ballPos: ball.position, 
         ballVel: ball.velocity, 
         paddlePos: rightPaddle.position,
@@ -216,6 +265,12 @@ export class PongGame {
     }
   }
 
+  /**
+   * Checks for a collision between the ball and a paddle.
+   * @param ball The ball to check for collisions.
+   * @param paddle The paddle to check against.
+   * @returns True if a collision is detected, false otherwise.
+   */
   private checkBallPaddleCollision(ball: Ball, paddle: Paddle): boolean {
     const ballRadius = ball.size / 2;
     const paddleHalfWidth = paddle.size.width / 2;
@@ -232,6 +287,7 @@ export class PongGame {
     const ballTop = ball.position.y + ballRadius;
     const ballBottom = ball.position.y - ballRadius;
 
+    //Check for overlap. Add a small tolerance to make collision detection more forgiving.
     const overlapX = (ballRight + collisionTolerance) >= paddleLeft && (ballLeft - collisionTolerance) <= paddleRight;
     const overlapY = ballTop >= paddleBottom && ballBottom <= paddleTop;
     
@@ -263,10 +319,17 @@ export class PongGame {
     return false;
   }
 
+  /**
+   * Adds spin to the ball upon collision with a paddle. Adjusts ball velocity based on hit position and paddle movement.
+   * @param ball The ball that collided with the paddle.
+   * @param paddle The paddle that the ball collided with.
+   */
   private addSpinToBall(ball: Ball, paddle: Paddle): void {
     console.log(`Ball collision with ${paddle.id} paddle!`);
     
+    //Calculate hit position relative to paddle center
     const relativeHitY = ball.position.y - paddle.position.y;
+    //Normalize to range [-1, 1]
     const normalizedHitY = Math.max(-1, Math.min(1, relativeHitY / (paddle.size.height / 2)));
     
     const baseSpeed = this.BALL_SPEED * 1.3;
@@ -275,6 +338,7 @@ export class PongGame {
     ball.velocity.y = normalizedHitY * baseSpeed * 0.8;
     ball.velocity.z = 0;
 
+    //Add paddle movement influence
     if (Math.abs(paddle.velocity) > 0.001) {
       ball.velocity.y += paddle.velocity * 0.7;
     }
@@ -291,6 +355,7 @@ export class PongGame {
     
     ball.position.z = 0;
     
+    //Clamp ball speed to prevent excessive velocities and scoring through paddles
     const maxSpeed = this.BALL_SPEED * 3;
     ball.velocity.x = Math.max(-maxSpeed, Math.min(maxSpeed, ball.velocity.x));
     ball.velocity.y = Math.max(-maxSpeed, Math.min(maxSpeed, ball.velocity.y));
