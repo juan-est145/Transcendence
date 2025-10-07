@@ -1,8 +1,8 @@
 Puzzles estarem dentro da DB
 O resultado do sudoku colocar na DB gerando puzzles infinitos (?)
 
-Implementar cronometro
-telinha bonita escrito COMPLETE
+Comunicar com a DB e implementar no projeto
+telinha bonita escrito COMPLETE (mais tarde)
 
 
 npx tsc Sudoku/Game/algo.ts --outDir dist --target ES2019 --module commonjs

@@ -3,7 +3,7 @@ import type {puzzleCell} from "./algo.js";
 
 let numSelected: HTMLDivElement | null = null;
 let tileSelected: HTMLDivElement | null = null;
-let errors = 0;
+let errors = 0; //cantidad de errores de los jugadores
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-easy")?.addEventListener("click", () => selectDifficult("easy"))
@@ -173,7 +173,7 @@ function isComplete ()
 				return false;
 		}
 	}
-	console.log("acabouuu")
+	//console.log("acabouuu")
 	let board = document.getElementById("board");
 	board?.classList.add("finished");
 	stopTimer();
@@ -197,7 +197,9 @@ function timeStart(){
 		const seconds = Math.floor (rawTime % 60).toString().padStart(2, "0");
 
 		const timeEl = document.getElementById("timer") as HTMLElement;
-		timeEl.innerText =`${minutes}:${seconds}`;
+		const totalTime = minutes + seconds;//tiempo total para terminar el juego
+		//console.log (totalTime);//sintaxe 0130 = 1m 30s
+		timeEl.innerText =`${minutes}:${seconds}`;//ese es el valor que tengo que guardar
 	}, 1000)
 }
 

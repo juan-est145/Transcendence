@@ -146,7 +146,7 @@ function isComplete() {
                 return false;
         }
     }
-    console.log("acabouuu");
+    //console.log("acabouuu")
     let board = document.getElementById("board");
     board === null || board === void 0 ? void 0 : board.classList.add("finished");
     stopTimer();
@@ -164,7 +164,9 @@ function timeStart() {
         const minutes = Math.floor(rawTime / 60).toString().padStart(2, "0");
         const seconds = Math.floor(rawTime % 60).toString().padStart(2, "0");
         const timeEl = document.getElementById("timer");
-        timeEl.innerText = `${minutes}:${seconds}`;
+        const totalTime = minutes + seconds;
+        console.log(totalTime);
+        timeEl.innerText = `${minutes}:${seconds}`; //ese es el valor que tengo que guardar
     }, 1000);
 }
 function stopTimer() {
