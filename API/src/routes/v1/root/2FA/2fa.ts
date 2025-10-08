@@ -7,7 +7,12 @@ import { generate2FASchema, enable2FASchema, verify2FASchema, disable2FASchema, 
 async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	const twoFactorService = new TwoFactorService(fastify.prisma);
 
-	// POST /api/v1/2fa/generate - Generate secret and QR code
+	/**
+	 * Generates a new 2FA secret and QR code for the authenticated user.
+	 * @param request - The Fastify request object, which includes the authenticated user's details.
+	 * @param reply - The Fastify reply object used to send the response.
+	 * @returns An object containing the generated secret and QR code data URL.
+	 */
 	fastify.post<{ Body: Generate2FASecretType }>(
 		'/generate',
 		{
@@ -20,12 +25,10 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		async (request: FastifyRequest, reply: FastifyReply) => {
 			const userId = request.user.id;
 			const email = request.user.email;
-		
 			const { secret, qrCode } = await twoFactorService.generateSecret(
 				userId,
 				email
 			);
-
 			return reply.send({
 				secret,
 				qrCode
@@ -33,7 +36,12 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		}
 	);
 
-	// POST /api/v1/2fa/enable - Enable 2FA
+	/**
+	 * Enables 2FA for the authenticated user after verifying the provided TOTP code.
+	 * @param request - The Fastify request object, which includes the authenticated user's details and the request body.
+	 * @param reply - The Fastify reply object used to send the response.
+	 * @returns An object indicating whether 2FA was successfully enabled.
+	 */
 	fastify.post<{ Body: Enable2FAType }>(
 		'/enable',
 		{
@@ -46,7 +54,6 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		async (request: FastifyRequest<{ Body: Enable2FAType }>, reply: FastifyReply) => {
 			const userId = request.user.id;
 			const { secret, token } = request.body;
-
 			try {
 				const result = await twoFactorService.enable2FA(userId, secret, token);
 				return reply.send(result);
@@ -58,7 +65,12 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		}
 	);
 
-	// POST /api/v1/2fa/verify - Verify 2FA token
+	/**
+	 * Verifies a 2FA token for the authenticated user.
+	 * @param request - The Fastify request object, which includes the authenticated user's details and the request body.
+	 * @param reply - The Fastify reply object used to send the response.
+	 * @returns An object indicating whether the token is valid.
+	 */
 	fastify.post<{ Body: Verify2FAType }>(
 		'/verify',
 		{
@@ -71,31 +83,31 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		async (request: FastifyRequest<{ Body: Verify2FAType }>, reply: FastifyReply) => {
 			const userId = request.user.id;
 			const { token } = request.body;
-
 			const user = await fastify.prisma.users.findUnique({
 				where: { id: userId },
 				select: { twoFactorSecret: true }
 			});
-
 			if (!user?.twoFactorSecret) {
 				return reply.status(400).send({
 					error: '2FA not enabled'
 				});
 			}
-
 			const isValid = twoFactorService.verifyToken(user.twoFactorSecret, token);
-
 			if (!isValid) {
 				return reply.status(400).send({
 					error: 'Invalid verification code'
 				});
 			}
-
 			return reply.send({ success: true });
 		}
 	);
 
-	// POST /api/v1/2fa/disable - Disable 2FA
+	/**
+	 * Disables 2FA for the authenticated user after verifying their password.
+	 * @param request - The Fastify request object, which includes the authenticated user's details and the request body.
+	 * @param reply - The Fastify reply object used to send the response.
+	 * @returns An object indicating whether 2FA was successfully disabled.
+	 */
 	fastify.post<{ Body: Disable2FAType }>(
 		'/disable',
 		{
@@ -107,23 +119,25 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		},
 		async (request: FastifyRequest<{ Body: Disable2FAType }>, reply: FastifyReply) => {
 			const userId = request.user.id;
-
 			// Verify password before disabling 2FA
 			const user = await fastify.prisma.users.findUnique({
 				where: { id: userId },
 				select: { password: true }
 			});
-
 			if (!user) {
 				return reply.status(404).send({ error: 'User not found' });
 			}
-
 			const result = await twoFactorService.disable2FA(userId);
 			return reply.send(result);
 		}
 	);
 
-	// GET /api/v1/2fa/status - Get 2FA status
+	/**
+	 * Gets the 2FA status for the authenticated user.
+	 * @param request - The Fastify request object, which includes the authenticated user's details.
+	 * @param reply - The Fastify reply object used to send the response.
+	 * @returns An object indicating whether 2FA is enabled for the user.
+	 */
 	fastify.get(
 		'/status',
 		{
@@ -133,7 +147,6 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		async (request: FastifyRequest, reply: FastifyReply) => {
 			const userId = request.user.id;
 			const enabled = await twoFactorService.is2FAEnabled(userId);
-
 			return reply.send({ enabled });
 		}
 	);

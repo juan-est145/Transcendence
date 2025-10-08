@@ -76,7 +76,7 @@ export async function auth(fastify: FastifyInstance) {
 	}, async (req, res) => {
 		try {
 			const user = await authService.getUser((req.user as any).email);
-			const jwt = authService.signJwt({ username: user.username, email: user.email });
+			const jwt = authService.signJwt({ id: user.id, username: user.username, email: user.email });
 			return res.code(201).send(jwt);
 		} catch (error) {
 			throw error;
