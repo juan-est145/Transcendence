@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Two Factor Authentication</title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+	<script defer src="/scripts/dist/2fa.js"></script> <!-- ← Esta línea -->
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+	<%- include('components/navbar.ejs') %>
+	<main class="flex-grow flex flex-col justify-center relative">
+		<%- include('components/errorPopup.ejs') %>
+		<%- include('components/successPopup.ejs') %>
+
+		<% if (!twoFactorEnabled) { %>
+			<!-- Setup 2FA -->
+			<div class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3">
+				<h1 class="text-4xl text-center m-3 font-bold">Enable Two Factor Authentication</h1>
+				<p class="text-center text-gray-300 mb-4">Secure your account with an additional layer of protection</p>
+
+				<!-- Step 1: Generate QR Code -->
+				<div class="w-full text-center">
+					<button id="generate-btn" 
+						class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-6 py-3 rounded-lg transition text-lg">
+						Generate QR Code
+					</button>
+				</div>
+
+				<!-- Step 2: QR Code Display (initially hidden) -->
+				<div id="qr-section" class="w-full text-center" style="display: none;">
+					<h3 class="text-xl mb-4">Scan this QR code with your authenticator app:</h3>
+					<div id="qr-code" class="mb-4 flex justify-center"></div>
+					<p class="text-sm text-gray-400 mb-4">Or enter this code manually:</p>
+					<code id="manual-secret" class="bg-gray-700 px-4 py-2 rounded text-sm"></code>
+
+					<!-- Step 3: Verify Setup -->
+					<form action="/2FA/enable" method="POST" class="flex flex-col items-center gap-3 w-full mt-6">
+						<input type="hidden" id="secret-input" name="secret" />
+						<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
+							<label for="token" class="text-lg">Enter verification code from your app:</label>
+							<input
+								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800 text-center"
+								type="text" id="token" name="token" placeholder="000000" required maxlength="6" pattern="[0-9]{6}">
+						</fieldset>
+						<button type="submit"
+							class="bg-green-600 hover:bg-green-700 active:bg-green-900 p-2 rounded-lg transition text-xl w-full">
+							Enable 2FA
+						</button>
+					</form>
+				</div>
+			</div>
+		<% } else { %>
+			<!-- 2FA is enabled -->
+			<div class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3">
+				<h1 class="text-4xl text-center m-3 font-bold">Two Factor Authentication</h1>
+				<p class="text-center text-green-400 mb-4">✅ 2FA is currently enabled on your account</p>
+
+				<!-- Test verification -->
+				<div class="w-full">
+					<h3 class="text-xl mb-4 text-center">Test your 2FA:</h3>
+					<form id="verify-form" class="flex flex-col items-center gap-3 w-full">
+						<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
+							<input
+								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800 text-center"
+								type="text" name="token" placeholder="000000" required maxlength="6" pattern="[0-9]{6}">
+						</fieldset>
+						<button type="submit"
+							class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition text-xl w-full">
+							Test Code
+						</button>
+					</form>
+				</div>
+
+				<!-- Disable 2FA -->
+				<div class="w-full border-t border-gray-600 pt-6 mt-6">
+					<h3 class="text-xl mb-4 text-center text-red-400">Disable 2FA</h3>
+					<form action="/2FA/disable" method="POST" class="flex flex-col items-center gap-3 w-full">
+						<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
+							<input
+								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+								type="password" name="password" placeholder="Enter your password to disable" required>
+						</fieldset>
+						<button type="submit"
+							class="bg-red-600 hover:bg-red-500 active:bg-red-700 p-2 rounded-lg transition text-xl w-full"
+							onclick="return confirm('Are you sure you want to disable 2FA?')">
+							Disable 2FA
+						</button>
+					</form>
+				</div>
+			</div>
+		<% } %>
+	</main>
+</body>
+</html>

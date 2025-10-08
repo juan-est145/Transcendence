@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Two Factor Authentication Required</title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+	<%- include('components/navbar.ejs') %>
+	<main class="flex-grow flex flex-col justify-center relative">
+		<%- include('components/errorPopup.ejs') %>
+
+		<form
+			class="bg-gray-800 min-w-lg rounded-xl self-center flex flex-col items-center justify-evenly shadow-md my-3 px-4 py-12 gap-3"
+			action="/2FA/verify-login" method="post">
+			<h1 class="text-4xl text-center m-3 font-bold">Two Factor Authentication</h1>
+			<p class="text-center text-gray-300 mb-4">Enter the 6-digit code from your authenticator app</p>
+
+			<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
+				<input
+					class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800 text-center"
+					type="text" id="token" name="token" placeholder="000000" required maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code">
+			</fieldset>
+
+			<button
+				class="bg-blue-800 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition text-xl w-full">Verify & Login</button>
+
+			<a class="underline text-gray-400" href="/auth/log-out">Cancel & Logout</a>
+		</form>
+	</main>
+</body>
+</html>

@@ -4,6 +4,8 @@ import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
 import { search } from './search/search';
 import { friends } from './friends/friends';
+import { twoFactor } from './2FA/2fa';
+import { settings } from './settings/settings';
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // 404 - Not Found handler
@@ -55,6 +57,8 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.register(account, { prefix: "/account" });
   fastify.register(search, { prefix: "/search" });
   fastify.register(friends, { prefix: "/friends" });
+  fastify.register(twoFactor, { prefix: "/2FA" });
+  fastify.register(settings, { prefix: "/settings" });
 
 }
 

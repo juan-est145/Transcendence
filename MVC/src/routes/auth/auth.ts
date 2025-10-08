@@ -36,10 +36,16 @@ export async function auth(fastify: FastifyInstance) {
 			if (req.session.jwt)
 				return res.redirect("/");
 			authService.validateLogInBody(req.body);
-			const token = await authService.postLogin(req.body);
-			fastify.jwt.verify(token.jwt);
-			authService.createSession(req.session, token);
-			return res.redirect("/account");
+			const loginResponse = await authService.postLogin(req.body);
+			
+			if (authService.requires2FA(loginResponse)) {
+				authService.createTempSession(req.session, loginResponse.tempToken);
+				return res.redirect("/2FA/verify");
+			} else {
+				fastify.jwt.verify(loginResponse.jwt);
+				authService.createSession(req.session, loginResponse);
+				return res.redirect("/account");
+			}
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
