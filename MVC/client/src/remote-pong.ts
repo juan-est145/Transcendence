@@ -3,7 +3,6 @@ import earcut from 'earcut';
 import { createScene } from './scene/scene';
 import { setupScores, updateScoreDisplay, cleanupScores, resetScores } from './scene/scores';
 import { PongWebSocketClient } from './websocket/pong-client';
-import type { PlayerInput } from './websocket/pong.types';
 
 /**
  * Class representing a remote multiplayer Pong game using Babylon.js and WebSocket for real-time communication.
@@ -39,9 +38,9 @@ export class RemotePongGame {
     
     this.gameStatusElement = document.getElementById('gameStatus');
     
-    //Initialize WebSocket client and setup event handlers
+  //Initialize WebSocket client and setup event handlers
     this.wsClient = new PongWebSocketClient();
-    this.setupWebSocketCallbacks();
+  this.setupWebSocketCallbacks();
     this.setupInputHandlers();
     
     //Handle window resize events
@@ -133,12 +132,8 @@ export class RemotePongGame {
       }
       
       if (direction) {
-        const input: PlayerInput = {
-          playerId: 'player-' + Math.random().toString(36).substr(2, 9),
-          direction,
-          timestamp: Date.now()
-        };
-        this.wsClient.sendPlayerInput(input);
+        // Use the client's sendInput method so the client's internal playerId is used
+        this.wsClient.sendInput(direction);
       }
     });
 
@@ -162,12 +157,8 @@ export class RemotePongGame {
       }
       
       if (direction) {
-        const input: PlayerInput = {
-          playerId: 'player-' + Math.random().toString(36).substr(2, 9),
-          direction,
-          timestamp: Date.now()
-        };
-        this.wsClient.sendPlayerInput(input);
+        // Use the client's sendInput method so the client's internal playerId is used
+        this.wsClient.sendInput(direction);
       }
     });
   }
