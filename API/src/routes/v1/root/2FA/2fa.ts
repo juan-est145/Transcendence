@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { TwoFactorService } from "./2fa.service";
-import { Generate2FASecretDto, Enable2FADto, Verify2FADto, Disable2FADto } from "./2fa.dto";
 import { Generate2FASecretType, Enable2FAType, Verify2FAType, Disable2FAType } from "./2fa.type";
 import { generate2FASchema, enable2FASchema, verify2FASchema, disable2FASchema, get2FAStatusSchema } from "./2fa.swagger";
 import bcrypt from "bcrypt";
+import { EncryptionUtil } from "../../../../utils/encryption.util";
 
 async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	const twoFactorService = new TwoFactorService(fastify.prisma);
@@ -84,7 +84,8 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 					error: '2FA not enabled'
 				});
 			}
-			const isValid = twoFactorService.verifyToken(user.twoFactorSecret, token);
+			const decryptedSecret = EncryptionUtil.decrypt(user.twoFactorSecret);
+			const isValid = twoFactorService.verifyToken(decryptedSecret, token);
 			if (!isValid) {
 				return reply.status(400).send({
 					error: 'Invalid verification code'

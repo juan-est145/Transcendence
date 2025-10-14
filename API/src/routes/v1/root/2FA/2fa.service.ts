@@ -1,6 +1,7 @@
 import { authenticator } from "otplib";
 import { toDataURL } from "qrcode";
 import { PrismaClient } from "@prisma/client";
+import { EncryptionUtil } from "../../../../utils/encryption.util";
 
 export class TwoFactorService {
 	private prisma: PrismaClient;
@@ -53,11 +54,12 @@ export class TwoFactorService {
 		if (!this.verifyToken(secret, token)) {
 			throw new Error('Invalid token');
 		}
+		const encryptedSecret = EncryptionUtil.encrypt(secret);
 		await this.prisma.users.update({
 			where: { id: userId },
 			data: {
 				twoFactorEnabled: true,
-				twoFactorSecret: secret
+				twoFactorSecret: encryptedSecret
 			}
 		});
 		return { success: true };

@@ -4,6 +4,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtPayload } from "./auth.type";
 import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
+import { EncryptionUtil } from "../../../../utils/encryption.util";
 
 
 /**
@@ -179,9 +180,10 @@ export class AuthService {
 			}
 
 			// Verify the 2FA code
+			const decryptedSecret = EncryptionUtil.decrypt(user.twoFactorSecret);
 			const isValid = authenticator.verify({
 				token: code,
-				secret: user.twoFactorSecret
+				secret: decryptedSecret
 			});
 
 			if (!isValid) {
