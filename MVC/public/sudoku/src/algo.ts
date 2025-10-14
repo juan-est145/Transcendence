@@ -1,5 +1,6 @@
 import type {puzzleBoard, puzzleCell, puzzleLine, difficult_board} from "./types.js"
 import { easy, medium, hard } from "./puzzles.js";
+import { setGame } from "./ui.js";
 
 export let solution:puzzleBoard;
 export let fixed:puzzleBoard;
@@ -20,6 +21,7 @@ export function selectDifficult (mode: string)
 	}
 	solution = structuredClone(fixed);
 	solveBoard(solution);
+	setGame();
 }
 
 export function createPuzzle(difficult: difficult_board , num: number)
@@ -29,7 +31,7 @@ export function createPuzzle(difficult: difficult_board , num: number)
 	shufflePuzzle(shuffleRow(board));
 	let rotate = randomInt(1, 4)
 	for (let i = 0; i < rotate; i++)
-		rotatePuzzle(board);
+		board = rotatePuzzle(board);
 	return board;
 }
 

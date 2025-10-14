@@ -16,10 +16,10 @@
     "watch:ts": "tsc -w",
     "build:client": "tsc -p public/tsconfig.json",
     "watch:client": "tsc -p public/tsconfig.json -w",
-    "dev": "concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:tailwind:dev\" \"npm:watch:client\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"Tailwind,Client,Sudoku,Server TS,App\" -c \"magenta.bold,blue.bold,green.bold,yellow.bold,cyan.bold\" \"npm:tailwind:dev\" \"npm:watch:client\" \"npm:dev:sudoku\" \"npm:watch:ts\" \"npm:dev:start\"",
     "dev:start": "npm run open-api && fastify start --ignore-watch='.ts$ db/' -w -l info -p 4343 -d -I 9320 -P dist/app.js --options",
     "build:sudoku": "cd public/sudoku && npx tsc",
-    "build:all": "npm run build:sudoku && npm run build:ts",
+    "build:all": "npm run build:client && npm run build:sudoku && npm run build:ts",
     "dev:sudoku": "cd public/sudoku && npx tsc -w"
   },
   "keywords": [],
