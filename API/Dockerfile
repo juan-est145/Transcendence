@@ -15,6 +15,7 @@ RUN apk update && apk upgrade && apk add --no-cache openssl curl && mkdir -p ./d
 	# Sign server certificate with CA
 	openssl x509 -req -in /etc/ssl/private/cert.csr -CA /etc/ssl/certs/ca.crt -CAkey /etc/ssl/private/ca.key -CAcreateserial \
 	-out /etc/ssl/certs/selfsigned.crt -days 730 -sha256
+
 EXPOSE 4343
 EXPOSE 9320
 
