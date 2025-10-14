@@ -24,7 +24,7 @@ export async function twoFactor(fastify: FastifyInstance) {
 			return res.redirect("/auth/login");
 		
 		try {
-			const userPayload = fastify.jwt.verify(req.session.jwt) as any;
+			const userPayload = fastify.jwt.decode(req.session.jwt) as any;
 			const status = await twoFactorService.getStatus();
 			return res.view("/2fa.ejs", { 
 				twoFactorEnabled: status.enabled,
@@ -128,11 +128,10 @@ export async function twoFactor(fastify: FastifyInstance) {
 	 * @returns A redirection to the 2FA page with success or error message.
 	 */
 	fastify.post<{ Body: EnableTwoFactorBody }>("/enable", async (req, res) => {
-		let userPayload: any = null;
 		try {
 			if (!req.session.jwt)
 				return res.redirect("/auth/login");
-			userPayload = fastify.jwt.verify(req.session.jwt) as any;
+			const userPayload = fastify.jwt.decode(req.session.jwt) as any;
 			twoFactorService.validateEnableTwoFactorBody(req.body);
 			await twoFactorService.postEnable(req.body);
 			return res.view("/2fa.ejs", { 
@@ -141,30 +140,29 @@ export async function twoFactor(fastify: FastifyInstance) {
 				user: userPayload
 			});
 		} catch (error) {
-			if (!userPayload && req.session.jwt) {
+			let userPayload = null;
+			if (req.session.jwt) {
 				try {
-					userPayload = fastify.jwt.verify(req.session.jwt) as any;
+					userPayload = fastify.jwt.decode(req.session.jwt) as any;
 				} catch {
 					userPayload = null;
 				}
 			}
 			if (error instanceof ZodError) {
-				const ejsVariables = { 
+				return res.status(400).view("/2fa.ejs", { 
 					errors: error.issues.map((element) => element.message),
 					twoFactorEnabled: false,
 					user: userPayload
-				};
-				return res.status(400).view("/2fa.ejs", ejsVariables);
+				});
 			} else {
 				const errorMessage = typeof error === 'object' && error !== null && 'error' in error 
 					? (error as any).error 
 					: "Error enabling 2FA";
-				const ejsVariables = { 
+				return res.status(401).view("/2fa.ejs", { 
 					errors: [errorMessage],
 					twoFactorEnabled: false,
 					user: userPayload
-				};
-				return res.status(401).view("/2fa.ejs", ejsVariables);
+				});
 			}
 		}
 	});
@@ -210,11 +208,10 @@ export async function twoFactor(fastify: FastifyInstance) {
 	 * @returns A redirection to the 2FA page with success or error message.
 	 */
 	fastify.post<{ Body: DisableTwoFactorBody }>("/disable", async (req, res) => {
-		let userPayload: any = null;
 		try {
 			if (!req.session.jwt)
 				return res.redirect("/auth/login");
-			userPayload = fastify.jwt.verify(req.session.jwt) as any;	
+			const userPayload = fastify.jwt.decode(req.session.jwt) as any;
 			twoFactorService.validateDisableTwoFactorBody(req.body);
 			await twoFactorService.postDisable(req.body);
 			return res.view("/2fa.ejs", { 
@@ -223,31 +220,30 @@ export async function twoFactor(fastify: FastifyInstance) {
 				user: userPayload
 			});
 		} catch (error) {
-			if (!userPayload && req.session.jwt) {
+			let userPayload = null;
+			if (req.session.jwt) {
 				try {
-					userPayload = fastify.jwt.verify(req.session.jwt) as any;
+					userPayload = fastify.jwt.decode(req.session.jwt) as any;
 				} catch {
 					userPayload = null;
 				}
 			}
 			if (error instanceof ZodError) {
-				const ejsVariables = { 
+				return res.status(400).view("/2fa.ejs", { 
 					errors: error.issues.map((element) => element.message),
 					twoFactorEnabled: true,
 					user: userPayload
-				};
-				return res.status(400).view("/2fa.ejs", ejsVariables);
+				});
 			} else {
 				const errorMessage = typeof error === 'object' && error !== null && 'error' in error 
 					? (error as any).error 
 					: "Error disabling 2FA";
 				
-				const ejsVariables = { 
+				return res.status(401).view("/2fa.ejs", { 
 					errors: [errorMessage],
 					twoFactorEnabled: true,
 					user: userPayload
-				};
-				return res.status(401).view("/2fa.ejs", ejsVariables);
+				});
 			}
 		}
 	});
