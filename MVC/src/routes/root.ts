@@ -53,6 +53,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.register(auth, { prefix: "/auth" });
   fastify.register(account, { prefix: "/account" });
   fastify.register(search, { prefix: "/search" });
+  // Do not manually register the Sudoku route here; it is autoloaded from src/routes/sudoku
 
 }
 

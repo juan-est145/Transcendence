@@ -1,10 +1,10 @@
-import {setGame} from "./sudoku.js";
-import { easy, medium, hard, difficult_board} from "./puzzles.js";
+import type {puzzleBoard, puzzleCell, puzzleLine, difficult_board} from "./types.js"
+import { easy, medium, hard } from "./puzzles.js";
 
 export let solution:puzzleBoard;
 export let fixed:puzzleBoard;
 
-//MAIN FUNCTION
+
 export function selectDifficult (mode: string)
 {
 	switch (mode)
@@ -20,9 +20,7 @@ export function selectDifficult (mode: string)
 	}
 	solution = structuredClone(fixed);
 	solveBoard(solution);
-	setGame();
 }
-
 
 export function createPuzzle(difficult: difficult_board , num: number)
 {
@@ -34,8 +32,6 @@ export function createPuzzle(difficult: difficult_board , num: number)
 		rotatePuzzle(board);
 	return board;
 }
-
-//Rotate and shuffle the board to create new puzzles
 
 const rotatePuzzle = (puzzle: puzzleBoard) => { //rota hacia derecha toda la tabla
 	const n = puzzle.length
@@ -154,7 +150,7 @@ const checkValue = (board: puzzleBoard, row: number, col: number, num: number) =
 	return checkSub(board, row, col, num)	
 }	
 
-const solveBoard = (board: puzzleBoard) => {
+export const solveBoard = (board: puzzleBoard) => {
 	
 	const emptySpot = findNextEmpty(board)
 	let row = emptySpot[0]
@@ -178,7 +174,7 @@ const solveBoard = (board: puzzleBoard) => {
 	return false;
 }
 
-function randomInt(min: number, max: number): number {
+export function randomInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
