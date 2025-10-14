@@ -1,15 +1,22 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getUserAvatarSchema, postAvatarSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema, putFriendShipSchema } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
-import { AccountGetAvatarParam, AccountPostAvatarBody } from "./account.type";
+import { AccountGetAvatarParam, AccountPostAvatarBody, FriendShipStatusBody } from "./account.type";
 import { AuthService } from "../auth/auth.service";
+import { GetUserParams } from "../users/users.type";
+import { UsersService } from "../users/users.service";
+import { Value } from "@sinclair/typebox/value";
+import { accountGetAvatarParam } from "./account.dto";
+import { TypeBoxError } from "@sinclair/typebox";
+import { getUserParams } from "../users/users.dto";
 
 /**
  * This module deals with the user's account
  */
 export async function account(fastify: FastifyInstance) {
 	const accountService = new AccountService(fastify, new AuthService(fastify));
+	accountService.setUsersService(new UsersService(fastify, accountService));
 
 	/**
 	 * This entire module requires the user to be logged in in order to be able to access and
@@ -77,10 +84,69 @@ export async function account(fastify: FastifyInstance) {
 	 */
 	fastify.get<{ Params: AccountGetAvatarParam }>("/avatar/:username", getUserAvatarSchema, async (req, res) => {
 		try {
+			Value.Assert(accountGetAvatarParam, req.params);
 			const { username } = req.params;
 			const result = await accountService.getUserAvatar(username);
 			return res.send(result);
 		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
+			throw error;
+		}
+	});
+
+	fastify.post<{ Params: GetUserParams }>("/friends/:username", makeFriendSchema, async (req, res) => {
+		try {
+			Value.Assert(getUserParams, req.params);
+			const { username } = req.params;
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const result = await accountService.makeFriend(jwtPayload, username);
+			return res.status(201).send(result);
+		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
+			throw error;
+		}
+	});
+
+	fastify.get("/friends", getFriendsSchema, async (req, res) => {
+		try {
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const result = await accountService.getFriends(jwtPayload);
+			return res.send(result);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	fastify.get<{ Params: GetUserParams }>("/friendship/:username", getFriendRelation, async (req, res) => {
+		try {
+			Value.Assert(getUserParams, req.params);
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const { username } = req.params;
+			const result = await accountService.checkFriendRelation(jwtPayload, username);
+			return res.send(result);
+		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
+			throw error;
+		}
+	});
+
+	fastify.put<{ Params: GetUserParams, Body: FriendShipStatusBody }>("/friendship/:username", putFriendShipSchema, async (req, res) => {
+		try {
+			Value.Assert(getUserParams, req.params);
+			const jwtPayload: JwtPayload = await req.jwtDecode();
+			const { username } = req.params;
+			const result = await accountService.handleFriendRelation(jwtPayload, username, req.body);
+			return res.send(result);
+		} catch (error) {
+			if (error instanceof TypeBoxError) {
+				throw fastify.httpErrors.badRequest(error.message);
+			}
 			throw error;
 		}
 	});

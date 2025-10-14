@@ -1,5 +1,5 @@
 import { RouteShorthandOptions } from "fastify";
-import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes } from "./account.dto";
+import { accountAvatarRes, accountPostAvatarBody, accountPostAvatarRes, accountRes, friendShipStatusBody, getFriendsRes, getRelationRes, makeFriendRes } from "./account.dto";
 import { generalError } from "../root.dto";
 
 const accountTag = "Account";
@@ -26,6 +26,14 @@ export const getAccountSchema: RouteShorthandOptions = {
 					}
 				}
 			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
 			404: {
 				description: "In the rare instance that the user in the jwt no longer exists, it will send a 404 response",
 				content: {
@@ -34,8 +42,8 @@ export const getAccountSchema: RouteShorthandOptions = {
 					}
 				}
 			},
-			401: {
-				description: "It returns an error message if the credentials are not correct.",
+			409: {
+				description: "If there is already an established friendship or a pending one, it will send a 409 response",
 				content: {
 					"application/json": {
 						schema: generalError,
@@ -179,6 +187,199 @@ export const getUserAvatarSchema: RouteShorthandOptions = {
 			},
 			404: {
 				description: "If the username does not exist, it returns a 404 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const makeFriendSchema: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This allows for the creation of a new friendship",
+		response: {
+			201: {
+				description: "It returns a JSON object with the status of the new relation",
+				content: {
+					"application/json": {
+						schema: makeFriendRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to befriend yourself, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "If the username does not exist, it returns a 404 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const getFriendsSchema: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This route returns a list of friends and friend requests of the logged in user",
+		response: {
+			200: {
+				description: "It returns an array with all friends and friend requet's of the logged in user",
+				content: {
+					"application/json": {
+						schema: getFriendsRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to befriend yourself, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const getFriendRelation: RouteShorthandOptions = {
+	schema: {
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This route checks the relation status of the user and some other user",
+		response: {
+			200: {
+				description: "It returns an object identifying each user and their relation",
+				content: {
+					"application/json": {
+						schema: getRelationRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to search yourself, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "If the username does not exist or there was no previous relation, it returns a 404 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			401: {
+				description: "It returns an error message if the credentials are not correct.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			500: {
+				description: "If something else went wrong with the server, it sends back this response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+		}
+	}
+};
+
+export const putFriendShipSchema: RouteShorthandOptions = {
+	schema: {
+		body: friendShipStatusBody,
+		security: [{ bearerAuth: [] }],
+		tags: [accountTag],
+		summary: "This route allows for deleting friendships, rejecting friend requests or accepting them",
+		response: {
+			200: {
+				description: "It returns an object with the new relation if a request was accepted, or the old one if it has been deleted",
+				content: {
+					"application/json": {
+						schema: makeFriendRes,
+					}
+				}
+			},
+			400: {
+				description: "If the jwt is not present or you try to search yourself, it will send a 400 response.",
+				content: {
+					"application/json": {
+						schema: generalError,
+					}
+				}
+			},
+			404: {
+				description: "If the username does not exist or there was no prior relation, it returns a 404 response.",
 				content: {
 					"application/json": {
 						schema: generalError,

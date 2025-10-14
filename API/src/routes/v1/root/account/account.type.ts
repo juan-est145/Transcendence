@@ -1,5 +1,6 @@
 import { type Static } from "@sinclair/typebox";
-import { accountRes, accountPostAvatarBody, accountGetAvatarParam} from "./account.dto";
+import { accountRes, accountPostAvatarBody, accountGetAvatarParam, getRelationRes, friendShipStatusBody } from "./account.dto";
+import { $Enums } from "@prisma/client";
 
 export type AccountRes = Static<typeof accountRes>;
 export type AccountPostAvatarBody = Static<typeof accountPostAvatarBody>;
@@ -16,3 +17,30 @@ export interface GetAccntQuery {
 		online: boolean;
 	} | null;
 };
+
+export interface FriendWithProfiles {
+	user1: {
+		id: number;
+		createdAt: Date;
+		updatedAt: Date;
+		online: boolean;
+		user: {
+			username: string;
+		};
+	};
+	user2: {
+		id: number;
+		createdAt: Date;
+		updatedAt: Date;
+		online: boolean;
+		user: {
+			username: string;
+		};
+	};
+	status: $Enums.Friendship;
+	user1Id: number;
+	user2Id: number;
+};
+
+export type FriendRelation = Static<typeof getRelationRes>;
+export type FriendShipStatusBody = Static<typeof friendShipStatusBody>;
