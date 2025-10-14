@@ -17,10 +17,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.post<{ Body: Generate2FASecretType }>(
 		'/generate',
 		{
-			schema: {
-				body: Generate2FASecretDto,
-				...generate2FASchema
-			},
+			...generate2FASchema,
 			onRequest: [fastify.authenticate]
 		},
 		async (request: FastifyRequest, reply: FastifyReply) => {
@@ -46,10 +43,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.post<{ Body: Enable2FAType }>(
 		'/enable',
 		{
-			schema: {
-				body: Enable2FADto,
-				...enable2FASchema
-			},
+			...enable2FASchema,
 			onRequest: [fastify.authenticate]
 		},
 		async (request: FastifyRequest<{ Body: Enable2FAType }>, reply: FastifyReply) => {
@@ -75,10 +69,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.post<{ Body: Verify2FAType }>(
 		'/verify',
 		{
-			schema: {
-				body: Verify2FADto,
-				...verify2FASchema
-			},
+			...verify2FASchema,
 			onRequest: [fastify.authenticate]
 		},
 		async (request: FastifyRequest<{ Body: Verify2FAType }>, reply: FastifyReply) => {
@@ -112,10 +103,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.post<{ Body: Disable2FAType }>(
 		'/disable',
 		{
-			schema: {
-				body: Disable2FADto,
-				...disable2FASchema
-			},
+			...disable2FASchema,
 			onRequest: [fastify.authenticate]
 		},
 		async (request: FastifyRequest<{ Body: Disable2FAType }>, reply: FastifyReply) => {
@@ -163,7 +151,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.get(
 		'/status',
 		{
-			schema: get2FAStatusSchema,
+			...get2FAStatusSchema,
 			onRequest: [fastify.authenticate]
 		},
 		async (request: FastifyRequest, reply: FastifyReply) => {

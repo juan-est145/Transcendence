@@ -1562,7 +1562,7 @@ export interface paths {
         put?: never;
         /**
          * Generate 2FA secret and QR code
-         * @description Generates a new secret for 2FA setup and returns a QR code
+         * @description Generates a new secret for 2FA setup and returns a QR code that can be scanned by authenticator apps
          */
         post: {
             parameters: {
@@ -1577,27 +1577,68 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Default Response */
+                /** @description Successfully generated 2FA secret and QR code */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
+                            /** @description Base32 encoded secret for manual entry */
                             secret: string;
-                            /** @description Base64 encoded QR code image */
+                            /** @description Base64 encoded QR code data URL */
                             qrCode: string;
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description If the JWT is not present, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
@@ -1632,13 +1673,15 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
+                        /** @description Base32 encoded secret for TOTP generation */
                         secret: string;
+                        /** @description Six-digit TOTP code from authenticator app */
                         token: string;
                     };
                 };
             };
             responses: {
-                /** @description Default Response */
+                /** @description 2FA successfully enabled for the user account */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1649,25 +1692,54 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description If the JWT is not present or verification token is invalid, it will send a 400 response. */
                 400: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
@@ -1702,12 +1774,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
+                        /** @description Six-digit TOTP code from authenticator app */
                         token: string;
                     };
                 };
             };
             responses: {
-                /** @description Default Response */
+                /** @description Token verification completed successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1718,25 +1791,54 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description If the JWT is not present, 2FA is not enabled, or token format is invalid. */
                 400: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
@@ -1771,12 +1873,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
+                        /** @description User password for verification */
                         password: string;
                     };
                 };
             };
             responses: {
-                /** @description Default Response */
+                /** @description 2FA successfully disabled for the user account */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1787,14 +1890,71 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description If the JWT is not present or 2FA is not enabled. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If the user does not exist, it sends a 404 response. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
@@ -1826,7 +1986,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Current 2FA status for the authenticated user */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1837,14 +1997,54 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Default Response */
+                /** @description If the JWT is not present, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            error: string;
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
                         };
                     };
                 };
