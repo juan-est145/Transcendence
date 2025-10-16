@@ -1,15 +1,16 @@
 import { PongGame } from './pong.game';
 import { WebSocketMessage, PlayerInput } from './pong.types';
 import { FastifyInstance } from 'fastify';
+import { WebSocket } from '@fastify/websocket';
 
 /**
  * Manages multiple Pong game instances and player connections.
  */
 export class PongGameManager {
   private games: Map<string, PongGame> = new Map();
-  private playerSockets: Map<string, any> = new Map();
+  private playerSockets: Map<string, WebSocket> = new Map();
   private playerGameMap: Map<string, string> = new Map();
-  private socketPlayerMap: Map<any, string> = new Map();
+  private socketPlayerMap: Map<WebSocket, string> = new Map();
 
   constructor(private fastify: FastifyInstance) {}
 
@@ -35,7 +36,7 @@ export class PongGameManager {
    * Handles a new WebSocket connection. Sets up message and close handlers.
    * @param socket The WebSocket connection.
    */
-  public handleWebSocketConnection(socket: any): void {
+  public handleWebSocketConnection(socket: WebSocket): void {
     this.fastify.log.info('New WebSocket connection established');
     
     socket.on('message', (message: Buffer) => {
@@ -65,7 +66,7 @@ export class PongGameManager {
    * @param socket The WebSocket connection.
    * @param message The parsed WebSocket message.
    */
-  private handleWebSocketMessage(socket: any, message: WebSocketMessage): void {
+  private handleWebSocketMessage(socket: WebSocket, message: WebSocketMessage): void {
     switch (message.type) {
       case 'join_game':
         this.handleJoinGame(socket, message);
@@ -87,7 +88,7 @@ export class PongGameManager {
    * @param message The parsed WebSocket message.
    * @returns 
    */
-  private handleJoinGame(socket: any, message: WebSocketMessage): void {
+  private handleJoinGame(socket: WebSocket, message: WebSocketMessage): void {
     const { gameId, playerId } = message;
     
     if (!gameId || !playerId) {
@@ -139,7 +140,7 @@ export class PongGameManager {
    * @param socket The WebSocket connection.
    * @param message The parsed WebSocket message.
    */
-  private handleLeaveGame(socket: any, message: WebSocketMessage): void {
+  private handleLeaveGame(socket: WebSocket, message: WebSocketMessage): void {
     const playerId = this.socketPlayerMap.get(socket);
     if (playerId) {
       this.handlePlayerDisconnect(socket);
@@ -152,7 +153,7 @@ export class PongGameManager {
    * @param message The parsed WebSocket message.
    * @returns 
    */
-  private handlePlayerInput(socket: any, message: WebSocketMessage): void {
+  private handlePlayerInput(socket: WebSocket, message: WebSocketMessage): void {
     const playerId = this.socketPlayerMap.get(socket);
     if (!playerId) {
       this.sendError(socket, 'Player not registered');
@@ -185,7 +186,7 @@ export class PongGameManager {
    * @param socket The WebSocket connection.
    * @returns 
    */
-  private handlePlayerDisconnect(socket: any): void {
+  private handlePlayerDisconnect(socket: WebSocket): void {
     const playerId = this.socketPlayerMap.get(socket);
     if (!playerId) return;
 
@@ -263,7 +264,7 @@ export class PongGameManager {
     });
   }
 
-  private sendToSocket(socket: any, message: WebSocketMessage): void {
+  private sendToSocket(socket: WebSocket, message: WebSocketMessage): void {
     try {
       socket.send(JSON.stringify(message));
     } catch (error) {
@@ -271,7 +272,7 @@ export class PongGameManager {
     }
   }
 
-  private sendError(socket: any, errorMessage: string): void {
+  private sendError(socket: WebSocket, errorMessage: string): void {
     this.sendToSocket(socket, {
       type: 'error',
       data: { message: errorMessage }
