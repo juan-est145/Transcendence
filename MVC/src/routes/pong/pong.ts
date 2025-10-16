@@ -10,10 +10,8 @@ export async function pong(fastify: FastifyInstance) {
 		return res.html();
 	});
 
-	fastify.register(async function (fastify) {
-		fastify.get('/ws', { websocket: true }, (connection, req) => {
-			gameManager.handleWebSocketConnection(connection);
-		});
+	fastify.get('/ws', { websocket: true }, (connection, req) => {
+		gameManager.handleWebSocketConnection(connection);
 	});
 
 	fastify.get("/games", async (req, res) => {
@@ -24,11 +22,11 @@ export async function pong(fastify: FastifyInstance) {
 	fastify.get("/games/:gameId/stats", async (req, res) => {
 		const { gameId } = req.params as { gameId: string };
 		const stats = gameManager.getGameStats(gameId);
-		
+
 		if (!stats) {
 			return res.status(404).send({ error: "Game not found" });
 		}
-		
+
 		return stats;
 	});
 
