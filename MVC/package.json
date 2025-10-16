@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" c8 --exclude=\"**/*.dto.ts\" --exclude=\"test/**\" --exclude=\"src/plugins/**\" jest --detectOpenHandles --forceExit --runInBand",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" c8 --exclude=\"**/*.dto.ts\" --exclude=\"test/**\" --exclude=\"src/plugins/**\" jest --forceExit --runInBand",
     "open-api": "mkdir -p ./schema && npx openapi-typescript https://api:4343/docs/json -o ./schema/api-schema.d.ts",
     "tailwind": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css",
     "tailwind:dev": "npx @tailwindcss/cli -i ./public/styles/style.css -o ./public/styles/dist/output.css --watch=always",
