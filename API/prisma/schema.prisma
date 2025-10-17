@@ -18,6 +18,8 @@ model Users {
   password String
   email    String   @unique
   profile  Profile?
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
 }
 
 // TO DO: Need to think about storing information like 2FA and stats.

@@ -5,6 +5,8 @@ import { account } from './account/account';
 import { search } from './search/search';
 import { pong } from './pong/pong';
 import { friends } from './friends/friends';
+import { twoFactor } from './2FA/2fa';
+import { settings } from './settings/settings';
 
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
@@ -64,6 +66,8 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.register(search, { prefix: "/search" });
   fastify.register(pong, { prefix: "/pong" });
   fastify.register(friends, { prefix: "/friends" });
+  fastify.register(twoFactor, { prefix: "/2FA" });
+  fastify.register(settings, { prefix: "/settings" });
 }
 
 export default root
