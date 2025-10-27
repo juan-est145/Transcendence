@@ -106,4 +106,14 @@ export async function account(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
+
+	fastify.get("/online", { websocket: true }, (socket, req) => {
+		socket.on("message", () => {
+			socket.send("Connection established, changing to online");
+		});
+
+		socket.on("close", () => {
+			console.log("Client disconnected");
+		});
+	});
 }

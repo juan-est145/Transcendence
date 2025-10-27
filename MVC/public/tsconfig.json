@@ -13,5 +13,5 @@
 	},
 	"include": [
 		"scripts/**/*.ts"
-	]
+, "scripts/socketWorker.js"	]
 }
