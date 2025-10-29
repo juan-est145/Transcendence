@@ -107,6 +107,12 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route uses websockets to track if a user is logged and still using the page to update
+	 * it's online status accordingly.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 */
 	fastify.get("/online", { websocket: true }, (socket, req) => {
 		const token = req.session.get("jwt")!;
 		socket.on("message", async () => {

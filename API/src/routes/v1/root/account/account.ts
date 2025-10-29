@@ -80,7 +80,10 @@ export async function account(fastify: FastifyInstance) {
 
 	/**
 	 * This route returns a user's avatar information whose username is equal to the url parameter.
-	 * @param req - The fastify request instance
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with the data of the searched user's
+	 * avatar data. Else, it throws an error and send's a JSON response with the details.
 	 */
 	fastify.get<{ Params: AccountGetAvatarParam }>("/avatar/:username", getUserAvatarSchema, async (req, res) => {
 		try {
@@ -96,6 +99,14 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows for the creation of a friend request between two users. The logged user sends the request
+	 * to the user whose username matches the username url parameter.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 201 JSON response with the new relation between the two users.
+	 * Else, it throws an error and send's a JSON response with the details.
+	 */
 	fastify.post<{ Params: GetUserParams }>("/friends/:username", makeFriendSchema, async (req, res) => {
 		try {
 			Value.Assert(getUserParams, req.params);
@@ -111,6 +122,13 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows for getting a list of all of the friends and friend requests of the logged in user.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with the aforementioned list.
+	 * Else, it throws an error and send's a JSON response with the details.
+	 */
 	fastify.get("/friends", getFriendsSchema, async (req, res) => {
 		try {
 			const jwtPayload: JwtPayload = await req.jwtDecode();
@@ -121,6 +139,14 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows for checking the relation between the logged in user and a different user.
+	 * The searched user will be the one specified under the username url path variable.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with basic data of both users and their
+	 * relation. Else, it throws an error and send's a JSON response with the details.
+	 */
 	fastify.get<{ Params: GetUserParams }>("/friendship/:username", getFriendRelation, async (req, res) => {
 		try {
 			Value.Assert(getUserParams, req.params);
@@ -136,6 +162,14 @@ export async function account(fastify: FastifyInstance) {
 		}
 	});
 
+	/**
+	 * This route allows the logged in user for modifying friendships and friend requests. You can accept, reject and delete.
+	 * The user to which the operation will be applied will be the one specified under the username url variable.
+	 * @param req - The fastify request instance. It's body must fulfill the FriendShipStatusBody object.
+	 * @param res - The fastify response instance.
+	 * @returns In case of sucess, it will return the new relation if a request was accepted or the old one if it has
+	 * been deleted. Else, it throws an error and send's a JSON response with the details.
+	 */
 	fastify.put<{ Params: GetUserParams, Body: FriendShipStatusBody }>("/friendship/:username", putFriendShipSchema, async (req, res) => {
 		try {
 			Value.Assert(getUserParams, req.params);
@@ -150,7 +184,15 @@ export async function account(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
-
+	
+	/**
+	 * This route allows to update the logged user's online status.
+	 * @param req - The fastify request instance. It must have a body according to the SetOnlineBody type.
+	 * @param res - The fastify response instance.
+	 * @returns In case of success, it returns a 200 JSON response with
+	 * the user's avatar data from the avatar table in the db. Else, it throws
+	 * an error and send's a JSON with the details.
+	 */
 	fastify.put<{ Body: SetOnlineBody }>("/online_status", putOnlineStatus, async (req, res) => {
 		try {
 			const { email }: JwtPayload = await req.jwtDecode();

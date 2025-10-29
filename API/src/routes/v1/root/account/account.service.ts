@@ -424,6 +424,13 @@ export class AccountService {
 		}
 	}
 
+	/**
+	 * This function updates the profile of the user in the database records to it's appropiate
+	 * online status.
+	 * @param online - A boolean that states wether or not the user is online.
+	 * @param email - An email to find the user in question.
+	 * @returns - The updated profile of the user.
+	 */
 	async setOnlineStatus(online: boolean, email: string) {
 		try {
 			const profile = await this.authService.getUser(email);
