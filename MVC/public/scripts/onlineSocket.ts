@@ -10,6 +10,6 @@ promise.then((value) => {
 		alert(e.data);
 	}
 
-	worker.port.postMessage("online");
+	//worker.port.postMessage("online");
 });
 
