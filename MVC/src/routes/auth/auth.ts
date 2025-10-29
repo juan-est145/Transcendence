@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
 import { AuthService } from "./auth.service";
 import { ZodError } from "zod";
+import { AccountService } from "../account/account.service";
 
 /**
  * This module deals with everything relating to the login page.
@@ -9,6 +10,7 @@ import { ZodError } from "zod";
 export async function auth(fastify: FastifyInstance) {
 
 	const authService = new AuthService(fastify);
+	const accountService = new AccountService(fastify);
 
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
@@ -66,6 +68,7 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.get("/log-out", async (req, res) => {
 		if (req.session.jwt) {
+			await accountService.setOnlineStatus(false, req.session.jwt);
 			await req.session.destroy();
 		}
 		return res.redirect("/");

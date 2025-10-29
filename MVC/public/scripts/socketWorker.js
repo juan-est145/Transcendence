@@ -36,6 +36,6 @@ onconnect = (event) => {
 		const i = clients.indexOf(port);
 		if (i !== -1) clients.splice(i, 1);
 	});
-
+	
 	connect();
 }
