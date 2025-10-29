@@ -12,6 +12,7 @@
 		"skipLibCheck": true
 	},
 	"include": [
-		"scripts/**/*.ts"
-, "scripts/socketWorker.js"	]
+		"scripts/**/*.ts",
+		"scripts/socketWorker.js"
+	]
 }

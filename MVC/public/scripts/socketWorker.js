@@ -20,11 +20,17 @@ function connect() {
 		clients.forEach((port) => port.postMessage(e.data));
 	});
 	websocket.addEventListener('close', () => {
-		console.log('[SharedWorker] ws closed');
-		websocket = null;
-		onlineSent = false;
+		disconnect();
 		// keep onlineSent true so we don't resend on reconnect; change if desired
 	});
+}
+
+function disconnect() {
+	console.log('[SharedWorker] ws closed');
+	if (websocket)
+		websocket.close();
+	websocket = null;
+	onlineSent = false;
 }
 
 onconnect = (event) => {
@@ -36,6 +42,13 @@ onconnect = (event) => {
 		const i = clients.indexOf(port);
 		if (i !== -1) clients.splice(i, 1);
 	});
-	
-	connect();
+
+	port.addEventListener("message", (e) => {
+		if (e.data === "online")
+			connect();
+		else
+			disconnect();
+	});
+
+	//connect();
 }
