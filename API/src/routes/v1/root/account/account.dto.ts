@@ -87,3 +87,7 @@ export const friendShipStatusBody = Type.Object({
 		DELETE: "DELETE",
 	}),
 });
+
+export const putOnlineBody = Type.Object({
+	online: Type.Boolean(),
+});

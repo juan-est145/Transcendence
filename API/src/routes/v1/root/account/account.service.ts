@@ -423,4 +423,21 @@ export class AccountService {
 			throw error;
 		}
 	}
+
+	async setOnlineStatus(online: boolean, email: string) {
+		try {
+			const profile = await this.authService.getUser(email);
+			const result = await this.fastify.prisma.profile.update({
+				where: {
+					id: profile.id
+				},
+				data: {
+					online
+				}
+			});
+			return result;
+		} catch (error) {
+			throw error;
+		}
+	}
 }

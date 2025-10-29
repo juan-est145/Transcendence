@@ -1,5 +1,5 @@
 import { type Static } from "@sinclair/typebox";
-import { accountRes, accountPostAvatarBody, accountGetAvatarParam, getRelationRes, friendShipStatusBody } from "./account.dto";
+import { accountRes, accountPostAvatarBody, accountGetAvatarParam, getRelationRes, friendShipStatusBody, putOnlineBody } from "./account.dto";
 import { $Enums } from "@prisma/client";
 
 export type AccountRes = Static<typeof accountRes>;
@@ -44,3 +44,4 @@ export interface FriendWithProfiles {
 
 export type FriendRelation = Static<typeof getRelationRes>;
 export type FriendShipStatusBody = Static<typeof friendShipStatusBody>;
+export type SetOnlineBody = Static<typeof putOnlineBody>;

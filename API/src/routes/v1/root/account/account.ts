@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema, putFriendShipSchema } from "./account.swagger";
+import { getAccountSchema, getAvatarSchema, getFriendRelation, getFriendsSchema, getUserAvatarSchema, makeFriendSchema, postAvatarSchema, putFriendShipSchema, putOnlineStatus } from "./account.swagger";
 import { JwtPayload } from "../auth/auth.type";
 import { AccountService } from "./account.service";
-import { AccountGetAvatarParam, AccountPostAvatarBody, FriendShipStatusBody } from "./account.type";
+import { AccountGetAvatarParam, AccountPostAvatarBody, FriendShipStatusBody, SetOnlineBody } from "./account.type";
 import { AuthService } from "../auth/auth.service";
 import { GetUserParams } from "../users/users.type";
 import { UsersService } from "../users/users.service";
@@ -147,6 +147,16 @@ export async function account(fastify: FastifyInstance) {
 			if (error instanceof TypeBoxError) {
 				throw fastify.httpErrors.badRequest(error.message);
 			}
+			throw error;
+		}
+	});
+
+	fastify.put<{ Body: SetOnlineBody }>("/online_status", putOnlineStatus, async (req, res) => {
+		try {
+			const { email }: JwtPayload = await req.jwtDecode();
+			const { online } = await accountService.setOnlineStatus(req.body.online, email);
+			return res.send({ online });
+		} catch (error) {
 			throw error;
 		}
 	});
