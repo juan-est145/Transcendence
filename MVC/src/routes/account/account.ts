@@ -108,12 +108,19 @@ export async function account(fastify: FastifyInstance) {
 	});
 
 	fastify.get("/online", { websocket: true }, (socket, req) => {
-		socket.on("message", () => {
+		const token = req.session.get("jwt")!;
+		socket.on("message", async () => {
+			await accountService.setOnlineStatus(true, token);
 			socket.send("Connection established, changing to online");
 		});
 
-		socket.on("close", () => {
-			console.log("Client disconnected");
+		socket.on("close", async () => {
+			try {
+				await accountService.setOnlineStatus(false, token);
+			} catch (error) {
+				console.error(error);
+			}
+			
 		});
 	});
 }

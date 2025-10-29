@@ -1320,7 +1320,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/account/online": {
+    "/v1/account/online_status": {
         parameters: {
             query?: never;
             header?: never;

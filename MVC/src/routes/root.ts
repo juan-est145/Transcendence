@@ -38,9 +38,10 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
    */
   fastify.addHook("onRequest", async (req, res) => {
     const authMiddleware: Middleware = {
-      onRequest({ schemaPath, request }) {
-        if (!req.session)
+      async onRequest({ schemaPath, request }) {
+        if (!req.session || schemaPath === "/v1/account/online_status")
           return request;
+        await req.session.reload();
         const token = schemaPath === "/v1/auth/refresh-jwt" ? req.session.get("refreshJwt") : req.session.get("jwt");
         request.headers.set("Authorization", `Bearer ${token}`);
         return request;

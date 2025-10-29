@@ -156,4 +156,18 @@ export class AccountService {
 			throw error;
 		return data;
 	}
+
+	async setOnlineStatus(online: boolean, token: string) {
+		const { data, error } = await this.fastify.apiClient.PUT("/v1/account/online_status", {
+			body: {
+				online
+			},
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (error)
+			throw error;
+		return data;
+	}
 }
