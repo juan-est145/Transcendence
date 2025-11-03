@@ -22,6 +22,9 @@ class PongGameManager {
     }
 
     this.setupEventListeners();
+    
+    // Check if coming from matchmaking
+    this.checkMatchmakingMode();
   }
 
   //Setup event listeners for UI buttons to switch game modes and return to the main menu
@@ -37,6 +40,13 @@ class PongGameManager {
     if (remoteModeBtn) {
       remoteModeBtn.addEventListener('click', () => {
         this.startRemoteGame();
+      });
+    }
+
+    const backToHomeBtn = document.getElementById('backToHome');
+    if (backToHomeBtn) {
+      backToHomeBtn.addEventListener('click', () => {
+        window.location.href = '/';
       });
     }
 
@@ -60,28 +70,62 @@ class PongGameManager {
   private startLocalGame(): void {
     console.log('Starting local multiplayer game');
     
+    // Test WebGL support before starting (Firefox compatibility)
+    if (!this.testWebGLSupport()) {
+      alert('WebGL is not supported or enabled in your browser. Please enable WebGL to play.');
+      return;
+    }
+    
     this.gameMode.style.display = 'none';
     this.canvas.style.display = 'block';
     this.gameUI.style.display = 'block';
 
-    this.currentGame = new LocalPongGame(this.canvas);
-    this.currentGame.start();
+    try {
+      this.currentGame = new LocalPongGame(this.canvas);
+      this.currentGame.start();
 
-    const gameStatus = document.getElementById('gameStatus');
-    if (gameStatus) {
-      gameStatus.textContent = 'Local Multiplayer - Player 1: W/S, Player 2: Arrow Keys';
+      const gameStatus = document.getElementById('gameStatus');
+      if (gameStatus) {
+        gameStatus.textContent = 'Local Multiplayer - Player 1: W/S, Player 2: Arrow Keys';
+      }
+    } catch (error) {
+      console.error('Error starting local game:', error);
+      alert('Failed to start the game. Please check your browser console for details.');
+      this.backToMenu();
     }
   }
 
   private startRemoteGame(): void {
     console.log('Starting remote multiplayer game');
     
+    // Test WebGL support before starting (Firefox compatibility)
+    if (!this.testWebGLSupport()) {
+      alert('WebGL is not supported or enabled in your browser. Please enable WebGL to play.');
+      return;
+    }
+    
     this.gameMode.style.display = 'none';
     this.canvas.style.display = 'block';
     this.gameUI.style.display = 'block';
 
-    this.currentGame = new RemotePongGame(this.canvas);
-    this.currentGame.start();
+    try {
+      this.currentGame = new RemotePongGame(this.canvas);
+      this.currentGame.start();
+    } catch (error) {
+      console.error('Error starting remote game:', error);
+      alert('Failed to start the game. Please check your browser console for details.');
+      this.backToMenu();
+    }
+  }
+
+  private testWebGLSupport(): boolean {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      return !!gl;
+    } catch (e) {
+      return false;
+    }
   }
 
   private backToMenu(): void {
@@ -100,6 +144,22 @@ class PongGameManager {
     const gameStatus = document.getElementById('gameStatus');
     if (gameStatus) {
       gameStatus.textContent = '';
+    }
+  }
+
+  /**
+   * Check if the page was loaded from matchmaking and automatically start remote game
+   */
+  private checkMatchmakingMode(): void {
+    const isFromMatchmaking = sessionStorage.getItem('matchmakingMode');
+    
+    if (isFromMatchmaking === 'true') {
+      console.log('Starting remote game from matchmaking');
+      // Clear the flag
+      sessionStorage.removeItem('matchmakingMode');
+      
+      // Automatically start remote game
+      this.startRemoteGame();
     }
   }
 }

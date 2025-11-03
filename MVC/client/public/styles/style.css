@@ -84,6 +84,18 @@ html, body{
 	box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
 }
 
+.back-home-button {
+	background: linear-gradient(45deg, #220011, #660033);
+	color: #ff88aa;
+	border: 2px solid #ff88aa;
+	margin-top: 1rem;
+}
+
+.back-home-button:hover {
+	background: linear-gradient(45deg, #660033, #aa0055);
+	box-shadow: 0 0 20px rgba(255, 136, 170, 0.4);
+}
+
 .game-info {
 	display: flex;
 	justify-content: space-between;

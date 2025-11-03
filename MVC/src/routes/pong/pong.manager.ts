@@ -227,16 +227,17 @@ export class PongGameManager {
 
       const gameState = game.getGameState();
       
-      if (gameState.gameStatus === 'finished' || 
-          (!gameState.players.left && !gameState.players.right)) {
-        clearInterval(updateInterval);
-        return;
-      }
-
       this.broadcastToGame(gameId, {
         type: 'game_state',
         data: gameState
       });
+      
+      if (gameState.gameStatus === 'finished' || 
+          (!gameState.players.left && !gameState.players.right)) {
+        console.log(`Game ${gameId} ended. Status: ${gameState.gameStatus}`);
+        clearInterval(updateInterval);
+        return;
+      }
     }, 1000 / 60); //FPS
   }
 

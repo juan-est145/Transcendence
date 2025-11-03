@@ -19,6 +19,21 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   // 401 - Unauthorized for not logged error's.
   fastify.setErrorHandler(async (error, request, reply) => {
     fastify.log.error(error);
+    
+    //For API endpoints (starting with /pong/matchmaking or /pong/tournaments), return JSON
+    const isApiEndpoint = request.url.includes('/matchmaking/') || 
+                          request.url.includes('/tournaments/') ||
+                          request.url.includes('/pong/games');
+    
+    if (isApiEndpoint) {
+      const statusCode = error.statusCode || 500;
+      return reply.code(statusCode).send({ 
+        success: false, 
+        error: error.message || "Internal server error" 
+      });
+    }
+    
+    //For page requests, return HTML error pages
     if (error.statusCode === 401) {
       if (request.session)
         await request.session.destroy();

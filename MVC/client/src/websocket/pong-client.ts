@@ -19,7 +19,17 @@ export class PongWebSocketClient {
   private playerPositionAssignedCallback: ((position: 'left' | 'right') => void) | null = null;
 
   constructor() {
-    console.log('PongWebSocketClient initialized with player ID:', this.playerId);
+    // Check if we have a match ID from matchmaking
+    const matchId = sessionStorage.getItem('matchId');
+    if (matchId) {
+      this.gameId = matchId;
+      console.log('PongWebSocketClient initialized with match ID:', matchId);
+      // Clear the match ID after using it
+      sessionStorage.removeItem('matchId');
+    } else {
+      console.log('PongWebSocketClient initialized with default game ID');
+    }
+    console.log('Player ID:', this.playerId);
   }
 
   public setOnGameStateUpdate(callback: (state: GameState) => void): void {

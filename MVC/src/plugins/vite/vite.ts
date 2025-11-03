@@ -6,8 +6,9 @@ export default fp<FastifyViteOptions>(async (fastify) => {
 	const opts: FastifyViteOptions = {
 		root: process.cwd(),
 		distDir: path.resolve(process.cwd(), "client", "dist"),
-		dev: process.env.NODE_ENV !== "production",
+		dev: false,
 		spa: true,
 	};
+	
 	fastify.register(FastifyVite, opts);
 });

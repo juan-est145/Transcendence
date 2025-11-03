@@ -56,6 +56,12 @@ export interface GameState {
     depth: number;
   };
   lastUpdate: number;
+  forfeit?: {
+    occurred: boolean;
+    forfeitedPlayer?: 'left' | 'right';
+    winner?: 'left' | 'right';
+    message?: string;
+  };
 }
 
 /**

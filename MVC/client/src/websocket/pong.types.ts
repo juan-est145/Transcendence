@@ -44,6 +44,12 @@ export interface GameState {
   };
   lastUpdate: number;
   playerPosition?: 'left' | 'right';
+  forfeit?: {
+    occurred: boolean;
+    forfeitedPlayer?: 'left' | 'right';
+    winner?: 'left' | 'right';
+    message?: string;
+  };
 }
 
 export interface PlayerInput {

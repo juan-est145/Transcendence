@@ -1,7 +1,8 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
 import { createScene } from './scene/scene';
-import { setupScores, incrementScoreOne, incrementScoreTwo, cleanupScores, resetScores } from './scene/scores';
+import { setupScores, incrementScoreOne, incrementScoreTwo, cleanupScores, resetScores, getScoreOne, getScoreTwo } from './scene/scores';
+import { showEndGameScreen, hideEndGameScreen } from './scene/end-game';
 
 /**
  * Class representing a local multiplayer Pong game using Babylon.js.
@@ -17,6 +18,8 @@ export class LocalPongGame {
   private ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
   private paddleSpeed = 0.1;
   private gameLoop: number | null = null;
+  private readonly MAX_SCORE = 5;
+  private gameEnded = false;
   
   private lastPaddleOneY = 0;
   private lastPaddleOneZ = 0;
@@ -32,7 +35,14 @@ export class LocalPongGame {
   //Initialize the game with the provided canvas element
   constructor(canvas: HTMLCanvasElement) {
     //Create Babylon.js engine and scene
-    this.engine = new BABYLON.Engine(canvas, true);
+    // Firefox compatibility: Use explicit WebGL context options
+    const engineOptions = {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      antialias: true,
+      powerPreference: 'high-performance' as WebGLPowerPreference
+    };
+    this.engine = new BABYLON.Engine(canvas, true, engineOptions);
     //Make earcut available globally for Babylon.js.
     (window as any).earcut = earcut;
     
@@ -116,6 +126,12 @@ export class LocalPongGame {
    * Update game state, including paddle and ball positions, handle collisions, and render the scene.
    */
   private updateGame(): void {
+    // Stop game updates if game has ended
+    if (this.gameEnded) {
+      this.scene.render();
+      return;
+    }
+
     const paddleMargin = 0.05;
 
     this.paddleOneVelocityY = this.paddleOne.position.y - this.lastPaddleOneY;
@@ -197,13 +213,36 @@ export class LocalPongGame {
 
     if (this.ball.position.x < -4.8) {
       incrementScoreTwo();
-      this.resetBall();
+      this.checkGameEnd();
+      if (!this.gameEnded) {
+        this.resetBall();
+      }
     } else if (this.ball.position.x > 4.8) {
       incrementScoreOne();
-      this.resetBall();
+      this.checkGameEnd();
+      if (!this.gameEnded) {
+        this.resetBall();
+      }
     }
 
     this.scene.render();
+  }
+
+  private checkGameEnd(): void {
+    const scoreOne = getScoreOne();
+    const scoreTwo = getScoreTwo();
+
+    if (scoreOne >= this.MAX_SCORE || scoreTwo >= this.MAX_SCORE) {
+      this.gameEnded = true;
+      const winner = scoreOne >= this.MAX_SCORE ? 'Player 1' : 'Player 2';
+      
+      // Stop ball movement and hide it
+      this.ballVelocity.set(0, 0, 0);
+      this.ball.setEnabled(false);
+      
+      // Show end-game screen
+      showEndGameScreen(this.scene, winner);
+    }
   }
 
   private resetBall(): void {
@@ -235,8 +274,13 @@ export class LocalPongGame {
     
     this.engine.stopRenderLoop();
     
+    // Re-enable ball in case it was hidden
+    this.ball.setEnabled(true);
+    
+    hideEndGameScreen();
     cleanupScores();
     resetScores();
+    this.gameEnded = false;
   }
 
   public destroy(): void {

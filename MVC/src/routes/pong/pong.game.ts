@@ -10,7 +10,7 @@ export class PongGame {
   private readonly GAME_SPEED = 1000 / 60; //FPS
   private readonly PADDLE_SPEED = 0.08;
   private readonly BALL_SPEED = 0.04;
-  private readonly MAX_SCORE = 11;
+  private readonly MAX_SCORE = 5;
 
   constructor(gameId: string) {
     this.gameState = this.initializeGameState(gameId);
@@ -80,13 +80,34 @@ export class PongGame {
    * @param playerId The ID of the player.
    */
   public removePlayer(playerId: string): void {
-    if (this.gameState.players.left === playerId) {
+    const wasLeftPlayer = this.gameState.players.left === playerId;
+    const wasRightPlayer = this.gameState.players.right === playerId;
+    
+    if (wasLeftPlayer) {
       this.gameState.players.left = undefined;
-    } else if (this.gameState.players.right === playerId) {
+    } else if (wasRightPlayer) {
       this.gameState.players.right = undefined;
     }
 
-    if (!this.gameState.players.left && !this.gameState.players.right) {
+    // If a player leaves during an active game, it's a forfeit
+    if (this.gameState.gameStatus === 'playing' && (wasLeftPlayer || wasRightPlayer)) {
+      const forfeitedPlayer = wasLeftPlayer ? 'left' : 'right';
+      const winner = wasLeftPlayer ? 'right' : 'left';
+      const forfeitedPlayerName = forfeitedPlayer === 'left' ? 'Player 1' : 'Player 2';
+      
+      this.gameState.forfeit = {
+        occurred: true,
+        forfeitedPlayer,
+        winner,
+        message: `${forfeitedPlayerName} disconnected. Victory awarded to ${winner === 'left' ? 'Player 1' : 'Player 2'}!`
+      };
+      
+      this.gameState.gameStatus = 'finished';
+      this.stopGameLoop();
+      
+      console.log(`Player ${forfeitedPlayerName} forfeited the match`);
+    } else if (!this.gameState.players.left && !this.gameState.players.right) {
+      // Both players left
       this.gameState.gameStatus = 'waiting';
       this.stopGameLoop();
     }

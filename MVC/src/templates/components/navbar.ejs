@@ -7,10 +7,9 @@
 		<% if (user) { %>
 			<!-- Options for logged in user -->
 			<ul class="hidden md:flex space-x-6 text-gray-300 items-center">
-				<li><a href="/local" class="hover:text-blue-400 transition">Local</a></li>
-				<li><a href="/multiplayer" class="hover:text-blue-400 transition">Multiplayer</a></li>
-				<li><a href="/tournament" class="hover:text-blue-400 transition">Tournament</a></li>
-				<li><a href="/ranking" class="hover:text-blue-400 transition">Ranking</a></li>
+				<li><a href="/pong" class="hover:text-blue-400 transition">Play</a></li>
+				<li><a href="/pong/matchmaking" class="hover:text-blue-400 transition">Matchmaking</a></li>
+				<li><a href="/pong/tournaments" class="hover:text-blue-400 transition">Tournaments</a></li>
 			</ul>
 		<% } else { %>
 			<!-- Options for non-logged user -->

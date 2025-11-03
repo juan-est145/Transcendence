@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Matchmaking - Pong Game</title>
+  <link rel="stylesheet" href="/styles/dist/output.css">
+  <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+  <%- include('components/navbar.ejs') %>
+
+  <main class="flex flex-col items-center justify-center flex-grow px-4 py-12 max-w-4xl mx-auto">
+    
+    <header class="mb-10 text-center">
+      <h1 class="text-5xl font-extrabold mb-4">Matchmaking</h1>
+      <p class="text-gray-400 max-w-lg mx-auto">
+        Encuentra un oponente y juega una partida competitiva
+      </p>
+    </header>
+
+    <!-- Matchmaking Status -->
+    <div id="matchmaking-container" class="w-full max-w-2xl">
+      
+      <!-- Idle State -->
+      <div id="idle-state" class="bg-gray-800 rounded-lg p-8 shadow-lg text-center">
+        <h2 class="text-2xl font-bold mb-6">¿Listo para jugar?</h2>
+        <button id="find-match-btn"
+          class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold">
+          Buscar Partida
+        </button>
+        <div class="mt-6">
+          <a href="/" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold inline-block">Volver al inicio</a>
+        </div>
+      </div>
+
+      <!-- Searching State -->
+      <div id="searching-state" class="bg-gray-800 rounded-lg p-8 shadow-lg text-center hidden">
+        <div class="mb-6">
+          <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
+        </div>
+        <h2 class="text-2xl font-bold mb-4">Buscando oponente...</h2>
+        <p class="text-gray-400 mb-6">Tiempo de espera: <span id="wait-time">0</span>s</p>
+        <button id="cancel-match-btn"
+          class="bg-red-600 hover:bg-red-700 active:bg-red-900 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg">
+          Cancelar
+        </button>
+      </div>
+
+      <!-- Match Found State -->
+      <div id="match-found-state" class="bg-gray-800 rounded-lg p-8 shadow-lg text-center hidden">
+        <div class="mb-6">
+          <svg class="inline-block w-16 h-16 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold mb-4 text-green-500">¡Oponente encontrado!</h2>
+        <p class="text-gray-400 mb-6">Preparando partida...</p>
+        <div id="opponent-info" class="bg-gray-700 rounded-lg p-4 mb-6">
+          <p class="text-lg">Oponente: <span id="opponent-name" class="font-bold">-</span></p>
+          <p class="text-sm text-gray-400">Ranking: <span id="opponent-rank">-</span></p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Active Matches -->
+    <section class="w-full max-w-2xl mt-10 bg-gray-800 rounded-lg p-6 shadow-lg">
+      <h2 class="text-2xl font-bold mb-4">Partidas Activas</h2>
+      <div id="active-matches" class="space-y-3">
+        <p class="text-gray-400 text-center">No hay partidas activas</p>
+      </div>
+    </section>
+
+  </main>
+
+  <%- include('components/footer.ejs') %>
+
+  <script src="/scripts/dist/matchmaking.js"></script>
+</body>
+
+</html>

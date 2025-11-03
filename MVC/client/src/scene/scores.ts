@@ -92,6 +92,14 @@ export function updateScoreDisplay(leftScore: number, rightScore: number) {
 	updateScores();
 }
 
+export function getScoreOne(): number {
+	return scoreOne;
+}
+
+export function getScoreTwo(): number {
+	return scoreTwo;
+}
+
 export function resetScores() {
 	scoreOne = 0;
 	scoreTwo = 0;

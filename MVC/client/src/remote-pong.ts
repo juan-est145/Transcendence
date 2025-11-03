@@ -3,6 +3,7 @@ import earcut from 'earcut';
 import { createScene } from './scene/scene';
 import { setupScores, updateScoreDisplay, cleanupScores, resetScores } from './scene/scores';
 import { PongWebSocketClient } from './websocket/pong-client';
+import { showEndGameScreen, hideEndGameScreen } from './scene/end-game';
 
 /**
  * Class representing a remote multiplayer Pong game using Babylon.js and WebSocket for real-time communication.
@@ -19,11 +20,19 @@ export class RemotePongGame {
   private playerPosition: 'left' | 'right' | null = null;
   private keysPressed: { [key: string]: boolean } = {};
   private gameStatusElement: HTMLElement | null = null;
+  private gameEnded = false;
 
   //Initialize the game with the provided canvas element
   constructor(canvas: HTMLCanvasElement) {
     //Create Babylon.js engine and scene
-    this.engine = new BABYLON.Engine(canvas, true);
+    // Firefox compatibility: Use explicit WebGL context options
+    const engineOptions = {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      antialias: true,
+      powerPreference: 'high-performance' as WebGLPowerPreference
+    };
+    this.engine = new BABYLON.Engine(canvas, true, engineOptions);
     //Make earcut available globally for Babylon.js.
     (window as any).earcut = earcut;
     
@@ -82,18 +91,42 @@ export class RemotePongGame {
       
       updateScoreDisplay(gameState.scores.left, gameState.scores.right);
       
+      // Check if game has finished
+      if (gameState.gameStatus === 'finished' && !this.gameEnded) {
+        this.gameEnded = true;
+        
+        let winner: string;
+        let message: string;
+        
+        // Check if game ended due to forfeit
+        if (gameState.forfeit && gameState.forfeit.occurred) {
+          winner = gameState.forfeit.winner === 'left' ? 'Player 1' : 'Player 2';
+          message = gameState.forfeit.message || `${winner} wins by forfeit!`;
+        } else {
+          // Normal game end
+          winner = gameState.scores.left > gameState.scores.right ? 'Player 1' : 'Player 2';
+          message = `Game Over! ${winner} wins!`;
+        }
+        
+        // Hide the ball
+        this.ball.setEnabled(false);
+        
+        // Show end-game screen
+        showEndGameScreen(this.scene, winner);
+        
+        if (this.gameStatusElement) {
+          this.gameStatusElement.textContent = message;
+        }
+      }
+      
       //Update game status display. Shows waiting, playing, or finished status.
-      if (this.gameStatusElement) {
+      if (this.gameStatusElement && !this.gameEnded) {
         switch (gameState.gameStatus) {
           case 'waiting':
             this.gameStatusElement.textContent = 'Waiting for another player...';
             break;
           case 'playing':
             this.gameStatusElement.textContent = this.playerPosition ? `You are Player ${this.playerPosition === 'left' ? '1' : '2'}` : 'Game in progress';
-            break;
-          case 'finished':
-            const winner = gameState.scores.left > gameState.scores.right ? 'Player 1' : 'Player 2';
-            this.gameStatusElement.textContent = `Game Over! ${winner} wins!`;
             break;
           default:
             this.gameStatusElement.textContent = '';
@@ -185,7 +218,12 @@ export class RemotePongGame {
     
     this.playerPosition = null;
     this.keysPressed = {};
+    this.gameEnded = false;
     
+    // Re-enable ball in case it was hidden
+    this.ball.setEnabled(true);
+    
+    hideEndGameScreen();
     cleanupScores();
     resetScores();
     
