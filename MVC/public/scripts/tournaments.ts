@@ -76,15 +76,15 @@ createTournamentForm?.addEventListener('submit', async (e) => {
             
             await loadTournaments();
             
-            alert(`¡Torneo creado exitosamente!\n\nCódigo de invitación: ${data.tournament.inviteCode}\n\nComparte este código con tus amigos para que puedan unirse.`);
+            alert(`Tournament created successfully!\n\nInvite Code: ${data.tournament.inviteCode}\n\nShare this code with your friends so they can join.`);
             
             viewTournament(data.tournament.id);
         } else {
-            alert(data.error || 'Error al crear el torneo');
+            alert(data.error || 'Error creating tournament');
         }
     } catch (error) {
         console.error('Error creating tournament:', error);
-        alert('Error al crear el torneo');
+        alert('Error creating tournament');
     }
 });
 
@@ -98,7 +98,7 @@ joinCodeForm?.addEventListener('submit', async (e) => {
     const inviteCode = codeInput?.value.toUpperCase().trim();
     
     if (!inviteCode || inviteCode.length !== 5) {
-        alert('Por favor ingresa un código válido de 5 letras');
+        alert('Please enter a valid 5-letter code');
         return;
     }
     
@@ -118,14 +118,14 @@ joinCodeForm?.addEventListener('submit', async (e) => {
             
             await loadTournaments();
             
-            alert('¡Te has unido al torneo exitosamente!');
+            alert('You have successfully joined the tournament!');
             viewTournament(data.tournament.id);
         } else {
-            alert(data.error || 'Error al unirse al torneo');
+            alert(data.error || 'Error joining tournament');
         }
     } catch (error) {
         console.error('Error joining by code:', error);
-        alert('Error al unirse al torneo');
+        alert('Error joining tournament');
     }
 });
 
@@ -157,15 +157,15 @@ async function loadTournaments() {
                      data-is-participant="${tournament.isParticipant}">
                     <h3 class="font-bold text-lg mb-2">${tournament.name}</h3>
                     <div class="flex justify-between text-sm text-gray-400">
-                        <span>${tournament.participants?.length || 0}/${tournament.size} jugadores</span>
+                        <span>${tournament.participants?.length || 0}/${tournament.size} players</span>
                         <span class="text-green-500">${tournament.status}</span>
                     </div>
                     ${tournament.isParticipant 
                         ? `<button class="view-active-lobby-btn mt-3 w-full bg-blue-600 hover:bg-blue-700 rounded px-4 py-2 text-sm font-semibold"
                                 data-tournament-id="${tournament.id}">
-                            Ver Partidas
+                            View Matches
                           </button>`
-                        : `<p class="mt-3 text-center text-gray-400 text-sm">Torneo en curso</p>`
+                        : `<p class="mt-3 text-center text-gray-400 text-sm">Tournament in progress</p>`
                     }
                 </div>
             `).join('');
@@ -195,7 +195,7 @@ async function loadTournaments() {
                 }
             });
         } else {
-            activeContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No hay torneos activos</p>';
+            activeContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No active tournaments</p>';
         }
         
         //Render upcoming tournaments
@@ -206,15 +206,15 @@ async function loadTournaments() {
                      data-is-participant="${tournament.isParticipant}">
                     <h3 class="font-bold text-lg mb-2">${tournament.name}</h3>
                     <div class="flex justify-between text-sm text-gray-400">
-                        <span>${tournament.participants?.length || 0}/${tournament.size} jugadores</span>
-                        <span class="text-yellow-500">Esperando</span>
+                        <span>${tournament.participants?.length || 0}/${tournament.size} players</span>
+                        <span class="text-yellow-500">Waiting</span>
                     </div>
                     ${tournament.isParticipant 
                         ? `<button class="view-lobby-btn mt-3 w-full bg-blue-600 hover:bg-blue-700 rounded px-4 py-2 text-sm font-semibold"
                                 data-tournament-id="${tournament.id}">
-                            Ver Lobby
+                            View Lobby
                           </button>`
-                        : `<p class="mt-3 text-center text-gray-400 text-sm">Usa el código para unirte</p>`
+                        : `<p class="mt-3 text-center text-gray-400 text-sm">Use code to join</p>`
                     }
                 </div>
             `).join('');
@@ -244,7 +244,7 @@ async function loadTournaments() {
                 }
             });
         } else {
-            upcomingContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No hay torneos próximos</p>';
+            upcomingContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No upcoming tournaments</p>';
         }
     } catch (error) {
         console.error('Error loading tournaments:', error);
@@ -265,15 +265,15 @@ async function joinTournament(tournamentId: string) {
         const data = await response.json();
         
         if (data.success) {
-            alert('Te has unido al torneo!');
+            alert('You joined the tournament!');
             await loadTournaments();
             viewTournament(tournamentId);
         } else {
-            alert(data.error || 'Error al unirse al torneo');
+            alert(data.error || 'Error joining tournament');
         }
     } catch (error) {
         console.error('Error joining tournament:', error);
-        alert('Error al unirse al torneo');
+        alert('Error joining tournament');
     }
 }
 
@@ -289,7 +289,7 @@ async function viewTournament(tournamentId: string) {
         
         if (!response.ok) {
             if (response.status === 403) {
-                alert('Solo los participantes del torneo pueden ver el lobby');
+                alert('Only tournament participants can view the lobby');
                 return;
             }
             throw new Error('Failed to fetch tournament');
@@ -310,15 +310,15 @@ async function viewTournament(tournamentId: string) {
                 const startButton = tournament.isOwner && tournament.isFull
                     ? `<button id="start-tournament-btn" data-tournament-id="${tournament.id}"
                               class="mt-4 bg-green-600 hover:bg-green-700 rounded-lg px-6 py-3 font-semibold">
-                         Iniciar Torneo
+                         Start Tournament
                        </button>`
                     : tournament.isOwner && !tournament.isFull
-                    ? `<p class="mt-4 text-yellow-400">Esperando a que se llene el torneo (${tournament.participants.length}/${tournament.size})</p>`
+                    ? `<p class="mt-4 text-yellow-400">Waiting for tournament to fill up (${tournament.participants.length}/${tournament.size})</p>`
                     : '';
                 
                 const leaveButton = `<button id="leave-tournament-btn" data-tournament-id="${tournament.id}"
                           class="mt-4 bg-red-600 hover:bg-red-700 rounded-lg px-6 py-3 font-semibold">
-                     Salir del Torneo
+                     Leave Tournament
                    </button>`;
                 
                 bracketContainer.innerHTML = `
@@ -327,31 +327,31 @@ async function viewTournament(tournamentId: string) {
                             <h3 class="text-2xl font-bold mb-4">${tournament.name}</h3>
                             <div class="grid grid-cols-2 gap-4 text-sm mb-4">
                                 <div>
-                                    <p class="text-gray-400">Código de invitación:</p>
+                                    <p class="text-gray-400">Invite Code:</p>
                                     <p class="text-2xl font-bold text-purple-400">${tournament.inviteCode}</p>
                                     <button id="copy-code-btn" data-code="${tournament.inviteCode}"
                                             class="text-xs bg-gray-600 hover:bg-gray-500 rounded px-3 py-1 mt-2">
-                                        Copiar código
+                                        Copy code
                                     </button>
                                 </div>
                                 <div>
-                                    <p class="text-gray-400">Jugadores:</p>
+                                    <p class="text-gray-400">Players:</p>
                                     <p class="text-xl font-bold">${tournament.participants.length}/${tournament.size}</p>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-400">
-                                <p>Creador: ${tournament.creatorUsername}</p>
-                                <p>Puntos para ganar: ${tournament.maxScore}</p>
+                                <p>Creator: ${tournament.creatorUsername}</p>
+                                <p>Points to win: ${tournament.maxScore}</p>
                             </div>
                         </div>
                         
                         <div class="bg-gray-700 rounded-lg p-6">
-                            <h4 class="text-xl font-bold mb-4">Participantes</h4>
+                            <h4 class="text-xl font-bold mb-4">Participants</h4>
                             <ul class="space-y-2">
                                 ${participantsList}
                             </ul>
                             ${tournament.participants.length < 2 ? 
-                                '<p class="text-yellow-400 mt-4">Se necesitan al menos 2 jugadores para iniciar</p>' 
+                                '<p class="text-yellow-400 mt-4">At least 2 players needed to start</p>' 
                                 : ''}
                         </div>
                         
@@ -400,19 +400,19 @@ async function viewTournament(tournamentId: string) {
                     let statusColor = '';
                     
                     if (match.status === 'completed') {
-                        matchStatusHTML = '✓ Completado';
+                        matchStatusHTML = '✓ Completed';
                         statusColor = 'text-green-400';
                     } else if (match.status === 'playing') {
-                        matchStatusHTML = '⚡ En juego';
+                        matchStatusHTML = '⚡ Playing';
                         statusColor = 'text-yellow-400';
                     } else if (match.status === 'ready') {
-                        matchStatusHTML = '🎮 Listo para empezar';
+                        matchStatusHTML = '🎮 Ready to start';
                         statusColor = 'text-blue-400';
                     } else if (match.status === 'lobby') {
-                        matchStatusHTML = '⏳ Esperando jugadores';
+                        matchStatusHTML = '⏳ Waiting for players';
                         statusColor = 'text-orange-400';
                     } else {
-                        matchStatusHTML = '⏳ Esperando';
+                        matchStatusHTML = '⏳ Waiting';
                         statusColor = 'text-gray-400';
                     }
                     
@@ -426,7 +426,7 @@ async function viewTournament(tournamentId: string) {
                             <div class="text-center ${statusColor} text-sm">
                                 ${matchStatusHTML}
                             </div>
-                            ${match.winner ? `<div class="text-center text-green-400 mt-2">Ganador: ${match.winner === match.player1?.userId ? player1Name : player2Name}</div>` : ''}
+                            ${match.winner ? `<div class="text-center text-green-400 mt-2">Winner: ${match.winner === match.player1?.userId ? player1Name : player2Name}</div>` : ''}
                         </div>
                     `;
                 }).join('');
@@ -436,24 +436,24 @@ async function viewTournament(tournamentId: string) {
                         <div class="bg-gray-700 rounded-lg p-6 mb-6">
                             <h3 class="text-2xl font-bold mb-4">${tournament.name}</h3>
                             <div class="text-center mb-4">
-                                <p class="text-lg text-green-400">🏆 Torneo en Progreso</p>
-                                <p class="text-gray-400 mt-2">Ronda ${currentRoundNumber} de ${totalRounds}</p>
+                                <p class="text-lg text-green-400">🏆 Tournament in Progress</p>
+                                <p class="text-gray-400 mt-2">Round ${currentRoundNumber} of ${totalRounds}</p>
                             </div>
                         </div>
                         
                         <div class="bg-gray-700 rounded-lg p-6">
-                            <h4 class="text-xl font-bold mb-4">Partidas de la Ronda Actual</h4>
-                            ${matchesList || '<p class="text-gray-400 text-center">No hay partidas en esta ronda</p>'}
+                            <h4 class="text-xl font-bold mb-4">Current Round Matches</h4>
+                            ${matchesList || '<p class="text-gray-400 text-center">No matches in this round</p>'}
                         </div>
                         
                         <div class="text-center mt-6">
                             <button id="check-my-match-btn" data-tournament-id="${tournament.id}"
                                     class="bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-3 font-semibold mr-3">
-                                Ver Mi Partida
+                                View My Match
                             </button>
                             <button id="refresh-tournament-btn" 
                                     class="bg-gray-600 hover:bg-gray-700 rounded-lg px-6 py-3 font-semibold">
-                                🔄 Actualizar
+                                🔄 Refresh
                             </button>
                         </div>
                     </div>
@@ -476,15 +476,15 @@ async function viewTournament(tournamentId: string) {
                 bracketContainer.innerHTML = `
                     <div class="text-center py-8">
                         <h3 class="text-xl font-bold mb-4">${tournament.name}</h3>
-                        <p class="text-green-400 text-2xl mb-4">¡Torneo Completado!</p>
-                        <p class="text-gray-400">Ganador: ${tournament.winner?.username || 'Desconocido'}</p>
+                        <p class="text-green-400 text-2xl mb-4">Tournament Completed!</p>
+                        <p class="text-gray-400">Winner: ${tournament.winner?.username || 'Unknown'}</p>
                     </div>
                 `;
             }
         }
     } catch (error) {
         console.error('Error viewing tournament:', error);
-        alert('Error al cargar el torneo');
+        alert('Error loading tournament');
     }
 }
 
@@ -493,10 +493,10 @@ async function viewTournament(tournamentId: string) {
  */
 function copyInviteCode(code: string) {
     navigator.clipboard.writeText(code).then(() => {
-        alert('¡Código copiado al portapapeles!');
+        alert('Code copied to clipboard!');
     }).catch(err => {
         console.error('Error copying code:', err);
-        alert('Error al copiar el código');
+        alert('Error copying code');
     });
 }
 
@@ -504,7 +504,7 @@ function copyInviteCode(code: string) {
  * Start tournament (only owner can do this)
  */
 async function startTournament(tournamentId: string) {
-    if (!confirm('¿Estás seguro de que quieres iniciar el torneo?')) {
+    if (!confirm('Are you sure you want to start the tournament?')) {
         return;
     }
     
@@ -517,14 +517,14 @@ async function startTournament(tournamentId: string) {
         const data = await response.json();
         
         if (data.success) {
-            alert('¡Torneo iniciado!');
+            alert('Tournament started!');
             viewTournament(tournamentId);
         } else {
-            alert(data.error || 'Error al iniciar el torneo');
+            alert(data.error || 'Error starting tournament');
         }
     } catch (error) {
         console.error('Error starting tournament:', error);
-        alert('Error al iniciar el torneo');
+        alert('Error starting tournament');
     }
 }
 
@@ -532,7 +532,7 @@ async function startTournament(tournamentId: string) {
  * Leave tournament
  */
 async function leaveTournament(tournamentId: string) {
-    if (!confirm('¿Estás seguro de que quieres salir del torneo?')) {
+    if (!confirm('Are you sure you want to leave the tournament?')) {
         return;
     }
     
@@ -545,15 +545,15 @@ async function leaveTournament(tournamentId: string) {
         const data = await response.json();
         
         if (data.success) {
-            alert('Has salido del torneo');
+            alert('You have left the tournament');
             bracketView?.classList.add('hidden');
             loadTournaments();
         } else {
-            alert(data.error || 'Error al salir del torneo');
+            alert(data.error || 'Error leaving tournament');
         }
     } catch (error) {
         console.error('Error leaving tournament:', error);
-        alert('Error al salir del torneo');
+        alert('Error leaving tournament');
     }
 }
 
@@ -574,7 +574,7 @@ async function viewMyMatch(tournamentId: string) {
         const data = await response.json();
         
         if (!data.success || !data.match) {
-            alert('No tienes ninguna partida activa en este momento');
+            alert('You have no active match at this time');
             return;
         }
         
@@ -593,43 +593,43 @@ async function viewMyMatch(tournamentId: string) {
             bracketContainer.innerHTML = `
                 <div class="max-w-2xl mx-auto">
                     <div class="bg-gray-700 rounded-lg p-6 mb-6 text-center">
-                        <h3 class="text-2xl font-bold mb-4">🎮 Lobby de Partida</h3>
-                        <p class="text-gray-400 mb-6">Prepárate para tu partida del torneo</p>
+                        <h3 class="text-2xl font-bold mb-4">🎮 Match Lobby</h3>
+                        <p class="text-gray-400 mb-6">Get ready for your tournament match</p>
                         
                         <div class="grid grid-cols-2 gap-6 mb-6">
                             <!-- You -->
                             <div class="bg-gray-800 rounded-lg p-4">
-                                <p class="text-sm text-gray-400 mb-2">Tú</p>
+                                <p class="text-sm text-gray-400 mb-2">You</p>
                                 <p class="text-xl font-bold mb-3">${isPlayer1 ? match.player1?.username : match.player2?.username}</p>
                                 <div class="flex items-center justify-center">
                                     ${myReadyStatus 
-                                        ? '<span class="text-green-400 text-2xl">✓ Listo</span>' 
-                                        : '<span class="text-gray-400 text-lg">⏳ No listo</span>'}
+                                        ? '<span class="text-green-400 text-2xl">✓ Ready</span>' 
+                                        : '<span class="text-gray-400 text-lg">⏳ Not Ready</span>'}
                                 </div>
                             </div>
                             
                             <!-- Opponent -->
                             <div class="bg-gray-800 rounded-lg p-4">
-                                <p class="text-sm text-gray-400 mb-2">Oponente</p>
+                                <p class="text-sm text-gray-400 mb-2">Opponent</p>
                                 <p class="text-xl font-bold mb-3">${opponentName}</p>
                                 <div class="flex items-center justify-center">
                                     ${opponentReadyStatus 
-                                        ? '<span class="text-green-400 text-2xl">✓ Listo</span>' 
-                                        : '<span class="text-gray-400 text-lg">⏳ No listo</span>'}
+                                        ? '<span class="text-green-400 text-2xl">✓ Ready</span>' 
+                                        : '<span class="text-gray-400 text-lg">⏳ Not Ready</span>'}
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Countdown display -->
                         <div id="countdown-display" class="hidden mb-4">
-                            <p class="text-green-400 text-lg font-bold mb-2">¡Ambos jugadores listos!</p>
-                            <p class="text-white text-3xl font-bold mb-2">Iniciando en <span id="countdown-number">3</span>...</p>
+                            <p class="text-green-400 text-lg font-bold mb-2">Both players ready!</p>
+                            <p class="text-white text-3xl font-bold mb-2">Starting in <span id="countdown-number">3</span>...</p>
                         </div>
                         
                         ${match.status === 'ready' && !myReadyStatus && !opponentReadyStatus
-                            ? '<p class="text-green-400 text-lg font-bold mb-4">¡Ambos jugadores listos!</p>'
+                            ? '<p class="text-green-400 text-lg font-bold mb-4">Both players ready!</p>'
                             : match.status !== 'ready'
-                            ? '<p class="text-yellow-400 mb-4">Esperando a que ambos jugadores estén listos...</p>'
+                            ? '<p class="text-yellow-400 mb-4">Waiting for both players to be ready...</p>'
                             : ''
                         }
                         
@@ -637,18 +637,18 @@ async function viewMyMatch(tournamentId: string) {
                             ${!myReadyStatus 
                                 ? `<button id="ready-btn" data-tournament-id="${tournamentId}" data-match-id="${match.id}"
                                           class="bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold text-lg">
-                                       ¡Estoy Listo!
+                                       I'm Ready!
                                    </button>`
                                 : `<button id="unready-btn" data-tournament-id="${tournamentId}" data-match-id="${match.id}"
                                           class="bg-yellow-600 hover:bg-yellow-700 rounded-lg px-8 py-3 font-semibold">
-                                       Cancelar
+                                       Cancel
                                    </button>`
                             }
                         </div>
                         
                         <button id="back-to-bracket-btn" data-tournament-id="${tournamentId}"
                                 class="mt-6 text-gray-400 hover:text-white underline">
-                            Volver al bracket
+                            Back to bracket
                         </button>
                     </div>
                 </div>
@@ -702,12 +702,12 @@ async function viewMyMatch(tournamentId: string) {
             bracketContainer.innerHTML = `
                 <div class="max-w-2xl mx-auto text-center">
                     <div class="bg-gray-700 rounded-lg p-6">
-                        <h3 class="text-2xl font-bold mb-4">⚡ Partida en Curso</h3>
-                        <p class="text-gray-400 mb-4">Tu partida ya ha comenzado</p>
+                        <h3 class="text-2xl font-bold mb-4">⚡ Match in Progress</h3>
+                        <p class="text-gray-400 mb-4">Your match has already started</p>
                         <p class="text-white text-lg mb-6">vs ${opponentName}</p>
                         <button onclick="window.location.href='/pong'" 
                                 class="bg-blue-600 hover:bg-blue-700 rounded-lg px-8 py-3 font-semibold">
-                            Ir al juego
+                            Go to game
                         </button>
                     </div>
                 </div>
@@ -715,7 +715,7 @@ async function viewMyMatch(tournamentId: string) {
         }
     } catch (error) {
         console.error('Error viewing match:', error);
-        alert('Error al cargar la partida');
+        alert('Error loading match');
     }
 }
 
@@ -823,11 +823,11 @@ async function toggleReady(tournamentId: string, matchId: string, ready: boolean
         if (data.success) {
             viewMyMatch(tournamentId);
         } else {
-            alert(data.error || 'Error al cambiar estado');
+            alert(data.error || 'Error changing status');
         }
     } catch (error) {
         console.error('Error toggling ready:', error);
-        alert('Error al cambiar estado');
+        alert('Error changing status');
     }
 }
 
@@ -851,12 +851,12 @@ async function startMatchGame(tournamentId: string, matchId: string) {
         if (data.success) {
             window.location.href = '/pong';
         } else {
-            alert(data.error || 'Error al iniciar la partida');
+            alert(data.error || 'Error starting match');
             viewMyMatch(tournamentId);
         }
     } catch (error) {
         console.error('Error starting match:', error);
-        alert('Error al iniciar la partida');
+        alert('Error starting match');
     }
 }
 

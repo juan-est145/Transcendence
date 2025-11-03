@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
@@ -14,30 +14,30 @@
   <!-- Navbar -->
   <%- include('components/navbar.ejs') %>
 
-    <!-- Contenido principal -->
+    <!-- Main Content -->
     <main class="flex flex-col items-center justify-center flex-grow px-4 py-12 max-w-3xl mx-auto text-center">
 
       <header class="mb-10">
         <h1 class="text-5xl font-extrabold mb-4">Pong</h1>
         <p class="text-gray-400 max-w-lg mx-auto">
-          Disfruta del clásico juego Pong y compite para ser el mejor!
+          Enjoy the classic Pong game and compete to be the best!
         </p>
       </header>
 
       <% if (!user) { %>
-        <p class="text-red-400 mb-10">Debes <a href="/auth/login" class="underline hover:text-red-600">iniciar sesión</a>
-          para jugar.</p>
+        <p class="text-red-400 mb-10">You must <a href="/auth/login" class="underline hover:text-red-600">log in</a>
+          to play.</p>
       <% } %>
 
       <!-- Ranking -->
             <section class="w-full bg-gray-800 rounded-lg p-6 shadow-md">
-              <h2 class="text-2xl font-bold mb-4">Ranking Top 5</h2>
+              <h2 class="text-2xl font-bold mb-4">Top 5 Ranking</h2>
               <ol class="list-decimal list-inside space-y-2 text-gray-300">
-                <li>Jugador1 — 150 puntos</li>
-                <li>Jugador2 — 130 puntos</li>
-                <li>Jugador3 — 120 puntos</li>
-                <li>Jugador4 — 110 puntos</li>
-                <li>Jugador5 — 100 puntos</li>
+                <li>Player1 — 150 points</li>
+                <li>Player2 — 130 points</li>
+                <li>Player3 — 120 points</li>
+                <li>Player4 — 110 points</li>
+                <li>Player5 — 100 points</li>
               </ol>
             </section>
     </main>

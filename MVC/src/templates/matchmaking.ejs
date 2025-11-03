@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
@@ -18,7 +18,7 @@
     <header class="mb-10 text-center">
       <h1 class="text-5xl font-extrabold mb-4">Matchmaking</h1>
       <p class="text-gray-400 max-w-lg mx-auto">
-        Encuentra un oponente y juega una partida competitiva
+        Find an opponent and play a competitive match
       </p>
     </header>
 
@@ -27,13 +27,13 @@
       
       <!-- Idle State -->
       <div id="idle-state" class="bg-gray-800 rounded-lg p-8 shadow-lg text-center">
-        <h2 class="text-2xl font-bold mb-6">¿Listo para jugar?</h2>
+        <h2 class="text-2xl font-bold mb-6">Ready to play?</h2>
         <button id="find-match-btn"
           class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold">
-          Buscar Partida
+          Find Match
         </button>
         <div class="mt-6">
-          <a href="/" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold inline-block">Volver al inicio</a>
+          <a href="/" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold inline-block">Back to home</a>
         </div>
       </div>
 
@@ -42,11 +42,11 @@
         <div class="mb-6">
           <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
         </div>
-        <h2 class="text-2xl font-bold mb-4">Buscando oponente...</h2>
-        <p class="text-gray-400 mb-6">Tiempo de espera: <span id="wait-time">0</span>s</p>
+        <h2 class="text-2xl font-bold mb-4">Searching for opponent...</h2>
+        <p class="text-gray-400 mb-6">Wait time: <span id="wait-time">0</span>s</p>
         <button id="cancel-match-btn"
           class="bg-red-600 hover:bg-red-700 active:bg-red-900 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg">
-          Cancelar
+          Cancel
         </button>
       </div>
 
@@ -57,10 +57,10 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
           </svg>
         </div>
-        <h2 class="text-2xl font-bold mb-4 text-green-500">¡Oponente encontrado!</h2>
-        <p class="text-gray-400 mb-6">Preparando partida...</p>
+        <h2 class="text-2xl font-bold mb-4 text-green-500">Opponent found!</h2>
+        <p class="text-gray-400 mb-6">Preparing match...</p>
         <div id="opponent-info" class="bg-gray-700 rounded-lg p-4 mb-6">
-          <p class="text-lg">Oponente: <span id="opponent-name" class="font-bold">-</span></p>
+          <p class="text-lg">Opponent: <span id="opponent-name" class="font-bold">-</span></p>
           <p class="text-sm text-gray-400">Ranking: <span id="opponent-rank">-</span></p>
         </div>
       </div>
@@ -69,9 +69,9 @@
 
     <!-- Active Matches -->
     <section class="w-full max-w-2xl mt-10 bg-gray-800 rounded-lg p-6 shadow-lg">
-      <h2 class="text-2xl font-bold mb-4">Partidas Activas</h2>
+      <h2 class="text-2xl font-bold mb-4">Active Matches</h2>
       <div id="active-matches" class="space-y-3">
-        <p class="text-gray-400 text-center">No hay partidas activas</p>
+        <p class="text-gray-400 text-center">No active matches</p>
       </div>
     </section>
 

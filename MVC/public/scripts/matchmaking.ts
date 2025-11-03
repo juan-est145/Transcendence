@@ -30,7 +30,7 @@ findMatchBtn?.addEventListener('click', async () => {
         }
     } catch (error) {
         console.error('Error joining matchmaking:', error);
-        alert('Error al unirse a la cola de matchmaking');
+        alert('Error joining matchmaking queue');
     }
 });
 
@@ -156,7 +156,7 @@ async function loadActiveMatches() {
                 <div class="bg-gray-700 rounded-lg p-4">
                     <div class="flex justify-between items-center">
                         <div>
-                            <p class="font-semibold">Partida #${game.id}</p>
+                            <p class="font-semibold">Match #${game.id}</p>
                             <p class="text-sm text-gray-400">${game.status}</p>
                         </div>
                         <div class="text-right">
@@ -166,7 +166,7 @@ async function loadActiveMatches() {
                 </div>
             `).join('');
         } else {
-            container.innerHTML = '<p class="text-gray-400 text-center">No hay partidas activas</p>';
+            container.innerHTML = '<p class="text-gray-400 text-center">No active matches</p>';
         }
     } catch (error) {
         console.error('Error loading active matches:', error);

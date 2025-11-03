@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Torneos - Pong Game</title>
+  <title>Tournaments - Pong Game</title>
   <link rel="stylesheet" href="/styles/dist/output.css">
   <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
 </head>
@@ -16,20 +16,20 @@
   <main class="flex flex-col items-center px-4 py-12 max-w-6xl mx-auto">
     
     <header class="mb-10 text-center">
-      <h1 class="text-5xl font-extrabold mb-4">Torneos</h1>
+      <h1 class="text-5xl font-extrabold mb-4">Tournaments</h1>
       <p class="text-gray-400 max-w-lg mx-auto">
-        Compite en torneos y demuestra que eres el mejor
+        Compete in tournaments and prove you're the best
       </p>
       
       <!-- Tournament Action Buttons -->
       <div class="flex justify-center gap-4 mt-6">
         <button id="create-tournament-btn"
           class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold">
-          Crear Torneo
+          Create Tournament
         </button>
         <button id="join-by-code-btn"
           class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition font-semibold">
-          Unirse con Código
+          Join with Code
         </button>
       </div>
     </header>
@@ -37,35 +37,35 @@
     <!-- Tournament Creation Modal (Hidden by default) -->
     <div id="create-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
       <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold mb-6">Crear Nuevo Torneo</h2>
+        <h2 class="text-2xl font-bold mb-6">Create New Tournament</h2>
         <form id="create-tournament-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">Nombre del Torneo</label>
+            <label class="block text-sm font-medium mb-2">Tournament Name</label>
             <input type="text" id="tournament-name" required
               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
           </div>
           <div>
-            <label class="block text-sm font-medium mb-2">Número de Jugadores</label>
+            <label class="block text-sm font-medium mb-2">Number of Players</label>
             <select id="tournament-size"
               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
-              <option value="4">4 jugadores</option>
-              <option value="8">8 jugadores</option>
-              <option value="16">16 jugadores</option>
+              <option value="4">4 players</option>
+              <option value="8">8 players</option>
+              <option value="16">16 players</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-2">Puntos para ganar</label>
+            <label class="block text-sm font-medium mb-2">Points to Win</label>
             <input type="number" id="tournament-max-score" value="5" min="3" max="11"
               class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500">
           </div>
           <div class="flex gap-4 mt-6">
             <button type="submit"
               class="flex-1 bg-purple-600 hover:bg-purple-700 rounded-lg px-6 py-3 font-semibold">
-              Crear
+              Create
             </button>
             <button type="button" id="cancel-create-btn"
               class="flex-1 bg-gray-600 hover:bg-gray-700 rounded-lg px-6 py-3 font-semibold">
-              Cancelar
+              Cancel
             </button>
           </div>
         </form>
@@ -75,10 +75,10 @@
     <!-- Join by Code Modal (Hidden by default) -->
     <div id="join-code-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
       <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold mb-6">Unirse con Código</h2>
+        <h2 class="text-2xl font-bold mb-6">Join with Code</h2>
         <form id="join-code-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">Código de Invitación (5 letras)</label>
+            <label class="block text-sm font-medium mb-2">Invite Code (5 letters)</label>
             <input type="text" id="invite-code" required maxlength="5" 
                    placeholder="ABCDE"
                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white text-center text-2xl uppercase font-bold focus:outline-none focus:border-blue-500"
@@ -87,11 +87,11 @@
           <div class="flex gap-4 mt-6">
             <button type="submit"
               class="flex-1 bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-3 font-semibold">
-              Unirse
+              Join
             </button>
             <button type="button" id="cancel-join-code-btn"
               class="flex-1 bg-gray-600 hover:bg-gray-700 rounded-lg px-6 py-3 font-semibold">
-              Cancelar
+              Cancel
             </button>
           </div>
         </form>
@@ -104,20 +104,20 @@
       <!-- Active Tournaments List -->
       <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-2xl font-bold">Torneos Activos</h2>
+          <h2 class="text-2xl font-bold">Active Tournaments</h2>
         </div>
         <div id="active-tournaments" class="space-y-3">
-          <p class="text-gray-400 text-center py-4">No hay torneos activos</p>
+          <p class="text-gray-400 text-center py-4">No active tournaments</p>
         </div>
       </div>
 
       <!-- Upcoming Tournaments -->
       <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-2xl font-bold">Próximos Torneos</h2>
+          <h2 class="text-2xl font-bold">Upcoming Tournaments</h2>
         </div>
         <div id="upcoming-tournaments" class="space-y-3">
-          <p class="text-gray-400 text-center py-4">No hay torneos próximos</p>
+          <p class="text-gray-400 text-center py-4">No upcoming tournaments</p>
         </div>
       </div>
 
@@ -126,7 +126,7 @@
     <!-- Tournament Bracket View (shown when viewing a specific tournament) -->
     <section id="bracket-view" class="w-full mt-10 bg-gray-800 rounded-lg p-6 shadow-lg hidden">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Bracket del Torneo</h2>
+        <h2 class="text-2xl font-bold">Tournament Bracket</h2>
         <button id="close-bracket-btn" class="text-gray-400 hover:text-white">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
