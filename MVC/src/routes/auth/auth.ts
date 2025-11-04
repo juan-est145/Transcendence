@@ -2,11 +2,14 @@ import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
 import { createSession, postLogin, postSignIn, validateLogInBody, validateSignInBody } from "./auth.service";
 import { ZodError } from "zod";
+import { oauth42 } from "./oauth42";
 
 /**
  * This module deals with everything relating to the login page.
  */
 export async function auth(fastify: FastifyInstance) {
+	// Register OAuth 42 routes
+	await fastify.register(oauth42);
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
 	 * it redirects him.

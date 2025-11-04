@@ -3,6 +3,7 @@ import { createUser, getUser, signJwt } from "./auth.service";
 import { logInSchema, refreshSchema, signInSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody } from "./auth.type";
+import oauth42Routes from './oauth42';
 
 /**
  * All auth endpoints are processed here.
@@ -39,7 +40,7 @@ export async function auth(fastify: FastifyInstance) {
 	fastify.post<{ Body: LogInBody }>("/log-in", logInSchema, async (req, res) => {
 		try {
 			const user = await getUser(fastify, req.body.email);
-			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
+			if (!user || !user.password || !(await bcrypt.compare(req.body.password, user.password)))
 				throw fastify.httpErrors.unauthorized("Invalid email or password");
 			const jwt = signJwt(fastify, { username: user.username, email: user.email });
 			return res.code(201).send(jwt);
@@ -68,4 +69,6 @@ export async function auth(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
+
+	await fastify.register(oauth42Routes);
 }
