@@ -59,6 +59,63 @@
             <div id="digits" class="flex gap-3 justify-center flex-wrap"></div>
         </div>
 
+        <!-- Final Screen -->
+        <div id="final-screen" class="hidden w-full">
+            <div class="final-screen-container">
+                <div class="final-screen-content">
+                    <!-- Success Icon -->
+                    <div class="text-center mb-8">
+                        <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Congratulations Message -->
+                    <h2 class="text-4xl font-extrabold mb-4 text-green-400">Congratulations!</h2>
+                    <p class="text-xl text-gray-300 mb-8">You've completed the Sudoku puzzle!</p>
+
+                    <!-- Game Statistics -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Time</p>
+                                <p id="final-time" class="text-2xl font-bold text-blue-400">00:00</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Errors</p>
+                                <p id="final-errors" class="text-2xl font-bold text-red-400">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-4 justify-center mt-10">
+                        <button id="btn-play-again" 
+                            class="bg-green-600 hover:bg-green-700 active:bg-green-800 transition-colors rounded-full px-10 py-3 text-lg font-semibold shadow-lg">
+                            Play Again
+                        </button>
+                        <button id="btn-back-home" 
+                            class="bg-gray-600 hover:bg-gray-700 active:bg-gray-800 transition-colors rounded-full px-10 py-3 text-lg font-semibold shadow-lg">
+                            Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <%- include('components/footer.ejs') %>
