@@ -1,29 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="/sudoku/sudoku.css"> 
-		<title>Sudoku</title>
-	</head>
-	
-	<body>
-		<h1>Sudoku</h1>
-		<hr>
-		<div id = "difficult-screen">
-			<button id = "btn-easy">Easy</button>
-			<button id = "btn-medium">Medium</button>
-			<button id = "btn-hard">Hard</button>
-			
-		</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku - Transcendence</title>
+    <link rel="stylesheet" href="/styles/dist/output.css">
+    <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <%- include('components/navbar.ejs') %>
 
-		<div id = "game-screen" style = "display: none;">
-			<h2 id = "timer" >00:00</h2>
-			<h2 id="errors">0</h2>
-			<div id="board"></div>
+    <main class="flex flex-col items-center justify-center flex-grow px-4 py-12 max-w-3xl mx-auto text-center">
+        
+        <!-- Difficulty Selection Screen -->
+        <div id="difficult-screen" class="w-full">
+            <header class="mb-10">
+                <h1 class="text-5xl font-extrabold mb-4">Sudoku</h1>
+                <p class="text-gray-400 max-w-lg mx-auto">
+                    Choose your difficulty and solve the puzzle!
+                </p>
+            </header>
+            
+            <div class="flex gap-4 justify-center flex-wrap mb-10">
+                <button id="btn-easy" 
+                    class="bg-green-600 hover:bg-green-700 active:bg-green-800 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg">
+                    Easy
+                </button>
+                <button id="btn-medium" 
+                    class="bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg">
+                    Medium
+                </button>
+                <button id="btn-hard" 
+                    class="bg-red-600 hover:bg-red-700 active:bg-red-800 transition-colors rounded-full px-12 py-4 text-lg font-semibold shadow-lg">
+                    Hard
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden w-full">
+            <!-- Game Stats -->
+            <div class="flex justify-between items-center mb-6 bg-gray-800 rounded-lg p-6 shadow-md">
+                <div class="text-xl">
+                    <span class="text-gray-400">Errors:</span>
+                    <span id="errors" class="text-red-400 font-bold ml-2">0</span>
+                </div>
+                <div class="text-xl">
+                    <span class="text-gray-400">Time:</span>
+                    <span id="timer" class="text-blue-400 font-bold ml-2">00:00</span>
+                </div>
+            </div>
+
+            <!-- Board Container -->
+            <div id="board" class="mb-6 mx-auto"></div>
+
+            <!-- Digits Selector -->
 			<br>
-			<div id="digits"></div>
-		</div>
-	<script type="module" src="/sudoku/dist/ui.js"></script>
-	</body>
+            <div id="digits" class="flex gap-3 justify-center flex-wrap"></div>
+        </div>
+
+    </main>
+
+    <%- include('components/footer.ejs') %>
+
+    <script type="module" src="/sudoku/dist/ui.js"></script>
+</body>
 </html>

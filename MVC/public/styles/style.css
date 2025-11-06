@@ -18,3 +18,124 @@
 ::selection {
   @apply bg-indigo-600 text-white;
 }
+
+/* Sudoku Board Styles */
+#board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0;
+  width: fit-content;
+  border: 3px solid #4b5563;
+  background-color: #1f2937;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+}
+
+/* Sudoku Tiles */
+.tile {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+.tile:hover {
+  background-color: #374151;
+}
+
+.selected-tile {
+  background-color: #3b82f6 !important;
+  color: white;
+}
+
+.tile-fixed {
+  background-color: #4b5563 !important;
+  color: #d1d5db;
+  cursor: not-allowed;
+  font-weight: 700;
+}
+
+.correct {
+  color: #10b981;
+}
+
+.incorrect {
+  color: #ef4444;
+  background-color: #7f1d1d !important;
+}
+
+.horizontal-line {
+  border-bottom: 2px solid #6b7280;
+}
+
+.vertical-line {
+  border-right: 2px solid #6b7280;
+}
+
+.finished {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+/* Digit selector buttons */
+.number {
+  width: 2.9rem;
+  height: 2.9rem;
+  background-color: #374151;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  border: none;
+  color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.number:hover {
+  background-color: #4b5563;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.number:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.selected-number {
+  background-color: #3b82f6 !important;
+  color: white;
+}
+
+.done {
+  background-color: #065f46 !important;
+  color: #6ee7b7;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .tile {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.125rem;
+  }
+
+  .number {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+}

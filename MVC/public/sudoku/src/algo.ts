@@ -21,7 +21,6 @@ export function selectDifficult (mode: string)
 	}
 	solution = structuredClone(fixed);
 	solveBoard(solution);
-	setGame();
 }
 
 export function createPuzzle(difficult: difficult_board , num: number)
