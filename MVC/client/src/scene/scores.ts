@@ -63,17 +63,31 @@ function updateScores() {
 		return;
 	}
 	
-	scoreOneDT.clear();
+	// Get context and fill with background color instead of just clearing
+	const ctx1 = scoreOneDT.getContext();
+	ctx1.fillStyle = '#0b0ba5ff';
+	ctx1.fillRect(0, 0, 256, 128);
+	
+	// Draw score text
     if (scoreOne < 10)
-	    scoreOneDT.drawText(scoreOne.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+	    scoreOneDT.drawText(scoreOne.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "transparent", true);
     else
-        scoreOneDT.drawText(scoreOne.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+        scoreOneDT.drawText(scoreOne.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "transparent", true);
+	
+	scoreOneDT.update();
 
-	scoreTwoDT.clear();
+	// Get context and fill with background color
+	const ctx2 = scoreTwoDT.getContext();
+	ctx2.fillStyle = '#0b0ba5ff';
+	ctx2.fillRect(0, 0, 256, 128);
+	
+	// Draw score text
     if (scoreTwo < 10)
-        scoreTwoDT.drawText(scoreTwo.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+        scoreTwoDT.drawText(scoreTwo.toString(), 100, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "transparent", true);
     else
-        scoreTwoDT.drawText(scoreTwo.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "#0b0ba5ff", true);
+        scoreTwoDT.drawText(scoreTwo.toString(), 60, 100, "bold 64px 'PressStart', Courier New", "lightgrey", "transparent", true);
+	
+	scoreTwoDT.update();
 }
 
 export function incrementScoreOne() {

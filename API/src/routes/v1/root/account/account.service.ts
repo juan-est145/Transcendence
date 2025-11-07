@@ -33,6 +33,7 @@ export class AccountService {
 					email: jwtPayload.email,
 				},
 				select: {
+					id: true,
 					profile: {
 						include: {
 							tournaments: {
@@ -44,7 +45,23 @@ export class AccountService {
 					email: true
 				}
 			});
-			return this.addTourResults(query!);
+
+			// Count wins/losses from GameResult (includes matchmaking, rooms, tournaments)
+			const wins = await this.fastify.prisma.gameResult.count({ where: { playerId: query.id, result: 'WIN' } });
+			const losses = await this.fastify.prisma.gameResult.count({ where: { playerId: query.id, result: 'LOSS' } });
+
+			const result: AccountRes = {
+				...query!,
+				profile: {
+					id: query!.profile!.id,
+					createdAt: query!.profile!.createdAt.toISOString(),
+					updatedAt: query!.profile!.updatedAt.toISOString(),
+					online: query!.profile!.online,
+					victories: wins,
+					defeats: losses,
+				}
+			};
+			return result;
 		} catch (error) {
 			if (error instanceof PrismaClientKnownRequestError && error.code == "P2025")
 				throw this.fastify.httpErrors.notFound();

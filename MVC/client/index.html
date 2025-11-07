@@ -10,23 +10,24 @@
   </head>
   <body>
     <!-- Game Mode Selection Screen -->
-    <div id="gameMode" class="menu-screen">
+    <div id="gameMode" class="menu-screen" style="display: none;">
       <div class="menu-container">
-        <h1 class="game-title">3D PONG</h1>
+        <h1 class="game-title">3D PONG - LOCAL PLAY</h1>
         <div class="menu-options">
-          <button id="localMode" class="menu-button">LOCAL MULTIPLAYER</button>
-          <button id="remoteMode" class="menu-button">REMOTE MULTIPLAYER</button>
+          <button id="localMode" class="menu-button">START LOCAL GAME</button>
+          <button id="remoteMode" class="menu-button" style="display: none;">START REMOTE GAME</button>
           <button id="backToHome" class="menu-button back-home-button">BACK TO HOME</button>
         </div>
         <div class="game-info">
           <div class="mode-description">
-            <p><strong>Local:</strong> Two players on the same computer</p>
-            <p><strong>Remote:</strong> Play against others online</p>
+            <p><strong>Local Play:</strong> Two players on the same computer</p>
+            <p>For online play, use <strong>Rooms</strong>, <strong>Matchmaking</strong>, or <strong>Tournaments</strong></p>
           </div>
           <div class="controls-info">
             <p><strong>Controls:</strong></p>
-            <p>Player 1: W/S keys</p>
-            <p>Player 2: Arrow Up/Down keys</p>
+            <p>Player 1 (Left): W/S keys</p>
+            <p>Player 2 (Right): Arrow Up/Down keys</p>
+            <p>ESC: Pause game</p>
           </div>
         </div>
       </div>
@@ -41,8 +42,18 @@
         <div id="scoreOne">0</div>
         <div id="scoreTwo">0</div>
       </div>
-      <div id="gameStatus"></div>
-      <button id="backToMenu" class="back-button">Back to Menu</button>
+      <div id="game-message"></div>
+      
+      <!-- Player Info (shown at bottom during remote play) -->
+      <div id="player-info"></div>
+      
+      <!-- Pause Counter -->
+      <div id="pause-counter" style="display: none;">
+        <div class="pause-text">PAUSED</div>
+        <div class="pause-time"><span id="pause-time-remaining">15</span>s</div>
+      </div>
+      
+      <button id="backToMenu" class="back-button">Back to Home</button>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

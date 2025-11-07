@@ -140,17 +140,3 @@ function createMaterial(scene: BABYLON.Scene, paddleName: string) {
 	material.backFaceCulling = false;
 	return material;
 }
-
-// const paddleTwo = BABYLON.MeshBuilder.CreateBox("paddleTwo", {
-// 		size: 1,
-// 		width: 0.1,
-// 		height: 0.6,
-// 		depth: 0.4
-// 	}, scene);
-// 	paddleTwo.position.x = 4;
-// 	paddleTwo.position.y = 1;
-// 	const paddleTwoMat = new BABYLON.StandardMaterial("paddleTwoMat", scene);
-// 	paddleTwoMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-// 	paddleTwoMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-// 	paddleTwoMat.backFaceCulling = false;
-// 	paddleTwo.material = paddleTwoMat;

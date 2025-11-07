@@ -178,3 +178,19 @@ loadActiveMatches();
 
 //Refresh active matches every 5 seconds
 setInterval(loadActiveMatches, 5000);
+
+//Clean up any stale matchmaking state when page loads
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Leave any existing queue
+        await fetch('/pong/matchmaking/leave', {
+            method: 'POST',
+            credentials: 'same-origin'
+        });
+        
+        //Reset UI to idle state
+        stopSearching();
+    } catch (error) {
+        console.error('Error cleaning up matchmaking state:', error);
+    }
+});

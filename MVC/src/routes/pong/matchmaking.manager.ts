@@ -49,18 +49,27 @@ export class MatchmakingManager {
 	}
 
 	/**
-	 * Remove a player from the matchmaking queue
+	 * Remove a player from the matchmaking queue and any active matches
 	 */
 	public leaveQueue(userId: string): boolean {
-		const index = this.queue.findIndex(p => p.userId === userId);
-		if (index === -1) {
-			return false;
-		}
+		let removed = false;
 
-		const player = this.queue[index];
-		this.queue.splice(index, 1);
-		this.fastify.log.info(`Player ${player.username} left matchmaking queue`);
-		return true;
+		const index = this.queue.findIndex(p => p.userId === userId);
+		if (index !== -1) {
+			const player = this.queue[index];
+			this.queue.splice(index, 1);
+			this.fastify.log.info(`Player ${player.username} left matchmaking queue`);
+			removed = true;
+		}
+		
+		const match = this.getUserMatch(userId);
+		if (match) {
+			this.matches.delete(match.id);
+			this.fastify.log.info(`Removed player ${userId} from match ${match.id}`);
+			removed = true;
+		}
+		
+		return removed;
 	}
 
 	/**

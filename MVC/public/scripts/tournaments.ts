@@ -719,7 +719,6 @@ async function viewMyMatch(tournamentId: string) {
     }
 }
 
-// Global variable to track countdown interval
 let countdownInterval: NodeJS.Timeout | null = null;
 let matchPollingInterval: NodeJS.Timeout | null = null;
 
@@ -849,6 +848,8 @@ async function startMatchGame(tournamentId: string, matchId: string) {
         const data = await response.json();
         
         if (data.success) {
+            sessionStorage.setItem('tournamentMode', 'true');
+            sessionStorage.setItem('matchId', data.gameId);
             window.location.href = '/pong';
         } else {
             alert(data.error || 'Error starting match');
@@ -873,8 +874,5 @@ async function startMatchGame(tournamentId: string, matchId: string) {
 (window as any).pollMatchStatus = pollMatchStatus;
 (window as any).createMatchGameSilent = createMatchGameSilent;
 
-//Load tournaments on page load
 loadTournaments();
-
-//Refresh tournaments every 10 seconds
 setInterval(loadTournaments, 10000);

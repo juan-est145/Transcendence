@@ -7,9 +7,10 @@
 		<% if (user) { %>
 			<!-- Options for logged in user -->
 			<ul class="hidden md:flex space-x-6 text-gray-300 items-center">
-				<li><a href="/pong" class="hover:text-blue-400 transition">Play</a></li>
-				<li><a href="/pong/matchmaking" class="hover:text-blue-400 transition">Matchmaking</a></li>
-				<li><a href="/pong/tournaments" class="hover:text-blue-400 transition">Tournaments</a></li>
+				<li><a href="/pong" class="hover:text-blue-400 transition" title="Local 2-player game">Local</a></li>
+				<li><a href="/pong/rooms" class="hover:text-blue-400 transition" title="Create or join a room with friends">Rooms</a></li>
+				<li><a href="/pong/matchmaking" class="hover:text-blue-400 transition" title="Find a random opponent">Matchmaking</a></li>
+				<li><a href="/pong/tournaments" class="hover:text-blue-400 transition" title="Join or create tournaments">Tournaments</a></li>
 			</ul>
 		<% } else { %>
 			<!-- Options for non-logged user -->

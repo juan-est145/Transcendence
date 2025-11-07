@@ -58,6 +58,32 @@
             background-color: rgba(0, 0, 0, 0.7);
         }
         
+        #pause-counter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: #ffff00;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px 50px;
+            border-radius: 10px;
+            border: 3px solid #ffff00;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+        
+        #pause-counter .pause-text {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        
+        #pause-counter .pause-time {
+            font-size: 48px;
+            color: #ff6600;
+        }
+        
         .connected {
             color: #00ff00;
         }
@@ -114,6 +140,11 @@
                 Disconnected
             </div>
             
+            <div id="pause-counter">
+                <div class="pause-text">PAUSED</div>
+                <div class="pause-time"><span id="pause-time-remaining">15</span>s</div>
+            </div>
+            
             <div id="controls">
                 Player 1: W/S keys<br>
                 Player 2: Arrow Up/Down keys
@@ -126,6 +157,9 @@
         </div>
     </div>
 
+    <script>
+        window.PONG_USER_EMAIL = <%= user && user.email ? JSON.stringify(user.email) : 'null' %>;
+    </script>
     <script src="/scripts/pong-game-3d.js"></script>
 </body>
 </html>

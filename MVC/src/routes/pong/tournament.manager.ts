@@ -17,10 +17,11 @@ interface Match {
 	round: number;
 	player1?: TournamentParticipant;
 	player2?: TournamentParticipant;
-	player1Ready?: boolean; // Player 1 ready status
-	player2Ready?: boolean; // Player 2 ready status
+	player1Ready?: boolean;
+	player2Ready?: boolean;
 	winner?: string;
-	gameId?: string; // ID of the actual pong game
+	gameId?: string;
+	roomCode?: string;
 	status: 'pending' | 'ready' | 'lobby' | 'playing' | 'completed';
 }
 
@@ -36,7 +37,7 @@ interface Tournament {
 	creatorUsername: string;
 	inviteCode: string;
 	participants: TournamentParticipant[];
-	invitedUsers: string[]; // Array of invited user IDs
+	invitedUsers: string[];
 	matches: Match[];
 	bracket: Match[][];
 	currentRound: number;
@@ -68,12 +69,22 @@ export class TournamentManager {
 		for (let i = 0; i < 5; i++) {
 			code += chars.charAt(Math.floor(Math.random() * chars.length));
 		}
-		//Check if code already exists
 		for (const tournament of this.tournaments.values()) {
 			if (tournament.inviteCode === code) {
-				//Regenerate if duplicate
 				return this.generateInviteCode();
 			}
+		}
+		return code;
+	}
+
+	/**
+	 * Generate a unique room code for a match (different from invite codes)
+	 */
+	private generateRoomCode(matchId: string): string {
+		const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		let code = '';
+		for (let i = 0; i < 5; i++) {
+			code += chars.charAt(Math.floor(Math.random() * chars.length));
 		}
 		return code;
 	}
@@ -277,6 +288,7 @@ export class TournamentManager {
 				match.status = 'lobby';
 				match.player1Ready = false;
 				match.player2Ready = false;
+				match.roomCode = this.generateRoomCode(match.id);
 			});
 		}
 
@@ -537,6 +549,7 @@ export class TournamentManager {
 					match.status = 'lobby';
 					match.player1Ready = false;
 					match.player2Ready = false;
+					match.roomCode = this.generateRoomCode(match.id);
 				}
 			});
 

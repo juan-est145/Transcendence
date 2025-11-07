@@ -50,6 +50,12 @@ export interface GameState {
     winner?: 'left' | 'right';
     message?: string;
   };
+  pause?: {
+    isPaused: boolean;
+    pausedBy?: 'left' | 'right';
+    pausedAt?: number;
+    remainingTime?: number;
+  };
 }
 
 export interface PlayerInput {
@@ -58,15 +64,10 @@ export interface PlayerInput {
   timestamp: number;
 }
 
-export interface GameEvent {
-  type: 'game_state' | 'player_joined' | 'player_left' | 'goal_scored' | 'game_ended';
-  data: any;
-  timestamp: number;
-}
-
 export interface WebSocketMessage {
-  type: 'join_game' | 'leave_game' | 'player_input' | 'game_state' | 'error' | 'player_joined' | 'player_left';
+  type: 'join_game' | 'leave_game' | 'player_input' | 'game_state' | 'error' | 'player_joined' | 'player_left' | 'pause_game' | 'unpause_game';
   gameId?: string;
   playerId?: string;
+  userEmail?: string; // User's email for game result tracking
   data?: any;
 }

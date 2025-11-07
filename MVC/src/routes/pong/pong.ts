@@ -2,18 +2,41 @@ import { FastifyInstance } from "fastify";
 import { PongGameManager } from "./pong.manager";
 import { MatchmakingManager } from "./matchmaking.manager";
 import { TournamentManager } from "./tournament.manager";
+import { RoomManager } from "./room.manager";
 
 let gameManager: PongGameManager;
 let matchmakingManager: MatchmakingManager;
 let tournamentManager: TournamentManager;
+let roomManager: RoomManager;
 
 export async function pong(fastify: FastifyInstance) {
 	gameManager = new PongGameManager(fastify);
 	matchmakingManager = new MatchmakingManager(fastify, gameManager);
+	gameManager.setMatchmakingManager(matchmakingManager);
 	tournamentManager = new TournamentManager(fastify);
+	roomManager = new RoomManager(fastify);
+	gameManager.setRoomManager(roomManager);
+
+	setInterval(() => {
+		roomManager.cleanupOldRooms();
+	}, 30 * 60 * 1000);
 
 	fastify.get("/", async (req, res) => {
 		return res.html();
+	});
+
+	//API endpoint to get current user info for pong game
+	fastify.get("/current-user", async (req, res) => {
+		if (!req.session || !req.session.get("jwt")) {
+			return res.status(401).send({ error: "Not logged in" });
+		}
+		
+		try {
+			await req.jwtVerify();
+			return { email: req.user!.email, username: req.user!.username };
+		} catch (error) {
+			return res.status(401).send({ error: "Invalid token" });
+		}
 	});
 
 	fastify.get("/matchmaking", async (req, res) => {
@@ -22,6 +45,14 @@ export async function pong(fastify: FastifyInstance) {
 		}
 		await req.jwtVerify();
 		return res.view("matchmaking.ejs", { user: req.user });
+	});
+
+	fastify.get("/rooms", async (req, res) => {
+		if (!req.session || !req.session.get("jwt")) {
+			return res.redirect("/auth/login");
+		}
+		await req.jwtVerify();
+		return res.view("rooms.ejs", { user: req.user });
 	});
 
 	fastify.get("/tournaments", async (req, res) => {
@@ -140,6 +171,214 @@ export async function pong(fastify: FastifyInstance) {
 
 	fastify.get("/matchmaking/queue-size", async (req, res) => {
 		return { queueSize: matchmakingManager.getQueueSize() };
+	});
+
+	//Room API endpoints
+	fastify.post("/rooms/create", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { name, maxScore } = req.body as { name: string; maxScore: number };
+			
+			//Check if user is already in a room
+			const existingRoom = roomManager.getUserRoom(user.email);
+			if (existingRoom) {
+				return res.status(409).send({ success: false, error: "Already in a room" });
+			}
+			
+			const room = roomManager.createRoom(
+				name,
+				maxScore || 5,
+				user.email,
+				user.username || user.email
+			);
+			
+			return { 
+				success: true, 
+				room: {
+					id: room.id,
+					code: room.code,
+					name: room.name,
+					maxScore: room.maxScore,
+					createdBy: room.createdBy,
+					players: room.players,
+					status: room.status
+				}
+			};
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/create");
+			return res.status(500).send({ success: false, error: error.message || "Failed to create room" });
+		}
+	});
+
+	fastify.post("/rooms/join-by-code", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { code } = req.body as { code: string };
+			
+			if (!code || code.length !== 5) {
+				return res.status(400).send({ success: false, error: "Invalid room code format" });
+			}
+			
+			//Check if user is already in a room
+			const existingRoom = roomManager.getUserRoom(user.email);
+			if (existingRoom) {
+				return res.status(409).send({ success: false, error: "Already in a room" });
+			}
+			
+			const room = roomManager.joinRoomByCode(
+				code.toUpperCase(),
+				user.email,
+				user.username || user.email
+			);
+			
+			return { 
+				success: true, 
+				message: "Joined room successfully",
+				room: {
+					id: room.id,
+					code: room.code,
+					name: room.name,
+					maxScore: room.maxScore,
+					players: room.players,
+					status: room.status
+				}
+			};
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/join-by-code");
+			return res.status(400).send({ success: false, error: error.message || "Failed to join room" });
+		}
+	});
+
+	fastify.get("/rooms/my-room", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const room = roomManager.getUserRoom(user.email);
+			
+			if (room) {
+				return { 
+					success: true, 
+					room: {
+						id: room.id,
+						code: room.code,
+						name: room.name,
+						maxScore: room.maxScore,
+						createdBy: room.createdBy,
+						creatorUsername: room.creatorUsername,
+						players: room.players,
+						status: room.status,
+						gameId: room.gameId,
+						isOwner: room.createdBy === user.email
+					}
+				};
+			} else {
+				return { success: true, room: null };
+			}
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/my-room");
+			return res.status(400).send({ success: false, error: error.message || "Failed to get room" });
+		}
+	});
+
+	fastify.get("/rooms/available", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const rooms = roomManager.getAvailableRooms();
+			fastify.log.info(`Available rooms request: ${rooms.length} rooms found`);
+			rooms.forEach(room => {
+				fastify.log.info(`Room: ${room.name} (${room.code}) - ${room.players.length}/2 players, status: ${room.status}`);
+			});
+			return { 
+				success: true, 
+				rooms: rooms.map(r => ({
+					id: r.id,
+					code: r.code,
+					name: r.name,
+					maxScore: r.maxScore,
+					creatorUsername: r.creatorUsername,
+					playerCount: r.players.length,
+					createdAt: r.createdAt
+				}))
+			};
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/available");
+			return res.status(400).send({ success: false, error: error.message || "Failed to get available rooms" });
+		}
+	});
+
+	fastify.post("/rooms/:roomId/ready", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { roomId } = req.params as { roomId: string };
+			
+			const success = roomManager.setPlayerReady(roomId, user.email);
+			return { success, message: "Marked as ready" };
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/ready");
+			return res.status(400).send({ success: false, error: error.message || "Failed to mark as ready" });
+		}
+	});
+
+	fastify.post("/rooms/:roomId/unready", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { roomId } = req.params as { roomId: string };
+			
+			const success = roomManager.setPlayerNotReady(roomId, user.email);
+			return { success, message: "Marked as not ready" };
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/unready");
+			return res.status(400).send({ success: false, error: error.message || "Failed to unmark as ready" });
+		}
+	});
+
+	fastify.post("/rooms/:roomId/create-game", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { roomId } = req.params as { roomId: string };
+			
+			const room = roomManager.getRoom(roomId);
+			if (!room) {
+				return res.status(404).send({ success: false, error: "Room not found" });
+			}
+			
+			if (!room.players.find(p => p.userId === user.email)) {
+				return res.status(403).send({ success: false, error: "You are not in this room" });
+			}
+			
+			const gameId = roomManager.createRoomGame(roomId);
+			return { success: true, gameId };
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/create-game");
+			return res.status(400).send({ success: false, error: error.message || "Failed to create game" });
+		}
+	});
+
+	fastify.post("/rooms/:roomId/leave", {
+		onRequest: fastify.auth([fastify.verifyLoggedIn])
+	}, async (req, res) => {
+		try {
+			const user = req.user!;
+			const { roomId } = req.params as { roomId: string };
+			
+			const success = roomManager.leaveRoom(roomId, user.email);
+			return { success, message: "Left room" };
+		} catch (error: any) {
+			fastify.log.error({ error }, "Error in rooms/leave");
+			return res.status(400).send({ success: false, error: error.message || "Failed to leave room" });
+		}
 	});
 
 	//Tournament API endpoints
