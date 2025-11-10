@@ -7,10 +7,13 @@ import { GameState, Ball, Paddle, PlayerInput } from './pong.types';
 export class PongGame {
   private gameState: GameState;
   private gameLoop: NodeJS.Timeout | null = null;
+  private pauseTimer: NodeJS.Timeout | null = null;
+  private pauseStartTime: number = 0;
   private readonly GAME_SPEED = 1000 / 60; //FPS
   private readonly PADDLE_SPEED = 0.08;
   private readonly BALL_SPEED = 0.04;
-  private readonly MAX_SCORE = 11;
+  private readonly MAX_SCORE = 5;
+  private readonly PAUSE_DURATION = 15000; //15 seconds in milliseconds
 
   constructor(gameId: string) {
     this.gameState = this.initializeGameState(gameId);
@@ -51,7 +54,13 @@ export class PongGame {
       gameStatus: 'waiting',
       players: {},
       bounds: { width: 10, height: 3, depth: 8 },
-      lastUpdate: Date.now()
+      lastUpdate: Date.now(),
+      pause: {
+        isPaused: false,
+        pausedBy: undefined,
+        pausedAt: undefined,
+        remainingTime: undefined
+      }
     };
   }
 
@@ -80,13 +89,40 @@ export class PongGame {
    * @param playerId The ID of the player.
    */
   public removePlayer(playerId: string): void {
-    if (this.gameState.players.left === playerId) {
+    const wasLeftPlayer = this.gameState.players.left === playerId;
+    const wasRightPlayer = this.gameState.players.right === playerId;
+    
+    if (wasLeftPlayer) {
       this.gameState.players.left = undefined;
-    } else if (this.gameState.players.right === playerId) {
+    } else if (wasRightPlayer) {
       this.gameState.players.right = undefined;
     }
 
-    if (!this.gameState.players.left && !this.gameState.players.right) {
+    //If a player leaves during an active game (playing or paused), it's a forfeit
+    if ((this.gameState.gameStatus === 'playing' || this.gameState.gameStatus === 'paused') && (wasLeftPlayer || wasRightPlayer)) {
+      const forfeitedPlayer = wasLeftPlayer ? 'left' : 'right';
+      const winner = wasLeftPlayer ? 'right' : 'left';
+      const forfeitedPlayerName = forfeitedPlayer === 'left' ? 'Player 1' : 'Player 2';
+      
+      //Clear pause timer if game was paused
+      if (this.pauseTimer) {
+        clearTimeout(this.pauseTimer);
+        this.pauseTimer = null;
+      }
+      
+      this.gameState.forfeit = {
+        occurred: true,
+        forfeitedPlayer,
+        winner,
+        message: `${forfeitedPlayerName} disconnected. Victory awarded to ${winner === 'left' ? 'Player 1' : 'Player 2'}!`
+      };
+      
+      this.gameState.gameStatus = 'finished';
+      this.stopGameLoop();
+      
+      console.log(`Player ${forfeitedPlayerName} forfeited the match`);
+    } else if (!this.gameState.players.left && !this.gameState.players.right) {
+      //Both players left
       this.gameState.gameStatus = 'waiting';
       this.stopGameLoop();
     }
@@ -129,9 +165,60 @@ export class PongGame {
     }
   }
 
-  public pauseGame(): void {
+  public pauseGame(playerId: string): void {
+    if (this.gameState.gameStatus !== 'playing') {
+      return;
+    }
+
+    //Determine which side the player is on
+    const pausedBy = this.gameState.players.left === playerId ? 'left' : 'right';
+
+    //Update game state to paused
     this.gameState.gameStatus = 'paused';
-    this.stopGameLoop();
+    this.pauseStartTime = Date.now();
+    this.gameState.pause = {
+      isPaused: true,
+      pausedBy,
+      pausedAt: this.pauseStartTime,
+      remainingTime: 15
+    };
+
+    console.log(`Game ${this.gameState.id} paused by ${pausedBy} player (${playerId})`);
+
+    this.pauseTimer = setTimeout(() => {
+      console.log(`Auto-unpausing game ${this.gameState.id} after 15 seconds`);
+      this.unpauseGame(playerId);
+    }, this.PAUSE_DURATION);
+  }
+
+  public unpauseGame(playerId: string): void {
+    if (this.gameState.gameStatus !== 'paused' || !this.gameState.pause?.isPaused) {
+      return;
+    }
+
+    //Determine which side the player is on
+    const playerSide = this.gameState.players.left === playerId ? 'left' : 'right';
+
+    //Only the player who paused can unpause (or auto-unpause after timeout)
+    if (this.gameState.pause.pausedBy !== playerSide && this.pauseTimer !== null) {
+      console.log(`Player ${playerSide} attempted to unpause but ${this.gameState.pause.pausedBy} paused the game`);
+      return;
+    }
+
+    if (this.pauseTimer) {
+      clearTimeout(this.pauseTimer);
+      this.pauseTimer = null;
+    }
+
+    this.gameState.gameStatus = 'playing';
+    this.gameState.pause = {
+      isPaused: false,
+      pausedBy: undefined,
+      pausedAt: undefined,
+      remainingTime: undefined
+    };
+
+    console.log(`Game ${this.gameState.id} unpaused by ${playerSide} player (${playerId})`);
   }
 
   /**
@@ -164,6 +251,15 @@ export class PongGame {
     const now = Date.now();
     const deltaTime = (now - this.gameState.lastUpdate) / 1000;
     this.gameState.lastUpdate = now;
+
+    if (this.gameState.gameStatus === 'paused' && this.gameState.pause?.isPaused) {
+      const elapsed = now - this.pauseStartTime;
+      const remaining = Math.max(0, Math.ceil((this.PAUSE_DURATION - elapsed) / 1000));
+      if (this.gameState.pause) {
+        this.gameState.pause.remainingTime = remaining;
+      }
+      return;
+    }
 
     if (this.gameState.gameStatus !== 'playing') {
       return;
@@ -398,5 +494,10 @@ export class PongGame {
 
   public destroy(): void {
     this.stopGameLoop();
+    
+    if (this.pauseTimer) {
+      clearTimeout(this.pauseTimer);
+      this.pauseTimer = null;
+    }
   }
 }

@@ -16,7 +16,7 @@ import { getUserParams } from "../users/users.dto";
  */
 export async function account(fastify: FastifyInstance) {
 	const accountService = new AccountService(fastify, new AuthService(fastify));
-	accountService.setUsersService(new UsersService(fastify, accountService));
+	accountService.setUsersService(new UsersService(fastify));
 
 	/**
 	 * This entire module requires the user to be logged in in order to be able to access and

@@ -1,7 +1,8 @@
 import * as BABYLON from '@babylonjs/core';
 import earcut from 'earcut';
 import { createScene } from './scene/scene';
-import { setupScores, incrementScoreOne, incrementScoreTwo, cleanupScores, resetScores } from './scene/scores';
+import { setupScores, incrementScoreOne, incrementScoreTwo, cleanupScores, resetScores, getScoreOne, getScoreTwo } from './scene/scores';
+import { hideEndGameScreen } from './scene/end-game';
 
 /**
  * Class representing a local multiplayer Pong game using Babylon.js.
@@ -17,6 +18,9 @@ export class LocalPongGame {
   private ballVelocity = new BABYLON.Vector3(0.05, 0.05, 0);
   private paddleSpeed = 0.1;
   private gameLoop: number | null = null;
+  private readonly MAX_SCORE = 5;
+  private gameEnded = false;
+  private isPaused = false;
   
   private lastPaddleOneY = 0;
   private lastPaddleOneZ = 0;
@@ -32,7 +36,14 @@ export class LocalPongGame {
   //Initialize the game with the provided canvas element
   constructor(canvas: HTMLCanvasElement) {
     //Create Babylon.js engine and scene
-    this.engine = new BABYLON.Engine(canvas, true);
+    //Firefox compatibility: Use explicit WebGL context options
+    const engineOptions = {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      antialias: true,
+      powerPreference: 'high-performance' as WebGLPowerPreference
+    };
+    this.engine = new BABYLON.Engine(canvas, true, engineOptions);
     //Make earcut available globally for Babylon.js.
     (window as any).earcut = earcut;
     
@@ -62,6 +73,15 @@ export class LocalPongGame {
    */
   private setupInputHandlers(): void {
     window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        this.togglePause();
+        return;
+      }
+
+      if (this.isPaused) {
+        return;
+      }
+
       if (event.key === 'w' || event.key === 'W') {
         this.paddleOneDir = 1;
       } else if (event.key === 's' || event.key === 'S') {
@@ -74,12 +94,46 @@ export class LocalPongGame {
     });
 
     window.addEventListener('keyup', (event) => {
+      if (this.isPaused) {
+        return;
+      }
+
       if (event.key === 'w' || event.key === 'W' || event.key === 's' || event.key === 'S') {
         this.paddleOneDir = 0;
       } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         this.paddleTwoDir = 0;
       }
     });
+  }
+
+  private togglePause(): void {
+    if (this.gameEnded) {
+      return;
+    }
+
+    this.isPaused = !this.isPaused;
+
+    const pauseCounterElement = document.getElementById('pause-counter');
+    const pauseTimeElement = document.querySelector('#pause-counter .pause-time') as HTMLElement;
+    
+    if (this.isPaused) {
+      // Show HTML pause counter (hide timer for local play)
+      if (pauseCounterElement) {
+        pauseCounterElement.style.display = 'block';
+      }
+      if (pauseTimeElement) {
+        pauseTimeElement.style.display = 'none';
+      }
+      this.ball.visibility = 0;
+    } else {
+      if (pauseCounterElement) {
+        pauseCounterElement.style.display = 'none';
+      }
+      if (pauseTimeElement) {
+        pauseTimeElement.style.display = 'block';
+      }
+      this.ball.visibility = 1;
+    }
   }
 
   /**
@@ -116,6 +170,16 @@ export class LocalPongGame {
    * Update game state, including paddle and ball positions, handle collisions, and render the scene.
    */
   private updateGame(): void {
+    if (this.gameEnded) {
+      this.scene.render();
+      return;
+    }
+
+    if (this.isPaused) {
+      this.scene.render();
+      return;
+    }
+
     const paddleMargin = 0.05;
 
     this.paddleOneVelocityY = this.paddleOne.position.y - this.lastPaddleOneY;
@@ -197,13 +261,40 @@ export class LocalPongGame {
 
     if (this.ball.position.x < -4.8) {
       incrementScoreTwo();
-      this.resetBall();
+      this.checkGameEnd();
+      if (!this.gameEnded) {
+        this.resetBall();
+      }
     } else if (this.ball.position.x > 4.8) {
       incrementScoreOne();
-      this.resetBall();
+      this.checkGameEnd();
+      if (!this.gameEnded) {
+        this.resetBall();
+      }
     }
 
     this.scene.render();
+  }
+
+  private checkGameEnd(): void {
+    const scoreOne = getScoreOne();
+    const scoreTwo = getScoreTwo();
+
+    if (scoreOne >= this.MAX_SCORE || scoreTwo >= this.MAX_SCORE) {
+      this.gameEnded = true;
+      const winner = scoreOne >= this.MAX_SCORE ? 'Player 1' : 'Player 2';
+      
+      // Stop ball movement and hide it
+      this.ballVelocity.set(0, 0, 0);
+      this.ball.setEnabled(false);
+      
+      // Show win message in floating box only (no 3D banner for local play)
+      const gameMessageElement = document.getElementById('game-message');
+      if (gameMessageElement) {
+        gameMessageElement.textContent = `${winner} wins!`;
+        gameMessageElement.style.display = 'block';
+      }
+    }
   }
 
   private resetBall(): void {
@@ -220,6 +311,13 @@ export class LocalPongGame {
   public start(): void {
     console.log('Starting local multiplayer Pong game');
 
+    hideEndGameScreen();
+    
+    const gameMessageElement = document.getElementById('game-message');
+    if (gameMessageElement) {
+      gameMessageElement.style.display = 'none';
+    }
+
     this.engine.runRenderLoop(() => {
       this.updateGame();
     });
@@ -235,8 +333,34 @@ export class LocalPongGame {
     
     this.engine.stopRenderLoop();
     
+    //Re-enable ball in case it was hidden
+    this.ball.setEnabled(true);
+    
+    hideEndGameScreen();
+    
+    //Hide HTML pause counter and restore timer visibility
+    const pauseCounterElement = document.getElementById('pause-counter');
+    const pauseTimeElement = document.querySelector('#pause-counter .pause-time') as HTMLElement;
+    
+    if (pauseCounterElement) {
+      pauseCounterElement.style.display = 'none';
+    }
+    if (pauseTimeElement) {
+      pauseTimeElement.style.display = 'block';
+    }
+    
     cleanupScores();
     resetScores();
+
+    //Hide game-message
+    const gameMessageElement = document.getElementById('game-message');
+    if (gameMessageElement) {
+      gameMessageElement.textContent = '';
+      gameMessageElement.style.display = 'none';
+    }
+    
+    this.gameEnded = false;
+    this.isPaused = false;
   }
 
   public destroy(): void {

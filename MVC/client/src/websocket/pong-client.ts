@@ -9,6 +9,7 @@ export class PongWebSocketClient {
   private ws: WebSocket | null = null;
   private gameId: string = 'default-game';
   private playerId: string = 'player-' + Math.random().toString(36).substr(2, 9);
+  private userEmail: string | null = null; // User's email for game result tracking
   private playerPosition: 'left' | 'right' | null = null;
   private gameState: GameState | null = null;
   private connectionStatus: 'disconnected' | 'connecting' | 'connected' | 'waiting' = 'disconnected';
@@ -18,8 +19,20 @@ export class PongWebSocketClient {
   private connectionStatusChangeCallback: ((status: string, message: string) => void) | null = null;
   private playerPositionAssignedCallback: ((position: 'left' | 'right') => void) | null = null;
 
-  constructor() {
-    console.log('PongWebSocketClient initialized with player ID:', this.playerId);
+  constructor(playerId?: string, userEmail?: string) {
+    this.playerId = playerId || 'player-' + Math.random().toString(36).substr(2, 9);
+    this.userEmail = userEmail || null;
+    
+    // Check if we have a match ID from matchmaking
+    const storedMatchId = sessionStorage.getItem('matchId');
+    if (storedMatchId) {
+      this.gameId = storedMatchId;
+      console.log('PongWebSocketClient initialized with match ID:', storedMatchId);
+    } else {
+      // For direct access, let the server assign us to an available game
+      this.gameId = 'auto-assign';
+      console.log('PongWebSocketClient will be auto-assigned to an available game');
+    }
   }
 
   public setOnGameStateUpdate(callback: (state: GameState) => void): void {
@@ -131,6 +144,30 @@ export class PongWebSocketClient {
     });
   }
 
+  public sendPauseRequest(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !this.playerPosition) {
+      return;
+    }
+
+    this.sendMessage({
+      type: 'pause_game',
+      gameId: this.gameId,
+      playerId: this.playerId
+    });
+  }
+
+  public sendUnpauseRequest(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || !this.playerPosition) {
+      return;
+    }
+
+    this.sendMessage({
+      type: 'unpause_game',
+      gameId: this.gameId,
+      playerId: this.playerId
+    });
+  }
+
   public getGameState(): GameState | null {
     return this.gameState;
   }
@@ -153,11 +190,18 @@ export class PongWebSocketClient {
 
   private joinGame(): void {
     console.log('Joining game with ID:', this.gameId);
-    this.sendMessage({
+    const message: any = {
       type: 'join_game',
       gameId: this.gameId,
       playerId: this.playerId
-    });
+    };
+    
+    // Include userEmail if available
+    if (this.userEmail) {
+      message.userEmail = this.userEmail;
+    }
+    
+    this.sendMessage(message);
   }
 
   /**

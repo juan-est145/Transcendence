@@ -1,17 +1,14 @@
 import { Avatar } from '@prisma/client';
 import { SearchUsersResponse, GetUserResponse } from './users.type';
 import { FastifyInstance } from 'fastify';
-import { AccountService } from '../account/account.service';
 
 /**
  * This class accepts the following parameters:
  * @param fastify - The current fastify instance.
- * @param account - The Account service class.
  */
 export class UsersService {
 	constructor(
 		private fastify: FastifyInstance,
-		private account: AccountService,
 	) { }
 
 	/**
@@ -87,15 +84,19 @@ export class UsersService {
 			return null;
 		}
 
-		const { victories, defeats } = this.account.addTourResults(user).profile;
+		// Aggregate wins/losses/games from GameResult table (includes matchmaking, rooms, tournaments)
+		const wins = await this.fastify.prisma.gameResult.count({ where: { playerId: user.id, result: 'WIN' } });
+		const losses = await this.fastify.prisma.gameResult.count({ where: { playerId: user.id, result: 'LOSS' } });
+
+		const gamesPlayed = wins + losses;
 
 		return {
 			...user,
 			avatar: user.profile?.avatar as Avatar,
 			createdAt: user.profile!.createdAt.toISOString(),
-			gamesPlayed: user.profile!.tournaments.length,
-			wins: victories,
-			losses: defeats,
+			gamesPlayed,
+			wins,
+			losses,
 		};
 	}
 }

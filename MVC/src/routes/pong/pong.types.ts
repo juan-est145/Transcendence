@@ -56,6 +56,18 @@ export interface GameState {
     depth: number;
   };
   lastUpdate: number;
+  forfeit?: {
+    occurred: boolean;
+    forfeitedPlayer?: 'left' | 'right';
+    winner?: 'left' | 'right';
+    message?: string;
+  };
+  pause?: {
+    isPaused: boolean;
+    pausedBy?: 'left' | 'right';
+    pausedAt?: number;
+    remainingTime?: number;
+  };
 }
 
 /**
@@ -68,20 +80,12 @@ export interface PlayerInput {
 }
 
 /**
- * Game event representation
- */
-export interface GameEvent {
-  type: 'game_state' | 'player_joined' | 'player_left' | 'goal_scored' | 'game_ended';
-  data: any;
-  timestamp: number;
-}
-
-/**
  * WebSocket message format for client-server communication
  */
 export interface WebSocketMessage {
-  type: 'join_game' | 'leave_game' | 'player_input' | 'game_state' | 'error' | 'player_joined' | 'player_left';
+  type: 'join_game' | 'leave_game' | 'player_input' | 'game_state' | 'error' | 'player_joined' | 'player_left' | 'pause_game' | 'unpause_game';
   gameId?: string;
   playerId?: string;
+  userEmail?: string;
   data?: any;
 }
