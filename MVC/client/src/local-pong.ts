@@ -309,8 +309,6 @@ export class LocalPongGame {
   }
 
   public start(): void {
-    console.log('Starting local multiplayer Pong game');
-
     hideEndGameScreen();
     
     const gameMessageElement = document.getElementById('game-message');
@@ -324,8 +322,6 @@ export class LocalPongGame {
   }
 
   public stop(): void {
-    console.log('Stopping local multiplayer Pong game');
-    
     if (this.gameLoop) {
       clearInterval(this.gameLoop);
       this.gameLoop = null;

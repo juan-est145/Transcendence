@@ -1,4 +1,5 @@
 import { FastifyInstance } from "fastify";
+import { generateUniqueCode } from "./code.utils";
 
 /**
  * Room representation for casual pong matches
@@ -40,19 +41,8 @@ export class RoomManager {
 	 * Generate a random room code (5 uppercase letters)
 	 */
 	private generateRoomCode(): string {
-		const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		let code = '';
-		for (let i = 0; i < this.ROOM_CODE_LENGTH; i++) {
-			code += chars.charAt(Math.floor(Math.random() * chars.length));
-		}
-		
-		for (const room of this.rooms.values()) {
-			if (room.code === code) {
-				return this.generateRoomCode();
-			}
-		}
-		
-		return code;
+		const existingCodes = Array.from(this.rooms.values()).map(room => room.code);
+		return generateUniqueCode(this.ROOM_CODE_LENGTH, existingCodes);
 	}
 
 	/**

@@ -525,7 +525,7 @@ export async function pong(fastify: FastifyInstance) {
 			const { tournamentId } = req.params as { tournamentId: string };
 			
 			const success = tournamentManager.joinTournament(tournamentId, user.email, user.username || user.email);
-			console.log(`User ${user.email} joining tournament ${tournamentId}`);
+			fastify.log.info({ userId: user.email, tournamentId }, "User joining tournament");
 			return { success, message: "Joined tournament" };
 		} catch (error: any) {
 			fastify.log.error({ error }, "Error in tournaments/join");
@@ -690,23 +690,5 @@ export async function pong(fastify: FastifyInstance) {
 			fastify.log.error({ error }, "Error in tournaments/unready");
 			return res.status(400).send({ success: false, error: error.message || "Failed to unmark as ready" });
 		}
-	});
-
-	fastify.post("/move", async (req, res) => {
-		return { success: true };
-	});
-
-	fastify.post("/tick", async (req, res) => {
-		return { success: true };
-	});
-
-	fastify.get("/state", async (req, res) => {
-		return {
-			paddleOne: { x: -4, y: 1, z: 0 },
-			paddleTwo: { x: 4, y: 1, z: 0 },
-			ball: { x: 0, y: 1, z: 0 },
-			scoreOne: 0,
-			scoreTwo: 0
-		};
 	});
 }

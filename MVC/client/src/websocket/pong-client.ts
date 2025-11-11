@@ -8,7 +8,7 @@ import type { GameState, WebSocketMessage, PlayerInput } from './pong.types';
 export class PongWebSocketClient {
   private ws: WebSocket | null = null;
   private gameId: string = 'default-game';
-  private playerId: string = 'player-' + Math.random().toString(36).substr(2, 9);
+  private playerId: string = 'player-' + Math.random().toString(36).slice(2, 11);
   private userEmail: string | null = null; // User's email for game result tracking
   private playerPosition: 'left' | 'right' | null = null;
   private gameState: GameState | null = null;
@@ -20,18 +20,16 @@ export class PongWebSocketClient {
   private playerPositionAssignedCallback: ((position: 'left' | 'right') => void) | null = null;
 
   constructor(playerId?: string, userEmail?: string) {
-    this.playerId = playerId || 'player-' + Math.random().toString(36).substr(2, 9);
+    this.playerId = playerId || 'player-' + Math.random().toString(36).slice(2, 11);
     this.userEmail = userEmail || null;
     
     // Check if we have a match ID from matchmaking
     const storedMatchId = sessionStorage.getItem('matchId');
     if (storedMatchId) {
       this.gameId = storedMatchId;
-      console.log('PongWebSocketClient initialized with match ID:', storedMatchId);
     } else {
       // For direct access, let the server assign us to an available game
       this.gameId = 'auto-assign';
-      console.log('PongWebSocketClient will be auto-assigned to an available game');
     }
   }
 
@@ -75,7 +73,6 @@ export class PongWebSocketClient {
       wsUrl = `${protocol}//${window.location.host}/pong/ws`;
     }
     
-    console.log('Connecting to WebSocket:', wsUrl);
     this.connectionStatus = 'connecting';
     this.shouldReconnect = true;
     this.notifyConnectionStatus('connecting', 'Connecting to server...');
@@ -83,7 +80,6 @@ export class PongWebSocketClient {
     this.ws = new WebSocket(wsUrl);
     
     this.ws.onopen = () => {
-      console.log('WebSocket connected successfully');
       this.connectionStatus = 'waiting';
       this.notifyConnectionStatus('waiting', 'Connected - Joining game...');
       this.joinGame();
@@ -92,15 +88,13 @@ export class PongWebSocketClient {
     this.ws.onmessage = (event) => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data);
-        console.log('Received WebSocket message:', message);
         this.handleMessage(message);
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }
     };
     
-    this.ws.onclose = (event) => {
-      console.log('WebSocket disconnected:', event.code, event.reason);
+    this.ws.onclose = () => {
       this.connectionStatus = 'disconnected';
       
       if (this.shouldReconnect) {
@@ -183,13 +177,10 @@ export class PongWebSocketClient {
   private sendMessage(message: WebSocketMessage): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
-    } else {
-      console.warn('WebSocket not ready, message not sent:', message);
     }
   }
 
   private joinGame(): void {
-    console.log('Joining game with ID:', this.gameId);
     const message: any = {
       type: 'join_game',
       gameId: this.gameId,
@@ -213,18 +204,10 @@ export class PongWebSocketClient {
       case 'game_state':
         this.handleGameState(message.data);
         break;
-      case 'player_joined':
-        console.log('Player joined:', message.data);
-        break;
-      case 'player_left':
-        console.log('Player left:', message.data);
-        break;
       case 'error':
         console.error('Game error:', message.data.message);
         this.notifyConnectionStatus('error', 'Error: ' + message.data.message);
         break;
-      default:
-        console.log('Unknown message type:', message.type);
     }
   }
 
@@ -238,7 +221,6 @@ export class PongWebSocketClient {
     //Assign player position if not already assigned
     if (state.playerPosition && !this.playerPosition) {
       this.playerPosition = state.playerPosition;
-      console.log('Assigned as player:', this.playerPosition);
       this.connectionStatus = 'connected';
       this.notifyConnectionStatus('connected', `Playing as Player ${this.playerPosition === 'left' ? '1' : '2'}`);
       //Notify position assigned
@@ -271,7 +253,6 @@ export class PongWebSocketClient {
   }
 
   public disconnect(): void {
-    console.log('Explicitly disconnecting WebSocket client');
     this.shouldReconnect = false;
     
     if (this.ws) {

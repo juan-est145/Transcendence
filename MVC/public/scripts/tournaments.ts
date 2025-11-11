@@ -10,7 +10,6 @@ const cancelJoinCodeBtn = document.getElementById('cancel-join-code-btn');
 const joinCodeForm = document.getElementById('join-code-form');
 
 createTournamentBtn?.addEventListener('click', () => {
-    console.log('Create tournament button clicked!');
     createModal?.classList.remove('hidden');
 });
 
@@ -44,8 +43,6 @@ joinCodeModal?.addEventListener('click', (e) => {
 createTournamentForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    console.log('Tournament form submitted!');
-    
     const nameInput = document.getElementById('tournament-name') as HTMLInputElement;
     const sizeInput = document.getElementById('tournament-size') as HTMLSelectElement;
     const maxScoreInput = document.getElementById('tournament-max-score') as HTMLInputElement;
@@ -56,8 +53,6 @@ createTournamentForm?.addEventListener('submit', async (e) => {
         maxScore: parseInt(maxScoreInput?.value || '5')
     };
     
-    console.log('Tournament data:', tournamentData);
-    
     try {
         const response = await fetch('/pong/tournaments/create', {
             method: 'POST',
@@ -66,9 +61,7 @@ createTournamentForm?.addEventListener('submit', async (e) => {
             body: JSON.stringify(tournamentData)
         });
         
-        console.log('Response status:', response.status);
         const data = await response.json();
-        console.log('Response data:', data);
         
         if (data.success) {
             createModal?.classList.add('hidden');
@@ -797,7 +790,7 @@ async function createMatchGameSilent(tournamentId: string, matchId: string) {
             credentials: 'same-origin'
         });
     } catch (error) {
-        console.log('Game creation handled by other player or already created');
+        // Silently ignore - game creation handled by other player or already created
     }
 }
 

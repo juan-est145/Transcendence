@@ -26,7 +26,6 @@ function connect() {
 }
 
 function disconnect() {
-	console.log('[SharedWorker] ws closed');
 	if (websocket)
 		websocket.close();
 	websocket = null;

@@ -1,4 +1,5 @@
 import { FastifyInstance } from "fastify";
+import { generateUniqueCode, generateRandomCode } from "./code.utils";
 
 /**
  * Data structures for tournament management
@@ -64,29 +65,15 @@ export class TournamentManager {
 	 * Generate a random 5-letter invite code
 	 */
 	private generateInviteCode(): string {
-		const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		let code = '';
-		for (let i = 0; i < 5; i++) {
-			code += chars.charAt(Math.floor(Math.random() * chars.length));
-		}
-		for (const tournament of this.tournaments.values()) {
-			if (tournament.inviteCode === code) {
-				return this.generateInviteCode();
-			}
-		}
-		return code;
+		const existingCodes = Array.from(this.tournaments.values()).map(t => t.inviteCode);
+		return generateUniqueCode(5, existingCodes);
 	}
 
 	/**
 	 * Generate a unique room code for a match (different from invite codes)
 	 */
 	private generateRoomCode(matchId: string): string {
-		const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-		let code = '';
-		for (let i = 0; i < 5; i++) {
-			code += chars.charAt(Math.floor(Math.random() * chars.length));
-		}
-		return code;
+		return generateRandomCode(5, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
 	}
 
 	public createTournament(

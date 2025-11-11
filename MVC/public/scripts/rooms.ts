@@ -83,17 +83,13 @@ function setupEventListeners() {
 
 async function createRoom(name: string, maxScore: number) {
   try {
-    console.log('Creating room:', { name, maxScore });
-    
     const response = await fetch('/pong/rooms/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, maxScore })
     });
 
-    console.log('Response status:', response.status);
     const data = await response.json();
-    console.log('Response data:', data);
     
     if (response.ok && data.success) {
       currentRoom = data.room;
@@ -232,11 +228,8 @@ async function startGame() {
 
 function showCurrentRoom() {
   if (!currentRoom) {
-    console.log('showCurrentRoom called but currentRoom is null');
     return;
   }
-
-  console.log('Showing current room:', currentRoom);
 
   const createFormParent = document.getElementById('create-room-form')?.closest('.bg-gray-800');
   const joinFormParent = document.getElementById('join-room-form')?.closest('.bg-gray-800');
@@ -264,34 +257,46 @@ function showCurrentRoom() {
 
   const player1 = currentRoom.players[0];
   if (player1) {
-    document.getElementById('player1-name')!.textContent = player1.username;
-    const player1Status = document.getElementById('player1-status')!;
-    player1Status.textContent = player1.ready ? 'Ready ✓' : 'Not Ready';
-    player1Status.className = player1.ready ? 'text-sm text-green-400' : 'text-sm text-gray-400';
+    const player1Name = document.getElementById('player1-name');
+    const player1Status = document.getElementById('player1-status');
+    if (player1Name) player1Name.textContent = player1.username;
+    if (player1Status) {
+      player1Status.textContent = player1.ready ? 'Ready ✓' : 'Not Ready';
+      player1Status.className = player1.ready ? 'text-sm text-green-400' : 'text-sm text-gray-400';
+    }
   }
 
   const player2 = currentRoom.players[1];
   if (player2) {
-    document.getElementById('player2-name')!.textContent = player2.username;
-    const player2Status = document.getElementById('player2-status')!;
-    player2Status.textContent = player2.ready ? 'Ready ✓' : 'Not Ready';
-    player2Status.className = player2.ready ? 'text-sm text-green-400' : 'text-sm text-gray-400';
+    const player2Name = document.getElementById('player2-name');
+    const player2Status = document.getElementById('player2-status');
+    if (player2Name) player2Name.textContent = player2.username;
+    if (player2Status) {
+      player2Status.textContent = player2.ready ? 'Ready ✓' : 'Not Ready';
+      player2Status.className = player2.ready ? 'text-sm text-green-400' : 'text-sm text-gray-400';
+    }
   } else {
-    document.getElementById('player2-name')!.textContent = 'Waiting...';
-    document.getElementById('player2-status')!.textContent = 'Not Ready';
-    document.getElementById('player2-status')!.className = 'text-sm text-gray-400';
+    const player2Name = document.getElementById('player2-name');
+    const player2Status = document.getElementById('player2-status');
+    if (player2Name) player2Name.textContent = 'Waiting...';
+    if (player2Status) {
+      player2Status.textContent = 'Not Ready';
+      player2Status.className = 'text-sm text-gray-400';
+    }
   }
 
   const currentPlayer = currentRoom.players.find(p => p.userId === currentUserId);
-  const readyBtn = document.getElementById('ready-btn') as HTMLButtonElement;
-  const unreadyBtn = document.getElementById('unready-btn') as HTMLButtonElement;
+  const readyBtn = document.getElementById('ready-btn') as HTMLButtonElement | null;
+  const unreadyBtn = document.getElementById('unready-btn') as HTMLButtonElement | null;
 
-  if (currentPlayer?.ready) {
-    readyBtn.classList.add('hidden');
-    unreadyBtn.classList.remove('hidden');
-  } else {
-    readyBtn.classList.remove('hidden');
-    unreadyBtn.classList.add('hidden');
+  if (readyBtn && unreadyBtn) {
+    if (currentPlayer?.ready) {
+      readyBtn.classList.add('hidden');
+      unreadyBtn.classList.remove('hidden');
+    } else {
+      readyBtn.classList.remove('hidden');
+      unreadyBtn.classList.add('hidden');
+    }
   }
 
   const startGameContainer = document.getElementById('start-game-container');
@@ -335,10 +340,7 @@ async function loadAvailableRooms() {
     const response = await fetch('/pong/rooms/available');
     const data = await response.json();
     
-    console.log('Available rooms response:', data);
-    
     if (data.success) {
-      console.log('Rooms to display:', data.rooms);
       displayAvailableRooms(data.rooms);
     }
   } catch (error) {
@@ -352,8 +354,6 @@ function displayAvailableRooms(rooms: any[]) {
     console.error('available-rooms container not found');
     return;
   }
-
-  console.log('Displaying rooms:', rooms);
 
   if (!rooms || rooms.length === 0) {
     container.innerHTML = '<p class="text-gray-400 text-center">No available rooms</p>';

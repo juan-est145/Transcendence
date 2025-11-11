@@ -73,8 +73,6 @@ class PongGameManager {
    * Hides the main menu and shows the game canvas and UI.
    */
   private async startLocalGame(): Promise<void> {
-    console.log('Starting local multiplayer game');
-    
     // Test WebGL support before starting (Firefox compatibility)
     if (!this.testWebGLSupport()) {
       alert('WebGL is not supported or enabled in your browser. Please enable WebGL to play.');
@@ -120,8 +118,6 @@ class PongGameManager {
   }
 
   private startRemoteGame(): void {
-    console.log('Starting remote multiplayer game');
-    
     // Test WebGL support before starting (Firefox compatibility)
     if (!this.testWebGLSupport()) {
       alert('WebGL is not supported or enabled in your browser. Please enable WebGL to play.');
@@ -153,8 +149,6 @@ class PongGameManager {
   }
 
   private backToMenu(): void {
-    console.log('Returning to main menu');
-    
     if (this.currentGame) {
       this.currentGame.stop();
       this.currentGame.destroy();
@@ -184,11 +178,9 @@ class PongGameManager {
     
     if (isFromTournament === 'true') {
       // Tournament mode - let players choose local or remote
-      console.log('Tournament mode - showing menu for local/remote choice');
       sessionStorage.removeItem('tournamentMode');
       this.showTournamentMenu();
     } else if (matchId || isFromMatchmaking === 'true') {
-      console.log('Starting remote game from online mode');
       // Clear the matchmaking flag
       sessionStorage.removeItem('matchmakingMode');
       
@@ -196,7 +188,6 @@ class PongGameManager {
       this.startRemoteGame();
     } else {
       // Direct access to /pong - start local game automatically with countdown
-      console.log('Starting local game (default mode)');
       this.startLocalGame();
     }
   }
@@ -231,6 +222,5 @@ class PongGameManager {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Initializing 3D Pong Game Manager');
   new PongGameManager();
 });

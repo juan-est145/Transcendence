@@ -8,10 +8,6 @@ promise.then((value) => {
 		return;
 	}
 
-	worker.port.onmessage = (e) => {
-		console.log(e.data);
-	}
-
 	worker.port.postMessage("online");
 	
 });

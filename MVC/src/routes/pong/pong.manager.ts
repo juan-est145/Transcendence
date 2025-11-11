@@ -154,7 +154,7 @@ export class PongGameManager {
     //If no gameId provided or it's the default, find/create an available game
     if (!gameId || gameId === 'default-game' || gameId.startsWith('game_')) {
       gameId = this.findOrCreateAvailableGame();
-      console.log(`Assigned player ${playerId} to game ${gameId}`);
+      this.fastify.log.info({ playerId, gameId }, "Assigned player to game");
     }
 
     let game = this.getGame(gameId);
@@ -482,7 +482,7 @@ export class PongGameManager {
       
       if (gameState.gameStatus === 'finished' || 
           (!gameState.players.left && !gameState.players.right)) {
-        console.log(`Game ${gameId} ended. Status: ${gameState.gameStatus}`);
+        this.fastify.log.info({ gameId, status: gameState.gameStatus }, "Game ended");
         
         if (this.matchmakingManager && gameState.gameStatus === 'finished') {
           const playerIds = [gameState.players.left, gameState.players.right].filter(Boolean);

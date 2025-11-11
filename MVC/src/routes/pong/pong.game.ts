@@ -119,8 +119,6 @@ export class PongGame {
       
       this.gameState.gameStatus = 'finished';
       this.stopGameLoop();
-      
-      console.log(`Player ${forfeitedPlayerName} forfeited the match`);
     } else if (!this.gameState.players.left && !this.gameState.players.right) {
       //Both players left
       this.gameState.gameStatus = 'waiting';
@@ -183,10 +181,7 @@ export class PongGame {
       remainingTime: 15
     };
 
-    console.log(`Game ${this.gameState.id} paused by ${pausedBy} player (${playerId})`);
-
     this.pauseTimer = setTimeout(() => {
-      console.log(`Auto-unpausing game ${this.gameState.id} after 15 seconds`);
       this.unpauseGame(playerId);
     }, this.PAUSE_DURATION);
   }
@@ -201,7 +196,6 @@ export class PongGame {
 
     //Only the player who paused can unpause (or auto-unpause after timeout)
     if (this.gameState.pause.pausedBy !== playerSide && this.pauseTimer !== null) {
-      console.log(`Player ${playerSide} attempted to unpause but ${this.gameState.pause.pausedBy} paused the game`);
       return;
     }
 
@@ -217,8 +211,6 @@ export class PongGame {
       pausedAt: undefined,
       remainingTime: undefined
     };
-
-    console.log(`Game ${this.gameState.id} unpaused by ${playerSide} player (${playerId})`);
   }
 
   /**
@@ -230,7 +222,6 @@ export class PongGame {
       clearInterval(this.gameLoop);
     }
 
-    console.log(`Starting game loop at ${1000/this.GAME_SPEED} FPS`);
     this.gameLoop = setInterval(() => {
       this.updateGame();
     }, this.GAME_SPEED);
@@ -296,19 +287,9 @@ export class PongGame {
     const ball = this.gameState.ball;
     const movementScale = 1.0;
     
-    const oldPosition = { ...ball.position };
-    
     ball.position.x += ball.velocity.x * movementScale;
     ball.position.y += ball.velocity.y * movementScale;
     ball.position.z = 0;
-
-    if (Math.abs(ball.position.x) > 3.0) {
-      console.log('Ball update near paddle:', {
-        oldPos: oldPosition,
-        newPos: ball.position,
-        velocity: ball.velocity
-      });
-    }
 
     //Check for wall collisions
     const ballRadius = ball.size / 2;
@@ -317,7 +298,6 @@ export class PongGame {
     if (ball.position.y - ballRadius <= 0.3 || ball.position.y + ballRadius >= 2.7) {
       ball.velocity.y *= -1;
       ball.position.y = Math.max(0.3 + ballRadius, Math.min(2.7 - ballRadius, ball.position.y));
-      console.log('Ball bounced off top/bottom wall');
     }
   }
 
@@ -330,33 +310,13 @@ export class PongGame {
     const leftPaddle = this.gameState.paddles.left;
     const rightPaddle = this.gameState.paddles.right;
 
-    //Check for paddle collisions
-    if (Math.abs(ball.position.x - leftPaddle.position.x) < 0.5 && Math.abs(ball.velocity.x) > 0) {
-      console.log(`Ball approaching left paddle: ballX=${ball.position.x.toFixed(2)}, distance=${Math.abs(ball.position.x - leftPaddle.position.x).toFixed(2)}`);
-    }
-    if (Math.abs(ball.position.x - rightPaddle.position.x) < 0.5 && Math.abs(ball.velocity.x) > 0) {
-      console.log(`Ball approaching right paddle: ballX=${ball.position.x.toFixed(2)}, distance=${Math.abs(ball.position.x - rightPaddle.position.x).toFixed(2)}`);
-    }
-
     //Check collision with left paddle
     if (this.checkBallPaddleCollision(ball, leftPaddle)) {
-      console.log('LEFT PADDLE COLLISION DETECTED', { 
-        ballPos: ball.position, 
-        ballVel: ball.velocity, 
-        paddlePos: leftPaddle.position,
-        distance: Math.abs(ball.position.x - leftPaddle.position.x)
-      });
       this.addSpinToBall(ball, leftPaddle);
     }
 
     //Check collision with right paddle
     if (this.checkBallPaddleCollision(ball, rightPaddle)) {
-      console.log('RIGHT PADDLE COLLISION DETECTED', { 
-        ballPos: ball.position, 
-        ballVel: ball.velocity, 
-        paddlePos: rightPaddle.position,
-        distance: Math.abs(ball.position.x - rightPaddle.position.x)
-      });
       this.addSpinToBall(ball, rightPaddle);
     }
   }
@@ -388,15 +348,6 @@ export class PongGame {
     const overlapY = ballTop >= paddleBottom && ballBottom <= paddleTop;
     
     const hasCollision = overlapX && overlapY;
-
-    if (hasCollision && Math.abs(ball.position.x - paddle.position.x) < 0.3) {
-      console.log(`${paddle.id} paddle collision check:`, {
-        ballPos: { x: ball.position.x.toFixed(2), y: ball.position.y.toFixed(2) },
-        paddlePos: { x: paddle.position.x.toFixed(2), y: paddle.position.y.toFixed(2) },
-        overlapX, overlapY,
-        ballVelocity: { x: ball.velocity.x.toFixed(3), y: ball.velocity.y.toFixed(3) }
-      });
-    }
     
     if (hasCollision) {
       const movingTowardsLeft = ball.velocity.x < 0 && paddle.id === 'left' && ball.position.x > paddle.position.x;
@@ -405,10 +356,7 @@ export class PongGame {
       const isValidCollision = movingTowardsLeft || movingTowardsRight;
       
       if (isValidCollision) {
-        console.log(`VALID COLLISION with ${paddle.id} paddle!`);
         return true;
-      } else {
-        console.log(`Invalid collision direction with ${paddle.id} paddle (ballX: ${ball.position.x}, paddleX: ${paddle.position.x}, velX: ${ball.velocity.x})`);
       }
     }
     
@@ -421,8 +369,6 @@ export class PongGame {
    * @param paddle The paddle that the ball collided with.
    */
   private addSpinToBall(ball: Ball, paddle: Paddle): void {
-    console.log(`Ball collision with ${paddle.id} paddle!`);
-    
     //Calculate hit position relative to paddle center
     const relativeHitY = ball.position.y - paddle.position.y;
     //Normalize to range [-1, 1]
@@ -456,8 +402,6 @@ export class PongGame {
     ball.velocity.x = Math.max(-maxSpeed, Math.min(maxSpeed, ball.velocity.x));
     ball.velocity.y = Math.max(-maxSpeed, Math.min(maxSpeed, ball.velocity.y));
     ball.velocity.z = 0;
-    console.log(`Ball velocity after collision:`, ball.velocity);
-    console.log(`Ball position after collision:`, ball.position);
   }
 
   private checkGoals(): void {

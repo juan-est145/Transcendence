@@ -79,13 +79,6 @@ export class RemotePongGame {
       this.gameStatusElement.style.display = 'none';
     }
     
-    console.log('DOM elements initialized:', {
-      gameStatusElement: !!this.gameStatusElement,
-      playerInfoElement: !!this.playerInfoElement,
-      pauseCounterElement: !!this.pauseCounterElement,
-      pauseTimeRemainingElement: !!this.pauseTimeRemainingElement
-    });
-    
     if (!this.pauseCounterElement) {
       console.error('pause-counter element not found in DOM!');
     }
@@ -96,10 +89,7 @@ export class RemotePongGame {
 
   //Setup WebSocket event callbacks. Handles connection status, game state updates, and player assignment.
   private setupWebSocketCallbacks(): void {
-    console.log('Setting up WebSocket callbacks...');
-    
     this.wsClient.onConnectionChanged((connected) => {
-      console.log('Connection status:', connected);
       if (this.playerInfoElement) {
         this.playerInfoElement.textContent = connected ? 'Connected - Waiting for game...' : 'Connecting...';
       }
@@ -107,8 +97,6 @@ export class RemotePongGame {
 
     //Update game objects based on server-sent game state
     this.wsClient.onGameStateUpdate((gameState) => {
-      console.log('onGameStateUpdate called with gameStatus:', gameState.gameStatus);
-      
       if (gameState.ball) {
         this.ball.position.set(gameState.ball.position.x, gameState.ball.position.y, gameState.ball.position.z);
       }
@@ -132,15 +120,7 @@ export class RemotePongGame {
       updateScoreDisplay(gameState.scores.left, gameState.scores.right);
       
       // Handle pause state
-      console.log('Game state:', {
-        status: gameState.gameStatus,
-        hasPause: !!gameState.pause,
-        isPaused: gameState.pause?.isPaused,
-        remainingTime: gameState.pause?.remainingTime
-      });
-      
       if (gameState.gameStatus === 'paused' && gameState.pause && gameState.pause.isPaused) {
-        console.log('Game is paused, showing counter. Remaining time:', gameState.pause.remainingTime);
         this.showPauseCounter(gameState.pause.remainingTime ?? 15);
       } else {
         this.hidePauseCounter();
@@ -198,7 +178,6 @@ export class RemotePongGame {
     //Handle player assignment from the server
     this.wsClient.onPlayerAssigned((position) => {
       this.playerPosition = position;
-      console.log('Assigned to:', position, 'paddle');
       if (this.playerInfoElement) {
         this.playerInfoElement.textContent = `You are Player ${position === 'left' ? '1' : '2'}`;
       }
@@ -297,10 +276,6 @@ export class RemotePongGame {
    * Show pause counter with remaining time
    */
   private showPauseCounter(remainingTime: number): void {
-    console.log('showPauseCounter called with remainingTime:', remainingTime);
-    console.log('pauseCounterElement:', this.pauseCounterElement);
-    console.log('pauseTimeRemainingElement:', this.pauseTimeRemainingElement);
-    
     if (!this.pauseCounterElement || !this.pauseTimeRemainingElement) {
       console.error('Pause counter elements not found!');
       return;
@@ -310,12 +285,6 @@ export class RemotePongGame {
     this.pauseTimeRemainingElement.textContent = timeValue.toString();
     this.pauseCounterElement.style.display = 'block';
     this.pauseCounterElement.style.visibility = 'visible';
-    
-    console.log('Pause counter displayed. Current styles:', {
-      display: this.pauseCounterElement.style.display,
-      visibility: this.pauseCounterElement.style.visibility,
-      timeText: this.pauseTimeRemainingElement.textContent
-    });
   }
 
   /**
@@ -329,9 +298,6 @@ export class RemotePongGame {
   }
 
   public start(): void {
-    console.log('Starting remote multiplayer Pong game');
-    console.log('Document readyState:', document.readyState);
-    
     //Fetch user email first, then initialize
     const initializeGame = async () => {
       try {
@@ -339,7 +305,6 @@ export class RemotePongGame {
         const response = await fetch('/pong/current-user');
         if (response.ok) {
           const userData = await response.json();
-          console.log('User data fetched:', userData);
           //Update the wsClient with the user email
           this.wsClient = new PongWebSocketClient(undefined, userData.email);
         } else {
@@ -354,27 +319,17 @@ export class RemotePongGame {
     
     //Wait for DOM elements to be available
     const waitForDOMAndStart = () => {
-      console.log('Checking for DOM elements...');
-      
       const pauseCounterCheck = document.getElementById('pause-counter');
       const pauseTimeCheck = document.getElementById('pause-time-remaining');
       
-      console.log('Elements found?', {
-        pauseCounter: !!pauseCounterCheck,
-        pauseTime: !!pauseTimeCheck
-      });
-      
       if (!pauseCounterCheck || !pauseTimeCheck) {
-        console.log('Elements not found yet, retrying in 50ms...');
         setTimeout(waitForDOMAndStart, 50);
         return;
       }
       
-      console.log('DOM elements found! Initializing...');
       this.initializeDOMElements();
       
       //Set up callbacks right before connecting to ensure they exist
-      console.log('Setting up callbacks...');
       this.setupWebSocketCallbacks();
       this.setupInputHandlers();
       
@@ -386,7 +341,6 @@ export class RemotePongGame {
         this.scene.render();
       });
       
-      console.log('About to connect WebSocket...');
       this.wsClient.connect();
     };
     
@@ -395,8 +349,6 @@ export class RemotePongGame {
   }
 
   public stop(): void {
-    console.log('Stopping remote multiplayer Pong game');
-    
     this.engine.stopRenderLoop();
     this.wsClient.disconnect();
     

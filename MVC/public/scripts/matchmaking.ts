@@ -12,16 +12,13 @@ const waitTimeElement = document.getElementById('wait-time');
 
 //Find match button handler. 
 findMatchBtn?.addEventListener('click', async () => {
-    console.log('Find match button clicked!');
     try {
         const response = await fetch('/pong/matchmaking/join', {
             method: 'POST',
             credentials: 'same-origin'
         });
         
-        console.log('Response status:', response.status);
         const data = await response.json();
-        console.log('Response data:', data);
         
         if (data.success) {
             startSearching();
