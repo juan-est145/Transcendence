@@ -18,6 +18,8 @@ model Users {
   password String
   email    String   @unique
   profile  Profile?
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
 }
 
 // TO DO: Need to think about storing information like 2FA and stats.
@@ -33,6 +35,8 @@ model Profile {
   friend2     Friends[]            @relation("Friend2")
   //This field will not be added until work starts on the tournaments. For now is not valid.
   tournaments Tournament_Players[]
+  gamesAsPlayer GameResult[]       @relation("PlayerGames")
+  gamesAsOpponent GameResult[]     @relation("OpponentGames")
 }
 
 model Avatar {
@@ -76,4 +80,29 @@ model Tournament_Players {
   tournaments  Tournament @relation(fields: [tournamentId], references: [id])
 
   @@id([playerId, tournamentId])
+}
+
+// Game results for tracking wins/losses in matchmaking, rooms, and tournaments
+model GameResult {
+  id          Int      @id @default(autoincrement())
+  playerId    Int
+  opponentId  Int
+  result      GameResultType
+  gameType    GameType
+  gameId      String   // Match ID, room ID, or tournament match ID
+  createdAt   DateTime @default(now())
+  
+  player      Profile  @relation("PlayerGames", fields: [playerId], references: [id])
+  opponent    Profile  @relation("OpponentGames", fields: [opponentId], references: [id])
+}
+
+enum GameResultType {
+  WIN
+  LOSS
+}
+
+enum GameType {
+  MATCHMAKING
+  ROOM
+  TOURNAMENT
 }

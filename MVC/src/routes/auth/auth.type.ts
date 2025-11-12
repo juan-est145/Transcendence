@@ -5,3 +5,12 @@ export type LogInError = paths["/v1/auth/log-in"]["post"]["responses"]["400"]["c
 export type JwtBody = paths["/v1/auth/log-in"]["post"]["responses"]["201"]["content"]["application/json"];
 export type SignInBody = paths["/v1/auth/sign-in"]["post"]["requestBody"]["content"]["application/json"] & { repeatPasswd: string };
 export type SigInError = paths["/v1/auth/sign-in"]["post"]["responses"]["400"]["content"]["application/json"];
+
+declare module "@fastify/session" {
+	interface FastifySessionObject {
+		jwt?: string;
+		refreshJwt?: string;
+		tempToken?: string;
+		requires2FA?: boolean;
+	}
+}

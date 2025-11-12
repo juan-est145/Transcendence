@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run build:ts && c8 --exclude=\"**/*.dto.ts\" --exclude=\"test/**\" --exclude=\"src/plugins/**\" jest",
     "prisma": "prisma migrate dev --name dev && prisma generate",
-    "start": "npm run prisma && npm run build:ts && fastify start -l info -p 4343 dist/app.js --options",
+    "start": "NODE_ENV=production npm run prisma && npm run build:ts && fastify start -l info -p 4343 dist/app.js --options",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run prisma && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
@@ -37,15 +37,18 @@
     "@fastify/type-provider-typebox": "^5.2.0",
     "@prisma/client": "^6.12.0",
     "@sinclair/typebox": "^0.34.38",
-    "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.0",
-    "fastify-plugin": "^5.0.0"
+    "fastify-plugin": "^5.0.0",
+    "otplib": "^12.0.1",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
+    "@types/qrcode": "^1.5.5",
     "c8": "^10.1.3",
     "concurrently": "^9.2.1",
     "fastify-tsconfig": "^3.0.0",

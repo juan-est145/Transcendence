@@ -3,11 +3,9 @@ import { UsersService } from "./users.service";
 import { searchUsersSchema, getUserSchema } from "./users.swagger";
 import { GetUserParams, SearchUsersQuery } from "./users.type";
 import { httpErrors } from "@fastify/sensible";
-import { AccountService } from "../account/account.service";
-import { AuthService } from "../auth/auth.service";
 
 export async function users(fastify: FastifyInstance): Promise<void> {
-	const usersService = new UsersService(fastify, new AccountService(fastify, new AuthService(fastify)));
+	const usersService = new UsersService(fastify);
 
 	/**
 	 * This entire module requires the user to be logged in in order to be able to access and

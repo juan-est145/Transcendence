@@ -3,18 +3,53 @@ import { auth } from './auth/auth';
 import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
 import { search } from './search/search';
+import { pong } from './pong/pong';
 import { friends } from './friends/friends';
+import { twoFactor } from './2FA/2fa';
+import { settings } from './settings/settings';
+
 
 const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  // 404 - Not Found handler
-  fastify.setNotFoundHandler(async (request, reply) => {
-    return reply.code(404).view("errors/404.ejs");
-  });
+	// 404 - Not Found handler
+	fastify.setNotFoundHandler(async (request, reply) => {
+		return reply.code(404).view("errors/404.ejs");
+	});
 
+<<<<<<< HEAD
+	// 500 - Internal Server Error handler for generic errors.
+	// 401 - Unauthorized for not logged error's.
+	fastify.setErrorHandler(async (error, request, reply) => {
+		fastify.log.error(error);
+		if (error.statusCode === 401) {
+			if (request.session)
+				await request.session.destroy();
+			return reply.code(error.statusCode).viewAsync("errors/401.ejs");
+		}
+		else if (error.statusCode === 404) {
+			return reply.code(404).view("errors/404.ejs");
+		}
+		return reply.code(500).view("errors/500.ejs");
+	});
+=======
   // 500 - Internal Server Error handler for generic errors.
   // 401 - Unauthorized for not logged error's.
   fastify.setErrorHandler(async (error, request, reply) => {
     fastify.log.error(error);
+    
+    //For API endpoints (starting with /pong/matchmaking or /pong/tournaments), return JSON
+    const isApiEndpoint = request.url.includes('/matchmaking/') || 
+                          request.url.includes('/tournaments/') ||
+                          request.url.includes('/pong/games');
+    
+    if (isApiEndpoint) {
+      const statusCode = error.statusCode || 500;
+      return reply.code(statusCode).send({ 
+        success: false, 
+        error: error.message || "Internal server error" 
+      });
+    }
+    
+    //For page requests, return HTML error pages
     if (error.statusCode === 401) {
       if (request.session)
         await request.session.destroy();
@@ -25,37 +60,47 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     }
     return reply.code(500).view("errors/500.ejs");
   });
+>>>>>>> matchmaking
 
 
-  /**
-   * This hooks handles the auth headers necessary for accesing our API's protected routes.
-   * If the user is logged in, it adds it's jwt to every request, except if the route is
-   * meant for refreshing the jwt, in which it's case, it uses the the refresh jwt token instead.
-   */
-  fastify.addHook("onRequest", async (req, res) => {
-    const authMiddleware: Middleware = {
-      onRequest({ schemaPath, request }) {
-        if (!req.session)
-          return request;
-        const token = schemaPath === "/v1/auth/refresh-jwt" ? req.session.get("refreshJwt") : req.session.get("jwt");
-        request.headers.set("Authorization", `Bearer ${token}`);
-        return request;
-      }
-    };
+	/**
+	 * This hooks handles the auth headers necessary for accesing our API's protected routes.
+	 * If the user is logged in, it adds it's jwt to every request, except if the route is
+	 * meant for refreshing the jwt, in which it's case, it uses the the refresh jwt token instead.
+	 */
+	fastify.addHook("onRequest", async (req, res) => {
+		const authMiddleware: Middleware = {
+			async onRequest({ schemaPath, request }) {
+				if (!req.session || schemaPath === "/v1/account/online_status")
+					return request;
+				await req.session.reload();
+				const token = schemaPath === "/v1/auth/refresh-jwt" ? req.session.get("refreshJwt") : req.session.get("jwt");
+				request.headers.set("Authorization", `Bearer ${token}`);
+				return request;
+			}
+		};
 
-    fastify.apiClient.use(authMiddleware);
-  });
+		fastify.apiClient.use(authMiddleware);
+	});
 
-  fastify.get('/', async function (request, reply) {
-    const user = request.session && request.session.get("jwt") ? fastify.jwt.decode(request.session.get("jwt")!) : null;
-    return reply.view("index.ejs", { user });
-  });
+	fastify.get('/', async function (request, reply) {
+		const user = request.session && request.session.get("jwt") ? fastify.jwt.decode(request.session.get("jwt")!) : null;
+		return reply.view("index.ejs", { user });
+	});
 
-  fastify.register(auth, { prefix: "/auth" });
-  fastify.register(account, { prefix: "/account" });
-  fastify.register(search, { prefix: "/search" });
-  fastify.register(friends, { prefix: "/friends" });
+	fastify.get('/ws', { websocket: true }, (connection, req) => {
+		connection.on("message", (message) => {
+			connection.send(`You said ${message}`);
+		});
+	});
 
+	fastify.register(auth, { prefix: "/auth" });
+	fastify.register(account, { prefix: "/account" });
+	fastify.register(search, { prefix: "/search" });
+	fastify.register(pong, { prefix: "/pong" });
+	fastify.register(friends, { prefix: "/friends" });
+	fastify.register(twoFactor, { prefix: "/2FA" });
+	fastify.register(settings, { prefix: "/settings" });
 }
 
 export default root

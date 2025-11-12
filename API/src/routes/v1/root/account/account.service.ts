@@ -33,6 +33,7 @@ export class AccountService {
 					email: jwtPayload.email,
 				},
 				select: {
+					id: true,
 					profile: {
 						include: {
 							tournaments: {
@@ -44,7 +45,23 @@ export class AccountService {
 					email: true
 				}
 			});
-			return this.addTourResults(query!);
+
+			// Count wins/losses from GameResult (includes matchmaking, rooms, tournaments)
+			const wins = await this.fastify.prisma.gameResult.count({ where: { playerId: query.id, result: 'WIN' } });
+			const losses = await this.fastify.prisma.gameResult.count({ where: { playerId: query.id, result: 'LOSS' } });
+
+			const result: AccountRes = {
+				...query!,
+				profile: {
+					id: query!.profile!.id,
+					createdAt: query!.profile!.createdAt.toISOString(),
+					updatedAt: query!.profile!.updatedAt.toISOString(),
+					online: query!.profile!.online,
+					victories: wins,
+					defeats: losses,
+				}
+			};
+			return result;
 		} catch (error) {
 			if (error instanceof PrismaClientKnownRequestError && error.code == "P2025")
 				throw this.fastify.httpErrors.notFound();
@@ -420,6 +437,30 @@ export class AccountService {
 			if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
 				throw this.fastify.httpErrors.notFound("The friendship does not exist");
 			}
+			throw error;
+		}
+	}
+
+	/**
+	 * This function updates the profile of the user in the database records to it's appropiate
+	 * online status.
+	 * @param online - A boolean that states wether or not the user is online.
+	 * @param email - An email to find the user in question.
+	 * @returns - The updated profile of the user.
+	 */
+	async setOnlineStatus(online: boolean, email: string) {
+		try {
+			const profile = await this.authService.getUser(email);
+			const result = await this.fastify.prisma.profile.update({
+				where: {
+					id: profile.id
+				},
+				data: {
+					online
+				}
+			});
+			return result;
+		} catch (error) {
 			throw error;
 		}
 	}

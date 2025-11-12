@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Settings</title>
+	<link rel="stylesheet" href="/styles/dist/output.css">
+	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+	<script src="/scripts/dist/onlineSocket.js" defer></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+	<%- include('components/navbar.ejs') %>
+	<%- include('components/errorPopup.ejs') %>
+	<%- include('components/successPopup.ejs') %>
+
+	<main class="flex-grow flex flex-col justify-center relative">
+		<div class="container mx-auto px-4 py-8 max-w-4xl">
+			<h1 class="text-4xl font-bold text-center mb-8">Settings</h1>
+
+			<!-- Security Settings -->
+			<section class="mb-8">
+				<h2 class="text-2xl font-bold mb-6 border-b border-gray-600 pb-2">Security Settings</h2>
+				<div class="space-y-4">
+					<div class="bg-gray-800 p-6 rounded-lg shadow-md">
+						<div class="flex justify-between items-center">
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Two-Factor Authentication</h3>
+								<p class="text-gray-300">Add an extra layer of security to your account with 2FA</p>
+							</div>
+							<a href="/2FA" 
+								class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-6 py-3 rounded-lg transition font-semibold">
+								Configure 2FA
+							</a>
+						</div>
+					</div>
+
+					<div class="bg-gray-800 p-6 rounded-lg shadow-md">
+						<div class="flex justify-between items-center">
+							<div>
+								<h3 class="text-xl font-semibold mb-2">Change Password</h3>
+								<p class="text-gray-300">Update your account password</p>
+							</div>
+							<button 
+								id="change-password-btn"
+								class="bg-gray-600 hover:bg-gray-500 active:bg-gray-700 px-6 py-3 rounded-lg transition font-semibold">
+								Change Password
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<%- include('components/footer.ejs') %>
+</body>
+</html>

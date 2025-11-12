@@ -7,5 +7,5 @@ export default fp<FastifyStaticOptions>(async (fastify) => {
 		root: path.join(process.cwd(), "public"),
 		allowedPath: (pathName, root, req) => {	return pathName === "/tsconfig.json" ? false : true; },
 	};
-	fastify.register(fastifyStatic, options)
+	fastify.register(fastifyStatic, options);
 });

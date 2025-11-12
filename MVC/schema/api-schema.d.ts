@@ -176,8 +176,19 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @enum {boolean} */
+                            requires2FA: false;
                             jwt: string;
                             refreshJwt: string;
+                            user: {
+                                username: string;
+                                email: string;
+                            };
+                        } | {
+                            /** @enum {boolean} */
+                            requires2FA: true;
+                            tempToken: string;
+                            message: string;
                         };
                     };
                 };
@@ -216,6 +227,107 @@ export interface paths {
                     };
                 };
                 /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/verify-2fa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** This endpoint verifies a 2FA token and completes the login process */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        tempToken: string;
+                        code: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description It returns JWT tokens after successful 2FA verification */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            jwt: string;
+                            refreshJwt: string;
+                            user: {
+                                username: string;
+                                email: string;
+                            };
+                        };
+                    };
+                };
+                /** @description If the token is invalid or 2FA is not configured. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If the 2FA token is incorrect. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server. */
                 500: {
                     headers: {
                         [name: string]: unknown;
@@ -1208,6 +1320,101 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/account/online_status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** This route allows setting the status of the logged in user as online or offline */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        online: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description It send's back the request body as confirmation of the new online status */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            online: boolean;
+                        };
+                    };
+                };
+                /** @description If the jwt is not present it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/users/search": {
         parameters: {
             query?: never;
@@ -1433,6 +1640,607 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate 2FA secret and QR code
+         * @description Generates a new secret for 2FA setup and returns a QR code that can be scanned by authenticator apps
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description Successfully generated 2FA secret and QR code */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Base32 encoded secret for manual entry */
+                            secret: string;
+                            /** @description Base64 encoded QR code data URL */
+                            qrCode: string;
+                        };
+                    };
+                };
+                /** @description If the JWT is not present, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enable 2FA for user account
+         * @description Enables 2FA after verifying the token from authenticator app
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Base32 encoded secret for TOTP generation */
+                        secret: string;
+                        /** @description Six-digit TOTP code from authenticator app */
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description 2FA successfully enabled for the user account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description If the JWT is not present or verification token is invalid, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify 2FA token
+         * @description Verifies a 2FA token from authenticator app
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description Six-digit TOTP code from authenticator app */
+                        token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Token verification completed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description If the JWT is not present, 2FA is not enabled, or token format is invalid. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disable 2FA for user account
+         * @description Disables 2FA after password verification
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description User password for verification */
+                        password: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description 2FA successfully disabled for the user account */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                        };
+                    };
+                };
+                /** @description If the JWT is not present or 2FA is not enabled. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If the user does not exist, it sends a 404 response. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/2fa/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get 2FA status
+         * @description Returns whether 2FA is enabled for the current user
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current 2FA status for the authenticated user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            enabled: boolean;
+                        };
+                    };
+                };
+                /** @description If the JWT is not present, it will send a 400 response. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description It returns an error message if the credentials are not correct. */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description If something else went wrong with the server, it sends back this response. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            statusCode: number;
+                            httpError: "Bad request" | "Unauthorized" | "Forbidden" | "Not found" | "Method not allowed" | "Not acceptable" | "Request timeout" | "Conflict" | "Gone" | "Precondition failed" | "Payload too large" | "Unsupported media type" | "I'm a teapot" | "Unprocessable entity" | "Internal server error" | "Not implemented" | "Bad gateway" | "Service unavailable" | "Gateway timeout" | "HTTP version not supported";
+                        } & {
+                            details?: {
+                                field?: string;
+                                msg?: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/games/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Save a game result */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        winnerEmail: string;
+                        /** Format: email */
+                        loserEmail: string;
+                        gameType: "MATCHMAKING" | "ROOM" | "TOURNAMENT";
+                        gameId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success: boolean;
+                            message: string;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/root/auth/oauth42": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
