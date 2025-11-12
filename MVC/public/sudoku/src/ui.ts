@@ -11,6 +11,8 @@ window.addEventListener("DOMContentLoaded", () => {
 	document.getElementById("btn-easy")?.addEventListener("click", () => { selectDifficult("easy"); setGame(); })
 	document.getElementById("btn-medium")?.addEventListener("click", () => { selectDifficult("medium"); setGame(); })
 	document.getElementById("btn-hard")?.addEventListener("click", () => { selectDifficult("hard"); setGame(); })
+	document.getElementById("btn-play-again")?.addEventListener("click", resetGame);
+	document.getElementById("btn-back-home")?.addEventListener("click", () => window.location.href = "/");
 })
 
 
@@ -179,6 +181,85 @@ function isComplete ()
 	let board = document.getElementById("board");
 	board?.classList.add("finished");
 	stopTimer();
+	
+	// Get final stats
+	const finalTime = (document.getElementById("timer") as HTMLElement).innerText;
+	const finalErrors = errors;
+	const timeInSeconds = getTimeInSeconds();
+	
+	// Report results to backend
+	reportResult(timeInSeconds, finalErrors);
+	
+	// Show final screen
+	showFinalScreen(finalTime, finalErrors);
+}
+
+function getTimeInSeconds(): number {
+	return Math.floor((Date.now() - startTime) / 1000);
+}
+
+function showFinalScreen(time: string, errorCount: number) {
+	// Hide game screen
+	(document.getElementById("game-screen") as HTMLElement).style.display = "none";
+	
+	// Update final screen stats
+	(document.getElementById("final-time") as HTMLElement).innerText = time;
+	(document.getElementById("final-errors") as HTMLElement).innerText = errorCount.toString();
+	
+	// Show final screen
+	(document.getElementById("final-screen") as HTMLElement).style.display = "block";
+}
+
+async function reportResult(seconds: number, errorCount: number) {
+	try {
+		const response = await fetch("/sudoku/result", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+			body: JSON.stringify({
+				seconds: seconds,
+				errors: errorCount,
+			}),
+		});
+
+		if (!response.ok) {
+			console.error("Failed to report result:", response.status);
+		}
+	} catch (error) {
+		console.error("Error reporting result:", error);
+	}
+}
+
+function resetGame() {
+	// Reset errors counter
+	errors = 0;
+	
+	// Clear board and digits
+	const board = document.getElementById("board");
+	const digits = document.getElementById("digits");
+	if (board) board.innerHTML = "";
+	if (digits) digits.innerHTML = "";
+	
+	// Reset selections
+	numSelected = null;
+	tileSelected = null;
+	
+	// Hide final screen and game screen, show difficulty selection
+	(document.getElementById("final-screen") as HTMLElement).style.display = "none";
+	(document.getElementById("game-screen") as HTMLElement).style.display = "none";
+	(document.getElementById("difficult-screen") as HTMLElement).style.display = "block";
+	
+	// Reset errors display
+	const errorsEl = document.getElementById("errors");
+	if (errorsEl) errorsEl.innerText = "0";
+	
+	// Stop any running timer
+	if (timeInterval) {
+		clearInterval(timeInterval);
+		timeInterval = null;
+	}
 }
 
 //TIMER 
