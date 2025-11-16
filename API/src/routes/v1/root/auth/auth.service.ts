@@ -229,4 +229,70 @@ export class AuthService {
 
 		return { jwt, refreshJwt };
 	}
+
+	/**
+	 * Find or create a user based on OAuth42 data.
+	 * @param data - OAuth42 user data (id42, email, username).
+	 * @returns The user from the database.
+	 */
+	async findOrCreateUser(data: { id42: string; email: string; username: string }) {
+		try {
+			// Try to find user by email first
+			let user = await this.fastify.prisma.users.findUnique({
+				where: { email: data.email },
+				include: { profile: true }
+			});
+
+			if (user) {
+				return user;
+			}
+
+			// If user doesn't exist, create new user with OAuth42 data
+			// Generate a random password since OAuth users don't need one
+			const randomPassword = await bcrypt.hash(Math.random().toString(36), 10);
+
+			user = await this.fastify.prisma.users.create({
+				data: {
+					username: data.username,
+					email: data.email,
+					password: randomPassword,
+					profile: {
+						create: {
+							avatar: {
+								create: {}
+							}
+						}
+					}
+				},
+				include: { profile: true }
+			});
+
+			return user;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+				// If username is taken, try with a modified username
+				const modifiedUsername = `${data.username}_${data.id42}`;
+				const randomPassword = await bcrypt.hash(Math.random().toString(36), 10);
+
+				const user = await this.fastify.prisma.users.create({
+					data: {
+						username: modifiedUsername,
+						email: data.email,
+						password: randomPassword,
+						profile: {
+							create: {
+								avatar: {
+									create: {}
+								}
+							}
+						}
+					},
+					include: { profile: true }
+				});
+
+				return user;
+			}
+			throw error;
+		}
+	}
 }

@@ -37,7 +37,8 @@ export default fp<FastifySessionOptions>(async (fastify) => {
 
 declare module 'fastify' {
   interface Session {
-    jwt?: string;
-    refreshJwt?: string,
+	jwt?: string;
+	refreshJwt?: string,
+	oauthState?: string;
   }
 }

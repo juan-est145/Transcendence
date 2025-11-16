@@ -3,12 +3,16 @@ import { AuthService } from "./auth.service";
 import { logInSchema, refreshSchema, signInSchema, verify2FALoginSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody, Verify2FALoginBody } from "./auth.type";
+import oauth42Routes from "./oauth42";
 
 /**
  * All auth endpoints are processed here.
  */
 export async function auth(fastify: FastifyInstance) {
 	const authService = new AuthService(fastify);
+
+	// Register OAuth42 routes
+	fastify.register(oauth42Routes);
 
 	/**
 	 * This route allows for the creation of new users
