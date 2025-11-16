@@ -15,11 +15,25 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		return reply.code(404).view("errors/404.ejs");
 	});
 
-<<<<<<< HEAD
 	// 500 - Internal Server Error handler for generic errors.
 	// 401 - Unauthorized for not logged error's.
 	fastify.setErrorHandler(async (error, request, reply) => {
 		fastify.log.error(error);
+
+		//For API endpoints (starting with /pong/matchmaking or /pong/tournaments), return JSON
+		const isApiEndpoint = request.url.includes('/matchmaking/') ||
+			request.url.includes('/tournaments/') ||
+			request.url.includes('/pong/games');
+
+		if (isApiEndpoint) {
+			const statusCode = error.statusCode || 500;
+			return reply.code(statusCode).send({
+				success: false,
+				error: error.message || "Internal server error"
+			});
+		}
+
+		//For page requests, return HTML error pages
 		if (error.statusCode === 401) {
 			if (request.session)
 				await request.session.destroy();
@@ -30,37 +44,6 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		}
 		return reply.code(500).view("errors/500.ejs");
 	});
-=======
-  // 500 - Internal Server Error handler for generic errors.
-  // 401 - Unauthorized for not logged error's.
-  fastify.setErrorHandler(async (error, request, reply) => {
-    fastify.log.error(error);
-    
-    //For API endpoints (starting with /pong/matchmaking or /pong/tournaments), return JSON
-    const isApiEndpoint = request.url.includes('/matchmaking/') || 
-                          request.url.includes('/tournaments/') ||
-                          request.url.includes('/pong/games');
-    
-    if (isApiEndpoint) {
-      const statusCode = error.statusCode || 500;
-      return reply.code(statusCode).send({ 
-        success: false, 
-        error: error.message || "Internal server error" 
-      });
-    }
-    
-    //For page requests, return HTML error pages
-    if (error.statusCode === 401) {
-      if (request.session)
-        await request.session.destroy();
-      return reply.code(error.statusCode).viewAsync("errors/401.ejs");
-    }
-    else if (error.statusCode === 404) {
-      return reply.code(404).view("errors/404.ejs");
-    }
-    return reply.code(500).view("errors/500.ejs");
-  });
->>>>>>> matchmaking
 
 
 	/**
