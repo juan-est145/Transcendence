@@ -97,8 +97,7 @@ export class AuthService {
 			});
 
 			// Verify password
-			const isValidPassword = await bcrypt.compare(password, user.password);
-			if (!isValidPassword) {
+			if (!user.password || !await bcrypt.compare(password, user.password)) {
 				throw this.fastify.httpErrors.unauthorized("Invalid email or password");
 			}
 
@@ -106,7 +105,7 @@ export class AuthService {
 			if (user.twoFactorEnabled && user.twoFactorSecret) {
 				// Generate a temporary token for 2FA verification
 				const tempToken = this.fastify.jwt.sign(
-					{ 
+					{
 						id: user.id,
 						username: user.username,
 						email: user.email,
@@ -212,15 +211,15 @@ export class AuthService {
 	 */
 	signJwt(payload: JwtPayload) {
 		const jwt = this.fastify.jwt.sign(
-		{
-			id: payload.id,
-			username: payload.username,
-			email: payload.email
-		},
-		{
-			expiresIn: "1h",
-			iss: "https://api:4343"
-		});
+			{
+				id: payload.id,
+				username: payload.username,
+				email: payload.email
+			},
+			{
+				expiresIn: "1h",
+				iss: "https://api:4343"
+			});
 
 		const refreshJwt = this.fastify.jwt.sign({ email: payload.email, refresh: true }, {
 			expiresIn: "3h",
