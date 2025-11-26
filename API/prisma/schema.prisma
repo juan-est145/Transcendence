@@ -14,8 +14,9 @@ datasource db {
 // that for every user created, a profile table is created
 model Users {
   id       Int      @id @default(autoincrement())
+  id42     String? @unique
   username String   @unique
-  password String
+  password String?
   email    String   @unique
   profile  Profile?
   twoFactorEnabled Boolean  @default(false)

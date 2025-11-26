@@ -1,8 +1,9 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance } from "fastify";
 import { AuthService } from "./auth.service";
 import { logInSchema, refreshSchema, signInSchema, verify2FALoginSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
 import { LogInBody, SignInBody, Verify2FALoginBody } from "./auth.type";
+import oauth42Routes from './oauth42';
 
 /**
  * All auth endpoints are processed here.
@@ -53,7 +54,7 @@ export async function auth(fastify: FastifyInstance) {
 	 * @param res - The fastify response instance.
 	 * @returns JWT tokens after successful 2FA verification.
 	 */
-	fastify.post<{ Body: Verify2FALoginBody }>("/verify-2fa", verify2FALoginSchema, async (req: FastifyRequest<{ Body: Verify2FALoginBody }>, res: FastifyReply) => {
+	fastify.post<{ Body: Verify2FALoginBody }>("/verify-2fa", verify2FALoginSchema, async (req, res) => {
 		try {
 			const result = await authService.verify2FALogin(req.body.tempToken, req.body.code);
 			return res.code(201).send(result);
@@ -82,4 +83,6 @@ export async function auth(fastify: FastifyInstance) {
 			throw error;
 		}
 	});
+
+	await fastify.register(oauth42Routes);
 }

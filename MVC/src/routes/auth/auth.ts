@@ -3,14 +3,16 @@ import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
 import { AuthService } from "./auth.service";
 import { ZodError } from "zod";
 import { AccountService } from "../account/account.service";
+import { oauth42 } from "./oauth42";
 
 /**
  * This module deals with everything relating to the login page.
  */
 export async function auth(fastify: FastifyInstance) {
-
 	const authService = new AuthService(fastify);
 	const accountService = new AccountService(fastify);
+	// Register OAuth 42 routes
+	await fastify.register(oauth42);
 
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,

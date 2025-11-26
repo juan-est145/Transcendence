@@ -229,4 +229,83 @@ export class AuthService {
 
 		return { jwt, refreshJwt };
 	}
+
+	/**
+	 * This function finds an existing user by id42 or creates a new one for OAuth2 authentication.
+	 * @param userData - An object containing OAuth2 user data (id42, email, username)
+	 * @returns If successful, it returns the user data. Creates a new user if one doesn't exist.
+	 */
+	async findOrCreateUser(userData: {
+		id42: string;
+		email: string;
+		username: string;
+	}) {
+		try {
+			// Primero intentar encontrar el usuario por id42
+			let user = await this.fastify.prisma.users.findUnique({
+				where: {
+					id42: userData.id42
+				},
+				include: {
+					profile: true
+				}
+			});
+
+			// Si no existe, intentar encontrar por email
+			if (!user) {
+				user = await this.fastify.prisma.users.findUnique({
+					where: {
+						email: userData.email
+					},
+					include: {
+						profile: true
+					}
+				});
+
+				// Si existe por email, actualizar con id42
+				if (user) {
+					user = await this.fastify.prisma.users.update({
+						where: {
+							email: userData.email
+						},
+						data: {
+							id42: userData.id42
+						},
+						include: {
+							profile: true
+						}
+					});
+				}
+			}
+
+			// Si no existe, crear nuevo usuario
+			if (!user) {
+				user = await this.fastify.prisma.users.create({
+					data: {
+						id42: userData.id42,
+						email: userData.email,
+						username: userData.username,
+						password: null,
+						profile: {
+							create: {
+								avatar: {
+									create: {}
+								}
+							}
+						}
+					},
+					include: {
+						profile: true
+					}
+				});
+			}
+
+			return user;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code == "P2002") {
+				throw this.fastify.httpErrors.conflict("Username already exists");
+			}
+			throw error;
+		}
+	}
 }
