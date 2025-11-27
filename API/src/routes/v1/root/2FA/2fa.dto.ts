@@ -12,11 +12,6 @@ const secret = Type.String({
 	description: 'Base32 encoded secret for TOTP generation'
 });
 
-const password = Type.String({
-	minLength: 1,
-	description: 'User password for verification'
-});
-
 export const Generate2FASecretDto = Type.Object({});
 
 export const Generate2FASecretResponse = Type.Object({
@@ -38,7 +33,7 @@ export const Verify2FADto = Type.Object({
 });
 
 export const Disable2FADto = Type.Object({
-	password
+	token
 });
 
 export const TwoFactorStatusResponse = Type.Object({

@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { TwoFactorService } from "./2fa.service";
 import { Generate2FASecretType, Enable2FAType, Verify2FAType, Disable2FAType } from "./2fa.type";
 import { generate2FASchema, enable2FASchema, verify2FASchema, disable2FASchema, get2FAStatusSchema } from "./2fa.swagger";
-import bcrypt from "bcrypt";
 import { EncryptionUtil } from "../../../../utils/encryption.util";
 
 async function twoFactor(fastify: FastifyInstance): Promise<void> {
@@ -109,27 +108,33 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 		},
 		async (request: FastifyRequest<{ Body: Disable2FAType }>, reply: FastifyReply) => {
 			const userId = request.user.id;
-			const { password } = request.body;
+			const { token } = request.body;
 			try {
 				const user = await fastify.prisma.users.findUnique({
 					where: { id: userId },
 					select: {
-						password: true,
+						twoFactorSecret: true,
 						twoFactorEnabled: true
 					}
 				});
 				if (!user) {
 					return reply.status(404).send({ error: 'User not found' });
 				}
-				const isPasswordValid = await bcrypt.compare(password, user.password);
-				if (!isPasswordValid) {
-					return reply.status(401).send({
-						error: 'Invalid password'
-					});
-				}
 				if (!user.twoFactorEnabled) {
 					return reply.status(400).send({
 						error: '2FA is not enabled'
+					});
+				}
+				if (!user.twoFactorSecret) {
+					return reply.status(400).send({
+						error: '2FA secret not found'
+					});
+				}
+				const decryptedSecret = EncryptionUtil.decrypt(user.twoFactorSecret);
+				const isValid = twoFactorService.verifyToken(decryptedSecret, token);
+				if (!isValid) {
+					return reply.status(401).send({
+						error: 'Invalid verification code'
 					});
 				}
 				const result = await twoFactorService.disable2FA(userId);

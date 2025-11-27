@@ -1989,7 +1989,7 @@ export interface paths {
         put?: never;
         /**
          * Disable 2FA for user account
-         * @description Disables 2FA after password verification
+         * @description Disables 2FA after verifying the 2FA token
          */
         post: {
             parameters: {
@@ -2001,8 +2001,8 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        /** @description User password for verification */
-                        password: string;
+                        /** @description Six-digit TOTP code from authenticator app */
+                        token: string;
                     };
                 };
             };
@@ -2018,7 +2018,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description If the JWT is not present or 2FA is not enabled. */
+                /** @description If the JWT is not present, 2FA is not enabled, or token is invalid. */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -2035,7 +2035,7 @@ export interface paths {
                         };
                     };
                 };
-                /** @description It returns an error message if the credentials are not correct. */
+                /** @description It returns an error message if the verification token is incorrect. */
                 401: {
                     headers: {
                         [name: string]: unknown;

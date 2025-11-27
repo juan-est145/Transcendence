@@ -150,7 +150,7 @@ export const disable2FASchema: RouteShorthandOptions = {
 		body: Disable2FADto,
 		tags: [twoFactorTag],
 		summary: "Disable 2FA for user account",
-		description: "Disables 2FA after password verification",
+		description: "Disables 2FA after verifying the 2FA token",
 		response: {
 			200: {
 				description: "2FA successfully disabled for the user account",
@@ -161,7 +161,7 @@ export const disable2FASchema: RouteShorthandOptions = {
 				}
 			},
 			400: {
-				description: "If the JWT is not present or 2FA is not enabled.",
+				description: "If the JWT is not present, 2FA is not enabled, or token is invalid.",
 				content: {
 					"application/json": {
 						schema: generalError
@@ -169,7 +169,7 @@ export const disable2FASchema: RouteShorthandOptions = {
 				}
 			},
 			401: {
-				description: "It returns an error message if the credentials are not correct.",
+				description: "It returns an error message if the verification token is incorrect.",
 				content: {
 					"application/json": {
 						schema: generalError

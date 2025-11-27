@@ -7,7 +7,7 @@
 	<title>Two Factor Authentication</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
-	<script defer src="/scripts/dist/2fa.js"></script> <!-- ← Esta línea -->
+	<script defer src="/scripts/dist/2fa.js"></script>
 	<script src="/scripts/dist/onlineSocket.js" defer></script>
 </head>
 
@@ -60,30 +60,15 @@
 				<h1 class="text-4xl text-center m-3 font-bold">Two Factor Authentication</h1>
 				<p class="text-center text-green-400 mb-4">✅ 2FA is currently enabled on your account</p>
 
-				<!-- Test verification -->
-				<div class="w-full">
-					<h3 class="text-xl mb-4 text-center">Test your 2FA:</h3>
-					<form id="verify-form" class="flex flex-col items-center gap-3 w-full">
-						<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
-							<input
-								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-800 text-center"
-								type="text" name="token" placeholder="000000" required maxlength="6" pattern="[0-9]{6}">
-						</fieldset>
-						<button type="submit"
-							class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 p-2 rounded-lg transition text-xl w-full">
-							Test Code
-						</button>
-					</form>
-				</div>
-
 				<!-- Disable 2FA -->
-				<div class="w-full border-t border-gray-600 pt-6 mt-6">
+				<div class="w-full">
 					<h3 class="text-xl mb-4 text-center text-red-400">Disable 2FA</h3>
+					<p class="text-center text-gray-300 mb-4">Enter your 2FA code to disable Two Factor Authentication</p>
 					<form action="/2FA/disable" method="POST" class="flex flex-col items-center gap-3 w-full">
 						<fieldset class="flex flex-col justify-center items-center gap-2 w-full p-3">
 							<input
-								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600"
-								type="password" name="password" placeholder="Enter your password to disable" required>
+								class="bg-gray-900 text-white rounded font-semibold m-2 p-1 w-full text-xl outline-2 outline-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600 text-center"
+								type="text" name="token" placeholder="000000" required maxlength="6" pattern="[0-9]{6}">
 						</fieldset>
 						<button type="submit"
 							class="bg-red-600 hover:bg-red-500 active:bg-red-700 p-2 rounded-lg transition text-xl w-full"
