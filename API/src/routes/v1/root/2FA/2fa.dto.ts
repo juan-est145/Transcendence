@@ -29,7 +29,19 @@ export const TwoFactorSuccessResponse = Type.Object({
 });
 
 export const Verify2FADto = Type.Object({
-	token
+	token,
+	userId: Type.Optional(Type.Number({ description: 'User ID (for OAuth login)' }))
+});
+
+export const Verify2FAWithJWTResponse = Type.Object({
+	success: Type.Boolean(),
+	jwt: Type.Optional(Type.String({ description: 'JWT token (only for OAuth login)' })),
+	refreshJwt: Type.Optional(Type.String({ description: 'Refresh JWT token (only for OAuth login)' })),
+	user: Type.Optional(Type.Object({
+		id: Type.Number(),
+		email: Type.String(),
+		username: Type.String()
+	}))
 });
 
 export const Disable2FADto = Type.Object({

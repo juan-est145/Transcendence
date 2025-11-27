@@ -46,10 +46,11 @@ export async function twoFactor(fastify: FastifyInstance) {
 	 * @returns The 2FA verification page.
 	 */
 	fastify.get("/verify", async (req, res) => {
-		if (!req.session.requires2FA || !req.session.tempToken) {
+		const hasNormalLogin = req.session.requires2FA && req.session.tempToken;
+		const hasOAuthLogin = req.session.pending2FAUserId && req.session.isOauth;
+		if (!hasNormalLogin && !hasOAuthLogin) {
 			return res.redirect("/auth/login");
 		}
-		
 		return res.view("/2fa-verify.ejs", {
 			user: null,
 		});
@@ -63,13 +64,43 @@ export async function twoFactor(fastify: FastifyInstance) {
 	 */
 	fastify.post<{ Body: VerifyTwoFactorBody }>("/verify-login", async (req, res) => {
 		try {
-			if (!req.session.requires2FA || !req.session.tempToken) {
+			const hasNormalLogin = req.session.requires2FA && req.session.tempToken;
+			const hasOAuthLogin = req.session.pending2FAUserId && req.session.isOauth;
+			
+			if (!hasNormalLogin && !hasOAuthLogin) {
 				return res.redirect("/auth/login");
 			}
 			twoFactorService.validateVerifyTwoFactorBody(req.body);
+			if (hasOAuthLogin) {
+				const response = await fastify.apiClient.POST("/v1/2fa/verify", {
+					body: {
+						token: req.body.token,
+						userId: req.session.pending2FAUserId
+					} as any,
+				});
+				if (response.error || !response.data) {
+					return res.status(401).view("/2fa-verify.ejs", {
+						errors: ["Invalid 2FA code"],
+						user: null
+					});
+				}
+				const authData = response.data as any;
+
+				delete req.session.pending2FAUserId;
+				delete req.session.isOauth;
+
+				// Create session with JWT tokens
+				authService.createSession(req.session, { 
+					jwt: authData.jwt, 
+					refreshJwt: authData.refreshJwt,
+					user: authData.user
+				});
+				return res.redirect("/account");
+			}
+
 			const verifyLoginBody: VerifyLoginTwoFactorBody = {
 				code: req.body.token,
-				tempToken: req.session.tempToken
+				tempToken: req.session.tempToken!
 			};
 			twoFactorService.validateVerifyLoginTwoFactorBody(verifyLoginBody);
 			const loginResult = await twoFactorService.postVerifyLogin(verifyLoginBody);

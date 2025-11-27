@@ -6,6 +6,7 @@ import {
 	Verify2FADto, 
 	Disable2FADto,
 	TwoFactorSuccessResponse,
+	Verify2FAWithJWTResponse,
 	TwoFactorStatusResponse
 } from "./2fa.dto";
 import { generalError } from "../root.dto";
@@ -102,7 +103,6 @@ export const enable2FASchema: RouteShorthandOptions = {
 
 export const verify2FASchema: RouteShorthandOptions = {
 	schema: {
-		security: [{ bearerAuth: [] }],
 		body: Verify2FADto,
 		tags: [twoFactorTag],
 		summary: "Verify 2FA token",
@@ -112,7 +112,7 @@ export const verify2FASchema: RouteShorthandOptions = {
 				description: "Token verification completed successfully",
 				content: {
 					"application/json": {
-						schema: TwoFactorSuccessResponse
+						schema: Verify2FAWithJWTResponse
 					}
 				}
 			},

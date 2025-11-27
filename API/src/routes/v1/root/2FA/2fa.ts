@@ -60,7 +60,7 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	);
 
 	/**
-	 * Verifies a 2FA token for the authenticated user.
+	 * Verifies a 2FA token for the authenticated user or during Oauth login.
 	 * @param request - The Fastify request object, which includes the authenticated user's details and the request body.
 	 * @param reply - The Fastify reply object used to send the response.
 	 * @returns An object indicating whether the token is valid.
@@ -68,15 +68,33 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 	fastify.post<{ Body: Verify2FAType }>(
 		'/verify',
 		{
-			...verify2FASchema,
-			onRequest: [fastify.authenticate]
+			...verify2FASchema
 		},
 		async (request: FastifyRequest<{ Body: Verify2FAType }>, reply: FastifyReply) => {
-			const userId = request.user.id;
-			const { token } = request.body;
+			const { token, userId } = request.body;
+
+			let targetUserId: number;
+			if (userId) {
+				// Verification during Oauth login
+				targetUserId = userId;
+			} else if (request.user?.id) {
+				// Verification for authenticated user
+				targetUserId = request.user.id;
+			} else {
+				return reply.status(400).send({
+					error: 'User ID is required for verification'
+				});
+			}
+
 			const user = await fastify.prisma.users.findUnique({
-				where: { id: userId },
-				select: { twoFactorSecret: true }
+				where: { id: targetUserId },
+				select: {
+					id: true,
+					email: true,
+					username: true,
+					twoFactorSecret: true,
+					twoFactorEnabled: true,
+				 }
 			});
 			if (!user?.twoFactorSecret) {
 				return reply.status(400).send({
@@ -88,6 +106,31 @@ async function twoFactor(fastify: FastifyInstance): Promise<void> {
 			if (!isValid) {
 				return reply.status(400).send({
 					error: 'Invalid verification code'
+				});
+			}
+			if (userId && !request.user) {
+				const jwt = fastify.jwt.sign({
+					id: user.id,
+					email: user.email,
+					username: user.username
+				});
+				const refreshJwt = fastify.jwt.sign(
+					{
+						id: user.id,
+						email: user.email,
+						username: user.username
+					},
+					{ expiresIn: '7d' }
+				);
+				return reply.send({
+					success: true,
+					jwt,
+					refreshJwt,
+					user: {
+						id: user.id,
+						email: user.email,
+						username: user.username
+					}
 				});
 			}
 			return reply.send({ success: true });

@@ -12,6 +12,18 @@ export default async function (fastify: FastifyInstance) {
     };
     
     const user = await authService.findOrCreateUser({ id42, email, username });
+	//Verify if user have 2FA enabled
+	if (user.twoFactorEnabled) {
+		return {
+			require2FA: true,
+			userId: user.id,
+			user: {
+				id: user.id,
+				email: user.email,
+				username: user.username
+			}
+		};
+	}
     const { jwt, refreshJwt } = authService.signJwt({ 
       id: user.id,
       email: user.email, 

@@ -58,7 +58,26 @@ fastify.get<{ Querystring: { code?: string } }>("/auth/42/callback", async (req,
     }
 
     const authData = response.data as any;
-    
+
+	// Check if 2FA is required
+	if (authData.require2FA) {
+		console.log("User requires 2FA verification");
+	
+		req.session.pending2FAUserId = authData.userId;
+		req.session.isOauth = true;
+
+		await new Promise<void>((resolve, reject) => {
+			req.session.save((err) => {
+			if (err) {
+				console.error("Failed to save session for 2FA:", err);
+				reject(err);
+			} else {
+				resolve();
+			}
+		});
+		});
+		return res.redirect("/2FA/verify");
+	}
     console.log("OAuth successful, creating session with JWT");
     
     // Create session with JWT tokens

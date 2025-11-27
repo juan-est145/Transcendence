@@ -1904,6 +1904,8 @@ export interface paths {
                     "application/json": {
                         /** @description Six-digit TOTP code from authenticator app */
                         token: string;
+                        /** @description User ID (for OAuth login) */
+                        userId?: number;
                     };
                 };
             };
@@ -1916,6 +1918,15 @@ export interface paths {
                     content: {
                         "application/json": {
                             success: boolean;
+                            /** @description JWT token (only for OAuth login) */
+                            jwt?: string;
+                            /** @description Refresh JWT token (only for OAuth login) */
+                            refreshJwt?: string;
+                            user?: {
+                                id: number;
+                                email: string;
+                                username: string;
+                            };
                         };
                     };
                 };

@@ -44,6 +44,22 @@ export async function auth(fastify: FastifyInstance) {
 			
 			if (authService.requires2FA(loginResponse)) {
 				authService.createTempSession(req.session, loginResponse.tempToken);
+				// Save session before redirecting
+				await new Promise<void>((resolve, reject) => {
+					req.session.save((err) => {
+						if (err) {
+							console.error("Failed to save session for 2FA:", err);
+							reject(err);
+						} else {
+							console.log("Session saved for 2FA login:", {
+								sessionId: req.session.sessionId,
+								requires2FA: req.session.requires2FA,
+								hasTempToken: !!req.session.tempToken
+							});
+							resolve();
+						}
+					});
+				});
 				return res.redirect("/2FA/verify");
 			} else {
 				fastify.jwt.verify(loginResponse.jwt);
