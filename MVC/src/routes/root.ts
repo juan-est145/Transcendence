@@ -1,4 +1,4 @@
-import { FastifyPluginAsync } from 'fastify'
+import { FastifyError, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify'
 import { auth } from './auth/auth';
 import { Middleware } from 'openapi-fetch';
 import { account } from './account/account';
@@ -17,7 +17,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 	// 500 - Internal Server Error handler for generic errors.
 	// 401 - Unauthorized for not logged error's.
-	fastify.setErrorHandler(async (error, request, reply) => {
+	fastify.setErrorHandler(async (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
 		fastify.log.error(error);
 
 		//For API endpoints (starting with /pong/matchmaking or /pong/tournaments), return JSON

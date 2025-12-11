@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify"
+import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { auth } from "./auth/auth";
 import { account } from "./account/account";
 import { users } from "./users/users";
@@ -39,7 +39,7 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		* ```
 		*/
 
-	fastify.setErrorHandler((error, req, res) => {
+	fastify.setErrorHandler((error: FastifyError, req: FastifyRequest, res: FastifyReply) => {
 		const statusCode = error.statusCode ?? 500;
 		const httpError = HttpMap.get(statusCode) ?? HttpError.INTERNAL_SERVER_ERROR;
 		const errorMsg: GeneralError = {
