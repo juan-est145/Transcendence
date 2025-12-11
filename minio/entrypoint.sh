@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e
 
+start=(server /data --console-address ":9001" -S /etc/ssl/certs)
+if [[ $# -gt 0 && "$1" == "prod" ]]; then
+  start=(server /data --anonymous --quiet --console-address ":9001" -S /etc/ssl/certs)
+fi
+
 # Start MinIO in the background
-minio server /data --console-address ":9001" -S /etc/ssl/certs &
+minio "${start[@]}" &
 MINIO_PID=$!
 
 # Wait for MinIO to be ready
