@@ -9,6 +9,8 @@
 	</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+	<script src="/scripts/dist/search.js" defer></script>
+	<script src="/scripts/dist/onlineSocket.js" defer></script>
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen">
@@ -36,9 +38,8 @@
 
 					<!-- Action Buttons -->
 					<div class="flex space-x-4">
-						<% if (user) { %>
-							<form method="POST" action="/friends/add" class="inline">
-								<input type="hidden" name="friendUsername" value="<%= userProfile.username %>" />
+						<% if (status === "NOT_FRIENDS") { %>
+							<form method="POST" action=<%= `/friends/add/${userProfile.username}` %>  class="inline">
 								<button type="submit"
 									class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,6 +50,47 @@
 									<span>Add Friend</span>
 								</button>
 							</form>
+							<% } else if (status === "FRIENDS") { %>
+								<form id="friendRequestForm" method="POST" action=<%= `/friends/friendRequest/${userProfile.username}` %>  class="inline">
+									<button id="rejectBtn" type="submit"
+										class="bg-red-600 hover:bg-red-800 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+											</path>
+										</svg>
+										<span>Delete friend</span>
+									</button>
+								</form>
+							<% } else if (status === "PENDING") { %>
+								<form id="friendRequestForm" method="POST" action=<%= `/friends/friendRequest/${userProfile.username}` %> class="inline">
+									<button
+										type="submit"
+										id="acceptBtn"
+										class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2 mb-2">
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+											</path>
+										</svg>
+										<span>Accept friend request</span>
+									</button>
+									<button
+										type="submit"
+										id="rejectBtn"
+										class="bg-red-600 hover:bg-red-800 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2">
+										<svg class="w-4 h-4" viewBox="0 -0.5 17 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+											<g stroke="currentColor" stroke-width="1" fill="white" fill-rule="evenodd">
+												<path d="M9.016,0.06 C4.616,0.06 1.047,3.629 1.047,8.029 C1.047,12.429 4.615,15.998 9.016,15.998 C13.418,15.998 16.985,12.429 16.985,8.029 C16.985,3.629 13.418,0.06 9.016,0.06 L9.016,0.06 Z M3.049,8.028 C3.049,4.739 5.726,2.062 9.016,2.062 C10.37,2.062 11.616,2.52 12.618,3.283 L4.271,11.631 C3.508,10.629 3.049,9.381 3.049,8.028 L3.049,8.028 Z M9.016,13.994 C7.731,13.994 6.544,13.583 5.569,12.889 L13.878,4.58 C14.571,5.555 14.982,6.743 14.982,8.028 C14.981,11.317 12.306,13.994 9.016,13.994 L9.016,13.994 Z" class="si-glyph-fill"></path>
+											</g>
+										</svg>
+										<span>Reject friend request</span>
+									</button>
+								</form>
+							<% } else if (status === "AWAITING") { %>
+									<span class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold">
+										Awaiting user's response
+									</span>
 							<% } %>
 					</div>
 				</div>

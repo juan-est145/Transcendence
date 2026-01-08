@@ -6,6 +6,7 @@
 	<title>Search users</title>
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+	<script src="/scripts/dist/onlineSocket.js" defer></script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
 	<%- include("components/navbar.ejs") %>
@@ -68,7 +69,7 @@
 								
 								<!-- Add Friend Button -->
 								<% if (user && user.username !== userResult.username) { %>
-									<form method="POST" action="/friends/add" class="ml-4">
+									<form method="POST" action=<%= `/friends/add/${userResult.username}` %> class="ml-4">
 										<input type="hidden" name="friendId" value="<%= userResult.id %>" />
 										<button 
 											type="submit"

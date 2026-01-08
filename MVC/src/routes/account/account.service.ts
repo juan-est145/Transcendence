@@ -144,4 +144,38 @@ export class AccountService {
 			throw error;
 		return data;
 	}
+
+	/**
+	 * This function sends a GET request without parameters to the API to get a collection of all the friends
+	 * and friendship requests of the logged in user.
+	 * @returns An array with all the relations of the user.
+	 */
+	async getFriends() {
+		const { data, error } = await this.fastify.apiClient.GET("/v1/account/friends");
+		if (error)
+			throw error;
+		return data;
+	}
+
+	/**
+	 * This function sends a PUT request to the API to set it's online status.
+	 * @param online - A boolean to set if the user is online or not.
+	 * @param token - The JWT of the user. Because this function is called inside websockets,
+	 * they work a little different and they needed a workaround for them to be able to send the
+	 * JWT.
+	 * @returns The updated online status of the user. 
+	 */
+	async setOnlineStatus(online: boolean, token: string) {
+		const { data, error } = await this.fastify.apiClient.PUT("/v1/account/online_status", {
+			body: {
+				online
+			},
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (error)
+			throw error;
+		return data;
+	}
 }

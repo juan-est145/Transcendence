@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="/styles/dist/output.css">
 	<link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
 	<script defer src="/scripts/dist/account.js"></script>
+	<script src="/scripts/dist/onlineSocket.js" defer></script>
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col">
@@ -38,68 +39,52 @@
 					<p class="text-xl font-medium">Your latest alias was <span class="text-blue-500">Prueba</span></p>
 				</article>
 
-				<article
-					class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Play time
-					</h1>
-					<div class="flex justify-evenly items-center">
-						<!-- Here, we could probably use a modal for the options once the user clicks in either of the buttons -->
-						<button
-							class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Friendly
-							match</button>
-						<button
-							class="bg-blue-600 hover:bg-blue-700 hover:scale-125 hover:-translate-y-2.5 active:bg-blue-900 px-4 py-2 rounded transition font-semibold ml-2 cursor-pointer">Tournament</button>
+			<article
+				class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
+				<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Your
+					latest stats</h1>
+				<div class="flex justify-evenly m-2">
+					<div class="text-center">
+						<p class="text-2xl font-medium">Games Played</p>
+						<p class="text-2xl font-medium text-blue-400">
+							<%= (profile.victories + profile.defeats) || 0 %>
+						</p>
 					</div>
-				</article>
-
-				<article
-					class="px-4 py-3 bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
-					<h1 class="text-2xl text-left font-extrabold underline underline-offset-3 decoration-2">Your
-						latest stats</h1>
-					<div class="flex justify-evenly m-2">
-						<div class="text-center">
-							<p class="text-2xl font-medium">Wins</p>
-							<p class="text-2xl font-medium">
-								<%= profile.victories %>
-							</p>
-						</div>
-						<div class="text-center">
-							<p class="text-2xl font-medium">Losses</p>
-							<p class="text-2xl font-medium">
-								<%= profile.defeats %>
-							</p>
+					<div class="text-center">
+						<p class="text-2xl font-medium">Wins</p>
+						<p class="text-2xl font-medium text-green-400">
+							<%= profile.victories || 0 %>
+						</p>
+					</div>
+					<div class="text-center">
+						<p class="text-2xl font-medium">Losses</p>
+						<p class="text-2xl font-medium text-red-400">
+							<%= profile.defeats || 0 %>
+						</p>
+					</div>
+				</div>
+				<!-- Win Rate -->
+				<% const gamesPlayed=(profile.victories + profile.defeats) || 0; %>
+				<% const winRateNum=gamesPlayed> 0 ? (profile.victories / gamesPlayed) * 100 : 0; %>
+				<% const winRate=winRateNum.toFixed(1); %>
+				<div class="mt-4">
+					<h3 class="text-lg font-semibold mb-2">Win Rate</h3>
+					<div class="bg-gray-700 rounded-full h-4 mb-2">
+						<div class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-500"
+							style="width: <%= winRate %>%;">
 						</div>
 					</div>
-				</article>
+					<p class="text-center text-lg font-semibold">
+						<%= winRate %>%
+					</p>
+				</div>
+			</article>
 			</section>
 
 			<aside
 				class="flex-1/5 px-4 py-3 overflow-auto bg-gray-800 transition-shadow duration-500 hover:inset-ring hover:inset-ring-indigo-600/70 rounded-md">
 				<h1 class="text-2xl font-extrabold text-center">Friends</h1>
-				<ul class="space-y-3">
-
-					<!-- Here we would pass the friend information when it is available -->
-					<!-- Later on, we can create a component for this part -->
-					<li class="flex items-center gap-3 text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
-						<img src="/images/default-avatar.png" alt="Friend Avatar"
-							class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
-						<span class="text-lg">Friend test</span>
-						<span class="bg-blue-600 p-2 rounded-full font-semibold ml-2">Online</span>
-					</li>
-					<li class="flex items-center gap-3 text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
-						<img src="/images/default-avatar.png" alt="Friend Avatar"
-							class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
-						<span class="text-lg">Offline friend test</span>
-						<span class="bg-black p-2 rounded-full font-semibold ml-2">Offline</span>
-					</li>
-					<li class="flex items-center gap-3 text-ellipsis overflow-x-auto border-b-1 border-gray-500 pb-2">
-						<img src="/images/default-avatar.png" alt="Friend Avatar"
-							class="w-10 h-10 shrink-0 rounded-full border-2 border-blue-400 bg-gray-700">
-						<span class="text-lg">A lot of fucking test, le'ts see that design break</span>
-						<span class="bg-black p-2 rounded-full font-semibold ml-2">Offline</span>
-					</li>
-					<li class="text-gray-400 text-center">No friends yet.</li>
-				</ul>
+				<%- include("components/friends.ejs")  %>
 			</aside>
 		</main>
 		<%- include('components/footer.ejs') %>

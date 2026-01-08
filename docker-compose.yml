@@ -11,13 +11,17 @@ services:
         condition: service_healthy
     networks:
       - lan
+
   api:
     build: 
       context: ./API
       dockerfile: Dockerfile
       target: prod
+    volumes:
+      - api-trans:/app/db
     env_file:
       - .env
+    hostname: api
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:4343/docs/json"]
       interval: 10s
@@ -42,9 +46,33 @@ services:
     depends_on:
       api:
         condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - lan
+  
+  minio:
+    build:
+      context: ./minio
+      dockerfile: Dockerfile
+      target: prod
+    volumes:
+      - minio-trans:/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-Ifk", "https://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    hostname: minio
     networks:
       - lan
 
 networks:
   lan:
     driver: bridge
+
+volumes:
+  minio-trans:
+  api-trans:

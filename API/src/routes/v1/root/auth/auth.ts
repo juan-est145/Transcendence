@@ -1,8 +1,9 @@
-import { FastifyInstance, } from "fastify";
+import { FastifyInstance } from "fastify";
 import { AuthService } from "./auth.service";
-import { logInSchema, refreshSchema, signInSchema } from "./auth.swagger";
+import { logInSchema, refreshSchema, signInSchema, verify2FALoginSchema } from "./auth.swagger";
 import bcrypt from "bcrypt";
-import { LogInBody, SignInBody } from "./auth.type";
+import { LogInBody, SignInBody, Verify2FALoginBody } from "./auth.type";
+import oauth42Routes from './oauth42';
 
 /**
  * All auth endpoints are processed here.
@@ -40,11 +41,23 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.post<{ Body: LogInBody }>("/log-in", logInSchema, async (req, res) => {
 		try {
-			const user = await authService.getUser(req.body.email);
-			if (!user || !(await bcrypt.compare(req.body.password, user.password)))
-				throw fastify.httpErrors.unauthorized("Invalid email or password");
-			const jwt = authService.signJwt({ username: user.username, email: user.email });
-			return res.code(201).send(jwt);
+			const result = await authService.login(req.body.email, req.body.password);
+			return res.code(201).send(result);
+		} catch (error) {
+			throw error;
+		}
+	});
+
+	/**
+	 * This route verifies 2FA code and completes the login process.
+	 * @param req - The fastify request instance with tempToken and code in the body.
+	 * @param res - The fastify response instance.
+	 * @returns JWT tokens after successful 2FA verification.
+	 */
+	fastify.post<{ Body: Verify2FALoginBody }>("/verify-2fa", verify2FALoginSchema, async (req, res) => {
+		try {
+			const result = await authService.verify2FALogin(req.body.tempToken, req.body.code);
+			return res.code(201).send(result);
 		} catch (error) {
 			throw error;
 		}
@@ -64,10 +77,12 @@ export async function auth(fastify: FastifyInstance) {
 	}, async (req, res) => {
 		try {
 			const user = await authService.getUser((req.user as any).email);
-			const jwt = authService.signJwt({ username: user.username, email: user.email });
+			const jwt = authService.signJwt({ id: user.id, username: user.username, email: user.email });
 			return res.code(201).send(jwt);
 		} catch (error) {
 			throw error;
 		}
 	});
+
+	await fastify.register(oauth42Routes);
 }

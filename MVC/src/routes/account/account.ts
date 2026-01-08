@@ -26,8 +26,9 @@ export async function account(fastify: FastifyInstance) {
 	 * property for adding data like victories.
 	 */
 	fastify.get("/", async (req, res) => {
-		const profile = await accountService.getProfileInfo();
-		return res.view("account.ejs", { user: req.user, profile: profile.profile });
+		const { profile } = await accountService.getProfileInfo();
+		const friends = await accountService.getFriends();
+		return res.view("account.ejs", { user: req.user, profile, friends });
 	});
 
 	/**
@@ -104,5 +105,28 @@ export async function account(fastify: FastifyInstance) {
 		} catch (error) {
 			throw error;
 		}
+	});
+
+	/**
+	 * This route uses websockets to track if a user is logged and still using the page to update
+	 * it's online status accordingly.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 */
+	fastify.get("/online", { websocket: true }, (socket, req) => {
+		const token = req.session.get("jwt")!;
+		socket.on("message", async () => {
+			await accountService.setOnlineStatus(true, token);
+			socket.send("Connection established, changing to online");
+		});
+
+		socket.on("close", async () => {
+			try {
+				await accountService.setOnlineStatus(false, token);
+			} catch (error) {
+				console.error(error);
+			}
+			
+		});
 	});
 }

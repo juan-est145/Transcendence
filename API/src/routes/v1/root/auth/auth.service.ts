@@ -2,6 +2,9 @@ import { FastifyInstance } from "fastify";
 import { type SignInBody } from "./auth.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtPayload } from "./auth.type";
+import { authenticator } from "otplib";
+import bcrypt from "bcrypt";
+import { EncryptionUtil } from "../../../../utils/encryption.util";
 
 
 /**
@@ -74,16 +77,149 @@ export class AuthService {
 	}
 
 	/**
+	 * Login with 2FA support.
+	 * @param email - User email.
+	 * @param password - User password.
+	 * @returns JWT tokens or temp token if 2FA is enabled.
+	 */
+	async login(email: string, password: string) {
+		try {
+			const user = await this.fastify.prisma.users.findUniqueOrThrow({
+				where: { email },
+				select: {
+					id: true,
+					username: true,
+					email: true,
+					password: true,
+					twoFactorEnabled: true,
+					twoFactorSecret: true
+				}
+			});
+
+			// Verify password
+			if (!user.password || !await bcrypt.compare(password, user.password)) {
+				throw this.fastify.httpErrors.unauthorized("Invalid email or password");
+			}
+
+			// Check if 2FA is enabled
+			if (user.twoFactorEnabled && user.twoFactorSecret) {
+				// Generate a temporary token for 2FA verification
+				const tempToken = this.fastify.jwt.sign(
+					{
+						id: user.id,
+						username: user.username,
+						email: user.email,
+						temp: true,
+						requires2FA: true
+					},
+					{ expiresIn: '5m' }
+				);
+
+				return {
+					requires2FA: true,
+					tempToken,
+					message: 'Please provide 2FA code'
+				};
+			}
+
+			// No 2FA, return normal tokens
+			const tokens = this.signJwt({ username: user.username, email: user.email, id: user.id });
+			return {
+				requires2FA: false,
+				...tokens,
+				user: {
+					username: user.username,
+					email: user.email
+				}
+			};
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
+				throw this.fastify.httpErrors.unauthorized("Invalid email or password");
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * Verify 2FA token and complete login.
+	 * @param tempToken - Temporary token from initial login.
+	 * @param code - 6-digit 2FA code.
+	 * @returns JWT tokens.
+	 */
+	async verify2FALogin(tempToken: string, code: string) {
+		try {
+			// Verify the temporary token
+			const decoded = this.fastify.jwt.verify(tempToken) as {
+				id: number;
+				username: string;
+				email: string;
+				temp: boolean;
+				requires2FA: boolean;
+			};
+
+			// Validate token type
+			if (!decoded.temp || !decoded.requires2FA) {
+				throw this.fastify.httpErrors.badRequest("Invalid token type");
+			}
+
+			// Get user with 2FA secret
+			const user = await this.fastify.prisma.users.findUniqueOrThrow({
+				where: { id: decoded.id },
+				select: {
+					id: true,
+					username: true,
+					email: true,
+					twoFactorEnabled: true,
+					twoFactorSecret: true
+				}
+			});
+
+			if (!user.twoFactorEnabled || !user.twoFactorSecret) {
+				throw this.fastify.httpErrors.badRequest("2FA not configured");
+			}
+
+			// Verify the 2FA code
+			const decryptedSecret = EncryptionUtil.decrypt(user.twoFactorSecret);
+			const isValid = authenticator.verify({
+				token: code,
+				secret: decryptedSecret
+			});
+
+			if (!isValid) {
+				throw this.fastify.httpErrors.unauthorized("Invalid 2FA code");
+			}
+
+			// Generate final tokens
+			const tokens = this.signJwt({ username: user.username, email: user.email, id: user.id });
+			return {
+				...tokens,
+				user: {
+					username: user.username,
+					email: user.email
+				}
+			};
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	/**
 	 * This function creates a JWT.
 	 * @param payload - An object containing the payload to pass to sign into the jwt. It
 	 * must have the JwtPayload type.
 	 * @returns It returns the JWT as a string.
 	 */
 	signJwt(payload: JwtPayload) {
-		const jwt = this.fastify.jwt.sign(payload, {
-			expiresIn: "1h",
-			iss: "https://api:4343"
-		});
+		const jwt = this.fastify.jwt.sign(
+			{
+				id: payload.id,
+				username: payload.username,
+				email: payload.email
+			},
+			{
+				expiresIn: "1h",
+				iss: "https://api:4343"
+			});
 
 		const refreshJwt = this.fastify.jwt.sign({ email: payload.email, refresh: true }, {
 			expiresIn: "3h",
@@ -91,5 +227,84 @@ export class AuthService {
 		});
 
 		return { jwt, refreshJwt };
+	}
+
+	/**
+	 * This function finds an existing user by id42 or creates a new one for OAuth2 authentication.
+	 * @param userData - An object containing OAuth2 user data (id42, email, username)
+	 * @returns If successful, it returns the user data. Creates a new user if one doesn't exist.
+	 */
+	async findOrCreateUser(userData: {
+		id42: string;
+		email: string;
+		username: string;
+	}) {
+		try {
+			// Primero intentar encontrar el usuario por id42
+			let user = await this.fastify.prisma.users.findUnique({
+				where: {
+					id42: userData.id42
+				},
+				include: {
+					profile: true
+				}
+			});
+
+			// Si no existe, intentar encontrar por email
+			if (!user) {
+				user = await this.fastify.prisma.users.findUnique({
+					where: {
+						email: userData.email
+					},
+					include: {
+						profile: true
+					}
+				});
+
+				// Si existe por email, actualizar con id42
+				if (user) {
+					user = await this.fastify.prisma.users.update({
+						where: {
+							email: userData.email
+						},
+						data: {
+							id42: userData.id42
+						},
+						include: {
+							profile: true
+						}
+					});
+				}
+			}
+
+			// Si no existe, crear nuevo usuario
+			if (!user) {
+				user = await this.fastify.prisma.users.create({
+					data: {
+						id42: userData.id42,
+						email: userData.email,
+						username: userData.username,
+						password: null,
+						profile: {
+							create: {
+								avatar: {
+									create: {}
+								}
+							}
+						}
+					},
+					include: {
+						profile: true
+					}
+				});
+			}
+
+			return user;
+		} catch (error) {
+			if (error instanceof PrismaClientKnownRequestError && error.code == "P2002") {
+				throw this.fastify.httpErrors.conflict("Username already exists");
+			}
+			throw error;
+		}
 	}
 }

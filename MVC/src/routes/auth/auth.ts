@@ -2,13 +2,17 @@ import { FastifyInstance } from "fastify";
 import { LogInBody, LogInError, SigInError, SignInBody } from "./auth.type";
 import { AuthService } from "./auth.service";
 import { ZodError } from "zod";
+import { AccountService } from "../account/account.service";
+import { oauth42 } from "./oauth42";
 
 /**
  * This module deals with everything relating to the login page.
  */
 export async function auth(fastify: FastifyInstance) {
-
 	const authService = new AuthService(fastify);
+	const accountService = new AccountService(fastify);
+	// Register OAuth 42 routes
+	await fastify.register(oauth42);
 
 	/**
 	 * This route sends to the client the login page. In case the user is already logged in,
@@ -36,10 +40,32 @@ export async function auth(fastify: FastifyInstance) {
 			if (req.session.jwt)
 				return res.redirect("/");
 			authService.validateLogInBody(req.body);
-			const token = await authService.postLogin(req.body);
-			fastify.jwt.verify(token.jwt);
-			authService.createSession(req.session, token);
-			return res.redirect("/account");
+			const loginResponse = await authService.postLogin(req.body);
+			
+			if (authService.requires2FA(loginResponse)) {
+				authService.createTempSession(req.session, loginResponse.tempToken);
+				// Save session before redirecting
+				await new Promise<void>((resolve, reject) => {
+					req.session.save((err) => {
+						if (err) {
+							console.error("Failed to save session for 2FA:", err);
+							reject(err);
+						} else {
+							console.log("Session saved for 2FA login:", {
+								sessionId: req.session.sessionId,
+								requires2FA: req.session.requires2FA,
+								hasTempToken: !!req.session.tempToken
+							});
+							resolve();
+						}
+					});
+				});
+				return res.redirect("/2FA/verify");
+			} else {
+				fastify.jwt.verify(loginResponse.jwt);
+				authService.createSession(req.session, loginResponse);
+				return res.redirect("/account");
+			}
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const ejsVariables = { errors: error.issues.map((element) => element.message) };
@@ -60,6 +86,7 @@ export async function auth(fastify: FastifyInstance) {
 	 */
 	fastify.get("/log-out", async (req, res) => {
 		if (req.session.jwt) {
+			await accountService.setOnlineStatus(false, req.session.jwt);
 			await req.session.destroy();
 		}
 		return res.redirect("/");

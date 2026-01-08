@@ -1,7 +1,9 @@
-import { FastifyInstance } from "fastify"
+import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import { auth } from "./auth/auth";
 import { account } from "./account/account";
 import { users } from "./users/users";
+import { twoFactor } from "./2FA/2fa";
+import { games } from "./games/games";
 import { HttpError, HttpMap } from "../v1.dto";
 import { RootService } from "./root.service";
 import { GeneralError } from "./root.type";
@@ -37,7 +39,7 @@ async function root(fastify: FastifyInstance): Promise<void> {
 		* ```
 		*/
 
-	fastify.setErrorHandler((error, req, res) => {
+	fastify.setErrorHandler((error: FastifyError, req: FastifyRequest, res: FastifyReply) => {
 		const statusCode = error.statusCode ?? 500;
 		const httpError = HttpMap.get(statusCode) ?? HttpError.INTERNAL_SERVER_ERROR;
 		const errorMsg: GeneralError = {
@@ -60,6 +62,8 @@ async function root(fastify: FastifyInstance): Promise<void> {
 	fastify.register(auth, { prefix: "auth" });
 	fastify.register(account, { prefix: "account" });
 	fastify.register(users, { prefix: "users" });
+	fastify.register(twoFactor, { prefix: "2fa" });
+	fastify.register(games, { prefix: "games" });
 }
 
 export { root }

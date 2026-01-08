@@ -35,6 +35,15 @@ export default fp<FastifyAuthPluginOptions>(async (fastify) => {
 		}
 	});
 
+	/**
+	 * Alias for verifyJwt - used in 2FA routes.
+	 * @param req - The fastify request instance.
+	 * @param res - The fastify response instance.
+	 */
+	fastify.decorate("authenticate", async (req: FastifyRequest, res: FastifyReply) => {
+		await fastify.verifyJwt(req, res);
+	});
+
 	fastify.register(fastifyAuth);
 });
 
@@ -42,5 +51,15 @@ declare module "fastify" {
 	interface FastifyInstance {
 		verifyJwt: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
 		verifyRefreshJwt: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
+		authenticate: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
 	}
-};
+
+	interface FastifyRequest {
+		user: {
+			id: number;
+			username: string;
+			email: string;
+			[key: string]: any;
+		};
+	}
+}
