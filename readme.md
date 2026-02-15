@@ -50,3 +50,14 @@ This developer was in charge of using front-end tools to design many of the webp
 
 ### yfang (developer)
 His main role was the implementation of an Oauth system that allows users to log in with their 42 network account if they do not wish to create their own.
+
+# Technical stack
+### Frontend
+The frontend uses vanilla javascript with server side generated html through the use of ejs in the backend. The reason we didn't use a frontend framework like React, Angular or Vue is because the previous subject did not allowed us to do so. However, despite that, it is also true that this approach simplifies development, as we do everything from a back-end perspective and the app really does not need interactivity, so the use of a framework is mostly unnecessary.
+
+For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for bettle type safety and having object definition
+
+### Backend
+Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
+
+For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
