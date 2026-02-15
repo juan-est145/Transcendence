@@ -40,4 +40,13 @@ https://github.com/minio/minio-js The documentation for interacting with the min
 # Team information
 
 ### juestrel (product owner, project manager and developer) 
+The main developer of the project. His functions were creating the API that interacts with the database and provides information to the MVC app when it requests it, integrating swagger in order to have schema definitions always available to the API responses and request parameters and implemented the S3 store minio solution for storing user's avatars. He was also responsible for creating the basic auth system by using jwt's, refresh tokens and session based management.
 
+### jcallejo (architect and developer)
+His main responsabilities were designing the logic of the pong game, setting up the 3D graphics for it, creating the networking of the game through the use of websockets for bidirectional and instant comunication between server and client and the implementation of the pong tournaments.
+
+### rguerrer (developer)
+This developer was in charge of using front-end tools to design many of the webpage layouts, implementing 2FA for secure loggin into the website and he also securing the webapp by encrypting the 2FA secret of the user's of the webpage.
+
+### yfang (developer)
+His main role was the implementation of an Oauth system that allows users to log in with their 42 network account if they do not wish to create their own.
