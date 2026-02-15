@@ -62,63 +62,6 @@ Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, w
 
 For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
 
-# Modules (Total of 16 points)
-### Use a backend framework (Minor: 1 point)
-*Team members: Everyone*
-
-This module has been the backbone of our project. Almost the entirety of it has been built using Fastify, both for the MVC part, that handled the frontend and passed requests to the Minio store and the API as well as the back-end composed of the API, that created JWT's and performed CRUD operations on the database. Choosing this module was obvious, given that
-most modern webapps need a backend for functioning. 
-
-### Implement real-time features using WebSockets or similar technology (Major: 2 points)
-*Team members: jcallejo*
-
-This module was chosen because in order to have real time online players we required a solution that provided us with real-time bidirectional communication. This was necessary to handle the game logic of each online match and also to keep track of which users were online at the moment. That is the main reason we defaulted to using websockets. 
-
-### Use an ORM for the database (Minor: 1 point)
-*Team members: Everyone*
-
-A pretty easy module. We chose Prisma as our solutin given it's popularity and ease of use. Also, an ORM speed's up the creation of queries and creates Typescript objects when returning results, so it makes working with the database data that much easier compared to handwritten queries. With hindsight, perhaps we could have used a different ORM like Drizzle, which is said to be more efficient, but alas, Prisma was enough for us.
-
-### Server-Side Rendering (SSR) for improved performance and SEO (Minor: 1 point).
-*Team members: Everyone*
-
-Although it is true that we couldn't use a proper front-end framework like React at the time, we still believe that SSR with html templates was the best solution. They do not incurr in added complexities like learning a new framework, it allows us to stay close to the back-end at all times and allows us to pass data through those templates and inform the user's of the website of new information. For this kind of project, it provides the best of both worlds. Also the improved SEO for indexing bots is a nice bonus.
-
-### Standard user management and authentication. (Major: 2 points)
-*Team members: juestrel*
-
-This is a basic feature of most modern websites, so of course it made sense that we implemented it as well. All features are working and the way it does so is that the MVC app receives the user commands and sends the data to the API, which it makes sure to store that information in the database and send the response back. Also, we needed this module in order to have logged in users and their information for creating online tournaments.
-
-### Implement remote authentication with OAuth 2.0 (Google, GitHub, 42, etc.) (Minor: 1 point)
-*Team members: yfang*
-
-We wanted to provided members of the 42 network with an easy way to log into the website without the need of creating a new account on a service. That is why we decided to implement this module, to make easier the evaluation and because it is a modern feature of most websites.
-
-### Implement a complete 2FA (Two-Factor Authentication) system for the users (Minor: 1 point)
-*Team members: rguerrer*
-
-Nowadays, cyberattacks are a constant in the online world and websites that have a logging system with personal data are a very lucrative target. We wanted to increase the security of our website and implement railguards against account hijacking. This is why we decided to implement this module. It works with all 2FA apps and solutions.
-
-### Implement a complete web-based game where users can play against each other (Major: 2 points).
-*Team members: jcallejo*
-
-This module was kinda forced to us because we were still using the old Transcendence subject when we started, so we didn't have much of a choice in the matter. Nevertheless, it has proven to be a very interesting project and we would have chosen it anyway because it is a lot of fun to develop an online game that everyone can play.
-
-### Remote players — Enable two players on separate computers to play the same game in real-time (Major: 2 points).
-*Team members: jcallejo*
-
-We chose this module because we thought that if we were going to create a web based game, it would be a good idea to allow people to play it from different parts of the world and without needing to use the same computer to do so. We view this module as non-negotiable to the core idea of our project.
-
-### Implement advanced 3D graphics using a library like Three.js or Babylon.js (Major: 2 points).
-*Team members: jcallejo*
-
-This module was chosen because we wanted to make a game with physics and that it looked more modern that the original 2D Pong game of 1972. For this, Babylon.js seemed like a good choice and the fact that Fastify has good integration with tools like Vite.js, made this an obvious choice.
-
-### Implement a tournament system (Minor: 1 point).
-*Team members: jcallejo*
-
-If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
-
 # Database Schema
 
 ```bash
@@ -198,3 +141,60 @@ enum GameType {
 }
 
 ```
+
+# Modules (Total of 16 points)
+### Use a backend framework (Minor: 1 point)
+*Team members: Everyone*
+
+This module has been the backbone of our project. Almost the entirety of it has been built using Fastify, both for the MVC part, that handled the frontend and passed requests to the Minio store and the API as well as the back-end composed of the API, that created JWT's and performed CRUD operations on the database. Choosing this module was obvious, given that
+most modern webapps need a backend for functioning. 
+
+### Implement real-time features using WebSockets or similar technology (Major: 2 points)
+*Team members: jcallejo*
+
+This module was chosen because in order to have real time online players we required a solution that provided us with real-time bidirectional communication. This was necessary to handle the game logic of each online match and also to keep track of which users were online at the moment. That is the main reason we defaulted to using websockets. 
+
+### Use an ORM for the database (Minor: 1 point)
+*Team members: Everyone*
+
+A pretty easy module. We chose Prisma as our solutin given it's popularity and ease of use. Also, an ORM speed's up the creation of queries and creates Typescript objects when returning results, so it makes working with the database data that much easier compared to handwritten queries. With hindsight, perhaps we could have used a different ORM like Drizzle, which is said to be more efficient, but alas, Prisma was enough for us.
+
+### Server-Side Rendering (SSR) for improved performance and SEO (Minor: 1 point).
+*Team members: Everyone*
+
+Although it is true that we couldn't use a proper front-end framework like React at the time, we still believe that SSR with html templates was the best solution. They do not incurr in added complexities like learning a new framework, it allows us to stay close to the back-end at all times and allows us to pass data through those templates and inform the user's of the website of new information. For this kind of project, it provides the best of both worlds. Also the improved SEO for indexing bots is a nice bonus.
+
+### Standard user management and authentication. (Major: 2 points)
+*Team members: juestrel*
+
+This is a basic feature of most modern websites, so of course it made sense that we implemented it as well. All features are working and the way it does so is that the MVC app receives the user commands and sends the data to the API, which it makes sure to store that information in the database and send the response back. Also, we needed this module in order to have logged in users and their information for creating online tournaments.
+
+### Implement remote authentication with OAuth 2.0 (Google, GitHub, 42, etc.) (Minor: 1 point)
+*Team members: yfang*
+
+We wanted to provided members of the 42 network with an easy way to log into the website without the need of creating a new account on a service. That is why we decided to implement this module, to make easier the evaluation and because it is a modern feature of most websites.
+
+### Implement a complete 2FA (Two-Factor Authentication) system for the users (Minor: 1 point)
+*Team members: rguerrer*
+
+Nowadays, cyberattacks are a constant in the online world and websites that have a logging system with personal data are a very lucrative target. We wanted to increase the security of our website and implement railguards against account hijacking. This is why we decided to implement this module. It works with all 2FA apps and solutions.
+
+### Implement a complete web-based game where users can play against each other (Major: 2 points).
+*Team members: jcallejo*
+
+This module was kinda forced to us because we were still using the old Transcendence subject when we started, so we didn't have much of a choice in the matter. Nevertheless, it has proven to be a very interesting project and we would have chosen it anyway because it is a lot of fun to develop an online game that everyone can play.
+
+### Remote players — Enable two players on separate computers to play the same game in real-time (Major: 2 points).
+*Team members: jcallejo*
+
+We chose this module because we thought that if we were going to create a web based game, it would be a good idea to allow people to play it from different parts of the world and without needing to use the same computer to do so. We view this module as non-negotiable to the core idea of our project.
+
+### Implement advanced 3D graphics using a library like Three.js or Babylon.js (Major: 2 points).
+*Team members: jcallejo*
+
+This module was chosen because we wanted to make a game with physics and that it looked more modern that the original 2D Pong game of 1972. For this, Babylon.js seemed like a good choice and the fact that Fastify has good integration with tools like Vite.js, made this an obvious choice.
+
+### Implement a tournament system (Minor: 1 point).
+*Team members: jcallejo*
+
+If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
