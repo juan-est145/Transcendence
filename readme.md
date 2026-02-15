@@ -52,12 +52,12 @@ This developer was in charge of using front-end tools to design many of the webp
 His main role was the implementation of an Oauth system that allows users to log in with their 42 network account if they do not wish to create their own.
 
 # Technical stack
-### Frontend
+### Front-end
 The frontend uses vanilla javascript with server side generated html through the use of ejs in the backend. The reason we didn't use a frontend framework like React, Angular or Vue is because the previous subject did not allowed us to do so. However, despite that, it is also true that this approach simplifies development, as we do everything from a back-end perspective and the app really does not need interactivity, so the use of a framework is mostly unnecessary.
 
 For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for bettle type safety and having object definition
 
-### Backend
+### Back-end
 Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
 
 For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
@@ -118,3 +118,83 @@ This module was chosen because we wanted to make a game with physics and that it
 *Team members: jcallejo*
 
 If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
+
+# Database Schema
+
+```bash
+// This table represents the basic login data of an user. At the application level, we must make sure that for every user created, a profile table is created
+
+model Users {
+  id       Int      @id @default(autoincrement())
+  id42     String? @unique
+  username String   @unique
+  password String?
+  email    String   @unique
+  profile  Profile?
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
+}
+
+model Profile {
+  id          Int                  @id
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt()
+  avatar      Avatar?
+  online      Boolean              @default(false)
+  user        Users                @relation(fields: [id], references[id])
+  friend1     Friends[]            @relation("Friend1")
+  friend2     Friends[]            @relation("Friend2")
+  gamesAsPlayer GameResult[]       @relation("PlayerGames")
+  gamesAsOpponent GameResult[]     @relation("OpponentGames")
+}
+
+model Avatar {
+  id Int @id
+  name String @default("default-avatar.png")
+  contentType String @default("image/png")
+  profile Profile @relation(fields: [id], references: [id])
+}
+
+// It is imperative that user1Id is always the smallest index number to avoid duplicates. Need to enforce at the application level
+model Friends {
+  user1Id Int
+  user2Id Int
+  status  Friendship
+  user1   Profile    @relation("Friend1", fields: [user1Id], references: [id])
+  user2   Profile    @relation("Friend2", fields: [user2Id], references: [id])
+
+  @@id([user1Id, user2Id])
+}
+
+enum Friendship {
+  FIRST_PENDING
+  SECOND_PENDING
+  FRIENDS
+}
+
+// Game results for tracking wins/losses in matchmaking, rooms, and tournaments
+model GameResult {
+  id          Int      @id @default(autoincrement())
+  playerId    Int
+  opponentId  Int
+  result      GameResultType
+  gameType    GameType
+  gameId      String   // Match ID, room ID, or tournament match ID
+  createdAt   DateTime @default(now())
+  
+  player      Profile  @relation("PlayerGames", fields: [playerId], references: [id])
+  opponent    Profile  @relation("OpponentGames", fields: [opponentId], references: [id])
+}
+
+enum GameResultType {
+  WIN
+  LOSS
+}
+
+enum GameType {
+  MATCHMAKING
+  ROOM
+  TOURNAMENT
+}
+
+```

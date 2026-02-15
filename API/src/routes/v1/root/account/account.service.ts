@@ -34,13 +34,14 @@ export class AccountService {
 				},
 				select: {
 					id: true,
-					profile: {
-						include: {
-							tournaments: {
-								select: { rank: true }
-							}
-						}
-					},
+					// profile: {
+					// 	include: {
+					// 		tournaments: {
+					// 			select: { rank: true }
+					// 		}
+					// 	}
+					// },
+					profile: true,
 					username: true,
 					email: true
 				}

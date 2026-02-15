@@ -71,9 +71,9 @@ export class UsersService {
 				email: true,
 				profile: {
 					include: {
-						tournaments: {
-							select: { rank: true }
-						},
+						// tournaments: {
+						// 	select: { rank: true }
+						// },
 						avatar: true,
 					},
 				}
