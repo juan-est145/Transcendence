@@ -71,6 +71,16 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 		return reply.view("index.ejs", { user });
 	});
 
+	fastify.get("/privacy", async function (request, reply) {
+		const user = request.session && request.session.get("jwt") ? fastify.jwt.decode(request.session.get("jwt")!) : null;
+		return reply.view("privacy.ejs", { user });
+	});
+
+	fastify.get("/terms", async function (request, reply) {
+		const user = request.session && request.session.get("jwt") ? fastify.jwt.decode(request.session.get("jwt")!) : null;
+		return reply.view("terms.ejs", { user });
+	})
+
 	fastify.get('/ws', { websocket: true }, (connection, req) => {
 		connection.on("message", (message) => {
 			connection.send(`You said ${message}`);

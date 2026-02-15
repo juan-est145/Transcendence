@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terms of Service - Pong</title>
+  <link rel="stylesheet" href="/styles/dist/output.css">
+  <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+  <a class="sr-only focus:not-sr-only absolute top-2 left-2 bg-gray-700 px-3 py-2 rounded" href="#main-content">Skip to content</a>
+
+  <!-- Navbar -->
+  <%- include('components/navbar.ejs') %>
+
+  <main id="main-content" role="main" aria-labelledby="terms-heading" class="flex flex-col items-start grow px-6 py-12 max-w-4xl mx-auto">
+
+    <header class="w-full mb-8">
+      <h1 id="terms-heading" class="text-4xl font-extrabold mb-2">Terms of Service</h1>
+      <p class="text-gray-400">Effective date: February 15, 2026</p>
+    </header>
+
+    <nav aria-label="Table of contents" class="w-full mb-6">
+      <ul class="flex flex-col sm:flex-row sm:space-x-6 text-sm text-gray-300">
+        <li><a href="#acceptance" class="underline hover:text-white">Acceptance</a></li>
+        <li><a href="#accounts" class="underline hover:text-white">Accounts</a></li>
+        <li><a href="#conduct" class="underline hover:text-white">Prohibited Conduct</a></li>
+        <li><a href="#liability" class="underline hover:text-white">Liability</a></li>
+        <li><a href="#contact" class="underline hover:text-white">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section id="acceptance" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Acceptance</h2>
+      <p class="text-gray-300">By accessing or using Pong, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.</p>
+    </section>
+
+    <section id="accounts" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Accounts</h2>
+      <p class="text-gray-300">You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account. Notify us immediately of any unauthorized use.</p>
+    </section>
+
+    <section id="conduct" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Prohibited Conduct</h2>
+      <ul class="list-disc list-inside text-gray-300 space-y-2">
+        <li>Cheating, exploiting, or manipulating game mechanics.</li>
+        <li>Harassment, hate speech, or threats toward other users.</li>
+        <li>Impersonation or providing false information.</li>
+      </ul>
+    </section>
+
+    <section id="intellectual" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Intellectual Property</h2>
+      <p class="text-gray-300">All content, trademarks, and logos are the property of their respective owners. You may not reproduce or distribute our proprietary content without permission.</p>
+    </section>
+
+    <section id="liability" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Limitation of Liability</h2>
+      <p class="text-gray-300">To the maximum extent permitted by law, we are not liable for indirect, incidental, or consequential damages arising out of your use of the service.</p>
+    </section>
+
+    <section id="termination" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Termination</h2>
+      <p class="text-gray-300">We may suspend or terminate accounts that violate these Terms or that we believe pose a risk to the service or other users.</p>
+    </section>
+
+    <section id="changes" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Changes</h2>
+      <p class="text-gray-300">We may modify these Terms at any time. Continued use after changes constitutes acceptance of the updated Terms.</p>
+    </section>
+
+    <section id="contact" class="w-full mb-12">
+      <h2 class="text-2xl font-bold mb-2">Contact</h2>
+      <p class="text-gray-300">Questions about these Terms? You can use the contact information provided at the following Github <a class="underline text-white" href="https://github.com/juan-est145">profile.</a></p>
+    </section>
+
+  </main>
+
+  <%- include('components/footer.ejs') %>
+</body>
+
+</html>

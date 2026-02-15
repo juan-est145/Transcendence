@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy - Pong</title>
+  <link rel="stylesheet" href="/styles/dist/output.css">
+  <link rel="shortcut icon" href="/favicon/favicon.png" type="image/x-icon">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+  <a class="sr-only focus:not-sr-only absolute top-2 left-2 bg-gray-700 px-3 py-2 rounded" href="#main-content">Skip to content</a>
+
+  <!-- Navbar -->
+  <%- include('components/navbar.ejs') %>
+
+  <main id="main-content" role="main" aria-labelledby="privacy-heading" class="flex flex-col items-start grow px-6 py-12 max-w-4xl mx-auto">
+
+    <header class="w-full mb-8">
+      <h1 id="privacy-heading" class="text-4xl font-extrabold mb-2">Privacy Policy</h1>
+      <p class="text-gray-400">Last updated: February 15, 2026</p>
+    </header>
+
+    <nav aria-label="Table of contents" class="w-full mb-6">
+      <ul class="flex flex-col sm:flex-row sm:space-x-6 text-sm text-gray-300">
+        <li><a href="#overview" class="underline hover:text-white">Overview</a></li>
+        <li><a href="#info" class="underline hover:text-white">Information We Collect</a></li>
+        <li><a href="#use" class="underline hover:text-white">How We Use Data</a></li>
+        <li><a href="#rights" class="underline hover:text-white">Your Rights</a></li>
+        <li><a href="#contact" class="underline hover:text-white">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section id="overview" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Overview</h2>
+      <p class="text-gray-300">This Privacy Policy explains how Pong (“we”, “us”, or “our”) collects, uses, discloses, and protects your personal information when you use our website and services.</p>
+    </section>
+
+    <section id="info" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Information We Collect</h2>
+      <ul class="list-disc list-inside text-gray-300 space-y-2">
+        <li><strong>Account information:</strong> name, email, username, and password when you register.</li>
+        <li><strong>Profile data:</strong> avatar, display name, and any optional profile details you provide.</li>
+        <li><strong>Usage data:</strong> game scores, match history, leaderboard position, and analytics about how you use the site.</li>
+        <li><strong>Cookies and similar technologies:</strong> to remember preferences and enable essential functionality.</li>
+      </ul>
+    </section>
+
+    <section id="use" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">How We Use Data</h2>
+      <p class="text-gray-300">We use the information we collect to:</p>
+      <ul class="list-decimal list-inside text-gray-300 ml-4 space-y-2">
+        <li>Provide, operate, and improve the service.</li>
+        <li>Personalize your experience and provide leaderboards and matchmaking.</li>
+        <li>Communicate with you about updates, security, and support.</li>
+        <li>Comply with legal obligations and protect our rights.</li>
+      </ul>
+    </section>
+
+    <section id="retention" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Data Retention & Security</h2>
+      <p class="text-gray-300">We retain personal data only as long as necessary for the purposes described. We implement reasonable technical and organizational measures to protect your information, but cannot guarantee absolute security.</p>
+    </section>
+
+    <section id="third" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Third Parties</h2>
+      <p class="text-gray-300">We may share information with trusted third-party providers (e.g., hosting, analytics, and storage) only as needed to operate the service. We require partners to protect personal information and only process it for permitted purposes.</p>
+    </section>
+
+    <section id="rights" class="w-full mb-6">
+      <h2 class="text-2xl font-bold mb-2">Your Rights</h2>
+      <p class="text-gray-300">Depending on your jurisdiction, you may have rights to access, correct, delete, or port your personal data. To exercise these rights, contact us using the details below.</p>
+    </section>
+
+    <section id="contact" class="w-full mb-12">
+      <h2 class="text-2xl font-bold mb-2">Contact</h2>
+      <p class="text-gray-300">For questions, requests, or privacy concerns, please use the contact information provided at the following Github <a class="underline text-white" href="https://github.com/juan-est145">profile.</a></p>
+    </section>
+
+  </main>
+
+  <%- include('components/footer.ejs') %>
+</body>
+
+</html>
