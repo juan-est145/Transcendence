@@ -92,14 +92,29 @@ This is a basic feature of most modern websites, so of course it made sense that
 ### Implement remote authentication with OAuth 2.0 (Google, GitHub, 42, etc.) (Minor: 1 point)
 *Team members: yfang*
 
-We wanted to provided members of the 42 network with an easy way to log into the website without the need of creating a new account on a service. That is why 
+We wanted to provided members of the 42 network with an easy way to log into the website without the need of creating a new account on a service. That is why we decided to implement this module, to make easier the evaluation and because it is a modern feature of most websites.
 
 ### Implement a complete 2FA (Two-Factor Authentication) system for the users (Minor: 1 point)
+*Team members: rguerrer*
+
+Nowadays, cyberattacks are a constant in the online world and websites that have a logging system with personal data are a very lucrative target. We wanted to increase the security of our website and implement railguards against account hijacking. This is why we decided to implement this module. It works with all 2FA apps and solutions.
 
 ### Implement a complete web-based game where users can play against each other (Major: 2 points).
+*Team members: jcallejo*
+
+This module was kinda forced to us because we were still using the old Transcendence subject when we started, so we didn't have much of a choice in the matter. Nevertheless, it has proven to be a very interesting project and we would have chosen it anyway because it is a lot of fun to develop an online game that everyone can play.
 
 ### Remote players — Enable two players on separate computers to play the same game in real-time (Major: 2 points).
+*Team members: jcallejo*
+
+We chose this module because we thought that if we were going to create a web based game, it would be a good idea to allow people to play it from different parts of the world and without needing to use the same computer to do so. We view this module as non-negotiable to the core idea of our project.
 
 ### Implement advanced 3D graphics using a library like Three.js or Babylon.js (Major: 2 points).
+*Team members: jcallejo*
 
-### Minor: Implement a tournament system (Minor: 1 point).
+This module was chosen because we wanted to make a game with physics and that it looked more modern that the original 2D Pong game of 1972. For this, Babylon.js seemed like a good choice and the fact that Fastify has good integration with tools like Vite.js, made this an obvious choice.
+
+### Implement a tournament system (Minor: 1 point).
+*Team members: jcallejo*
+
+If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
