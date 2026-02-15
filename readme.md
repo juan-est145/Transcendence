@@ -61,3 +61,45 @@ For styling we used Tailwindcss, which is a very nice option for keeping styles 
 Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
 
 For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
+
+# Modules (Total of 16 points)
+### Use a backend framework (Minor: 1 point)
+*Team members: Everyone*
+
+This module has been the backbone of our project. Almost the entirety of it has been built using Fastify, both for the MVC part, that handled the frontend and passed requests to the Minio store and the API as well as the back-end composed of the API, that created JWT's and performed CRUD operations on the database. Choosing this module was obvious, given that
+most modern webapps need a backend for functioning. 
+
+### Implement real-time features using WebSockets or similar technology (Major: 2 points)
+*Team members: jcallejo*
+
+This module was chosen because in order to have real time online players we required a solution that provided us with real-time bidirectional communication. This was necessary to handle the game logic of each online match and also to keep track of which users were online at the moment. That is the main reason we defaulted to using websockets. 
+
+### Use an ORM for the database (Minor: 1 point)
+*Team members: Everyone*
+
+A pretty easy module. We chose Prisma as our solutin given it's popularity and ease of use. Also, an ORM speed's up the creation of queries and creates Typescript objects when returning results, so it makes working with the database data that much easier compared to handwritten queries. With hindsight, perhaps we could have used a different ORM like Drizzle, which is said to be more efficient, but alas, Prisma was enough for us.
+
+### Server-Side Rendering (SSR) for improved performance and SEO (Minor: 1 point).
+*Team members: Everyone*
+
+Although it is true that we couldn't use a proper front-end framework like React at the time, we still believe that SSR with html templates was the best solution. They do not incurr in added complexities like learning a new framework, it allows us to stay close to the back-end at all times and allows us to pass data through those templates and inform the user's of the website of new information. For this kind of project, it provides the best of both worlds. Also the improved SEO for indexing bots is a nice bonus.
+
+### Standard user management and authentication. (Major: 2 points)
+*Team members: juestrel*
+
+This is a basic feature of most modern websites, so of course it made sense that we implemented it as well. All features are working and the way it does so is that the MVC app receives the user commands and sends the data to the API, which it makes sure to store that information in the database and send the response back. Also, we needed this module in order to have logged in users and their information for creating online tournaments.
+
+### Implement remote authentication with OAuth 2.0 (Google, GitHub, 42, etc.) (Minor: 1 point)
+*Team members: yfang*
+
+We wanted to provided members of the 42 network with an easy way to log into the website without the need of creating a new account on a service. That is why 
+
+### Implement a complete 2FA (Two-Factor Authentication) system for the users (Minor: 1 point)
+
+### Implement a complete web-based game where users can play against each other (Major: 2 points).
+
+### Remote players — Enable two players on separate computers to play the same game in real-time (Major: 2 points).
+
+### Implement advanced 3D graphics using a library like Three.js or Babylon.js (Major: 2 points).
+
+### Minor: Implement a tournament system (Minor: 1 point).
