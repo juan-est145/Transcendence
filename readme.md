@@ -1,7 +1,7 @@
 *This project has been created as part of the 42 curriculum by juestrel, jcallejo, rguerrer and yfang*
 
 # Description
-The following project is called Pong-game, and it is a ssr webapp made with fastify in the backend, sqlite as the RDBM for the data and Minio for storing images. This webapp allows user's to log in and play pong online and locally against other users, as well as sending friend requests to each other. They can also create tournaments that track the user's score.
+The following project is called Pong-game, and it is a ssr webapp made with fastify in the backend, Sqlite as the RDBM for the data and Minio for storing images. This webapp allows user's to log in and play pong online and locally against other users, as well as sending friend requests to each other. They can also create tournaments that track the user's score.
 
 # Instructions
 In order to deploy this project, you first have to create at the root of the directory a .env file with the following keys:
@@ -51,14 +51,18 @@ This developer was in charge of using front-end tools to design many of the webp
 ### yfang (developer)
 His main role was the implementation of an Oauth system that allows users to log in with their 42 network account if they do not wish to create their own.
 
+# Project management
+
+We mostly use Slack for internal communication and Github issues for assigning tasks and problems that had to be solved. Each member could create it's own issues and assign them themselves. We had a very loose hierarchy when working, and it was mostly voluntary. The issues were grouped into different groups according to what specific section of the project they belonged to.
+
 # Technical stack
 ### Front-end
 The frontend uses vanilla javascript with server side generated html through the use of ejs in the backend. The reason we didn't use a frontend framework like React, Angular or Vue is because the previous subject did not allowed us to do so. However, despite that, it is also true that this approach simplifies development, as we do everything from a back-end perspective and the app really does not need interactivity, so the use of a framework is mostly unnecessary.
 
-For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for bettle type safety and having object definition
+For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for bettle type safety and having object definition.
 
 ### Back-end
-Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
+Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of Typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
 
 For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
 
@@ -142,7 +146,21 @@ enum GameType {
 
 ```
 
-# Modules (Total of 16 points)
+# Features list
+
+### Account registration and logging system (juestrel and yfang)
+This feature allows user to create an account or using a pre-existing 42 account for logging in. The main benefits of logging in is being able to create tournaments for online play with other users, as well as adding them as friends.
+
+### Real time gameplay (jcallejo)
+This feature uses websockets to communicate between the clients and the server and send information that updates the gamestate whenever a pong tournament is going on. It also uses websockets to track wether or not a user is online and using the website, so that it updates the UI and that their friends can see their status.
+
+### 2FA authentication (rguerrer)
+This webapp is compatible with all 2FA apps and is a setting that can be enabled by users to add an extra layer of security to their accounts and prevent session theft or getting their accounts stolen by third parties.
+
+### Avatar upload (juestrel)
+The website allows registered users to upload a photo to be used as an avatar. Gifs are also supported, so you can have an animated profile for yourself.
+
+# Modules (Total of 17 points)
 ### Use a backend framework (Minor: 1 point)
 *Team members: Everyone*
 
@@ -198,3 +216,36 @@ This module was chosen because we wanted to make a game with physics and that it
 *Team members: jcallejo*
 
 If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
+
+### Support for additional browserss (Minor: 1 point).
+*Team members: Everyone*
+
+At first, the old subject required us to develop mainly for Firefox, but we luckily also kept chromium in mind, given that these are the mainly used browsers on the internet. The use of tailwindcss also helped us to keep the styles consistent accross various web-browsers. We have done tests with Firefox, Chrome and Brave. 
+
+# Individual contributions
+
+### juestrel
+The first developer to start the project. His main respponsibilites was laying out the groundwork for developing the project. At first, he prepared the docker containers and optimized them to have developing and production versions, so as to keep both environments the same. He deployed all docker images present in this project, including the use of Minio for storing user avatar's. He also integrated most tools with one another, for example by writing node scripts for each service and integrating Typescript.
+
+He also was responsible for using swagger and open-api fetch in order to both document the API and generating a compatible api client with proper type completion on Typescript. The logging and session based management was also mainly his doing, and the combined use of jwt's and cookies for security.
+
+Some of the main challenges were getting familiar with how Fastify works and solving a bug that made the Fastify cli crash, and made the creation of sessions and logging in a nightmare that break the pages css. After much search on Github forums, the issue was finally solved.
+
+### jcallejo
+The expert at the game and websockets. His main responsabilites included creating the style for the 3D game, integrating Vite and the 3D libraries that the game uses with the Fastify server and setting up the structure for sharing real time information between the clients and the game server. For each online match, the server assigns a unique key to said match and stores the relevant information in it's associated entry.
+
+Most of the logic was reused for both local and online multiplayer. However it is true that the added complexity to the online aspect of the game has been what has taken the most time to develop.
+
+The main challenge that we faced was using the correct plugins for integrating Vite with Fastify and passing the correct parameters to configure it accordingly.
+
+### rguerrer
+The first to use Tailwindcss in the project. At first he mostly developed the front-end and style of the page. However, later on he also did fullstack development by implementing a search functionality for finding other users.
+
+Most importantly, he developed the 2FA module and implemented it with the prexisting session based auth system. He also implemented additional security measures by encrypting the secrets shared between the 2FA apps and the website.
+
+His main difficulty was getting aquainted with the Nodejs ecosystem and more specifically Fastify, as the project has used this framework as his backbone.
+
+### yfang
+The last developer to join the project. His main responsibilty was implementing an oauth solution to the logging system and designing the schemas necessary for it to work with the pre-existing structure. However, he managed to handle it and it now works as expected.
+
+The main difficulty he found was integrating into a already developed project and learning the basics of Oauth and backend development, as this was his first web-dev project experience.
