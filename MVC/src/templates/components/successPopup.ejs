@@ -1,11 +1,11 @@
 <% var success = typeof success !== 'undefined' ? success : null; %>
 <% if (success && success.length) {  %>
-<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded absolute left-1/2 transform -translate-x-1/2 top-2 mb-4 animate-fade-out"
+<div class="bg-green-100 border border-green-400 text-green-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded absolute left-1/2 transform -translate-x-1/2 top-2 w-[calc(100%-2rem)] sm:w-auto sm:min-w-[24rem] max-w-2xl mb-4 animate-fade-out z-20"
 	role="alert">
-	<strong class="font-bold">Success:</strong>
-	<ul class="mt-2 list-disc list-inside">
+	<strong class="font-bold text-sm sm:text-base">Success:</strong>
+	<ul class="mt-2 list-disc list-inside text-sm sm:text-base break-words">
 		<% success.forEach((element) => { %>
-			<li> <%= element %> </li>
+			<li class="break-words"> <%= element %> </li>
 		<% }); %>
 	</ul>
 </div>

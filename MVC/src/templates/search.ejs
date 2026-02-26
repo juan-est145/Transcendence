@@ -11,24 +11,24 @@
 <body class="bg-gray-900 text-white min-h-screen">
 	<%- include("components/navbar.ejs") %>
 	
-	<div class="container mx-auto px-6 py-8">
-		<h1 class="text-3xl font-bold mb-6">Search Users</h1>
+	<div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+		<h1 class="text-2xl sm:text-3xl font-bold mb-5 sm:mb-6">Search Users</h1>
 		
 		<!-- Search Form -->
-		<form method="GET" action="/search/users" class="mb-8">
-			<div class="flex items-center space-x-4">
+		<form method="GET" action="/search/users" class="mb-6 sm:mb-8">
+			<div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
 				<input 
 					type="text" 
 					name="q"
 					value="<%= query %>"
 					placeholder="Enter username to search..." 
-					class="bg-gray-700 text-white px-4 py-2 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none flex-1 max-w-md"
+					class="bg-gray-700 text-white px-4 py-2 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none w-full sm:flex-1 sm:max-w-md"
 					autocomplete="off"
 					minlength="2"
 					required />
 				<button 
 					type="submit"
-					class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md text-white transition font-semibold">
+					class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md text-white transition font-semibold w-full sm:w-auto">
 					Search
 				</button>
 			</div>
@@ -39,7 +39,7 @@
 		
 		<!-- Search Results -->
 		<% if (query && query.length >= 2) { %>
-			<h2 class="text-xl font-semibold mb-4">
+			<h2 class="text-lg sm:text-xl font-semibold mb-4 break-words">
 				Search results for "<%= query %>" (<%= users.length %> found)
 			</h2>
 			
@@ -48,20 +48,20 @@
 					<p class="text-gray-400">No users found matching your search.</p>
 				</div>
 			<% } else { %>
-				<div class="grid gap-4">
+				<div class="grid gap-3 sm:gap-4">
 					<% users.forEach(function(userResult) { %>
 						<div class="bg-gray-800 p-4 rounded-md hover:bg-gray-700 transition">
-							<div class="flex items-center justify-between">
-								<a href="<%= user && user.username === userResult.username ? '/account' : '/search/user/' + userResult.username %>" class="flex items-center space-x-4 flex-1">
+							<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+								<a href="<%= user && user.username === userResult.username ? '/account' : '/search/user/' + userResult.username %>" class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
 									<img 
 										src="<%= `/account/avatar/${userResult.username}` || '/images/default-avatar.png' %>" 
 										alt="<%= userResult.username %>" 
-										class="w-12 h-12 rounded-full"
+										class="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
 									/>
-									<div>
-										<h3 class="font-semibold text-lg"><%= userResult.username %></h3>
-										<p class="text-gray-400"><%= userResult.email %></p>
-										<p class="text-sm text-gray-500">
+									<div class="min-w-0">
+										<h3 class="font-semibold text-base sm:text-lg break-words"><%= userResult.username %></h3>
+										<p class="text-gray-400 text-sm sm:text-base break-all"><%= userResult.email %></p>
+										<p class="text-xs sm:text-sm text-gray-500">
 											Joined: <%= new Date(userResult.createdAt).toLocaleDateString() %>
 										</p>
 									</div>
@@ -69,11 +69,11 @@
 								
 								<!-- Add Friend Button -->
 								<% if (user && user.username !== userResult.username) { %>
-									<form method="POST" action=<%= `/friends/add/${userResult.username}` %> class="ml-4">
+									<form method="POST" action=<%= `/friends/add/${userResult.username}` %> class="sm:ml-4 w-full sm:w-auto">
 										<input type="hidden" name="friendId" value="<%= userResult.id %>" />
 										<button 
 											type="submit"
-											class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center space-x-2"
+											class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md text-white transition font-semibold flex items-center justify-center gap-2 w-full sm:w-auto text-sm sm:text-base"
 											title="Add as friend">
 											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
