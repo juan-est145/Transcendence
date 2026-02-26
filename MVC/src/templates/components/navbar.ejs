@@ -1,12 +1,12 @@
 <% var user=typeof user !=='undefined' ? user : null; %>
 
-<nav class="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-md">
-	<div class="flex items-center space-x-8">
+<nav class="bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3 shadow-md">
+	<div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-8 w-full lg:w-auto">
 		<a href="/" class="text-xl font-bold hover:text-blue-400 transition">PongGame</a>
 
 		<% if (user) { %>
 			<!-- Options for logged in user -->
-			<ul class="hidden md:flex space-x-6 text-gray-300 items-center">
+			<ul class="flex flex-wrap gap-x-4 gap-y-2 text-gray-300 items-center text-sm sm:text-base">
 				<li><a href="/pong" class="hover:text-blue-400 transition" title="Local 2-player game">Local</a></li>
 				<li><a href="/pong/rooms" class="hover:text-blue-400 transition" title="Create or join a room with friends">Rooms</a></li>
 				<li><a href="/pong/matchmaking" class="hover:text-blue-400 transition" title="Find a random opponent">Matchmaking</a></li>
@@ -16,7 +16,7 @@
 			</ul>
 		<% } else { %>
 			<!-- Options for non-logged user -->
-			<ul class="hidden md:flex space-x-6 text-gray-300">
+			<ul class="flex flex-wrap gap-x-4 gap-y-2 text-gray-300 text-sm sm:text-base">
 				<li><a href="/terms" class="hover:text-blue-400 transition">Terms</a></li>
 				<li><a href="/privacy" class="hover:text-blue-400 transition">Privacy</a></li>
 			</ul>
@@ -24,17 +24,17 @@
 	</div>
 	
 	<!-- User state -->
-	<div id="userState" class="flex items-center space-x-4">
+	<div id="userState" class="w-full lg:w-auto flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
 		<% if (user) { %>
 			<!-- User search form in navbar - Hide on search page -->
 			<% if (typeof title === 'undefined' || !title.includes('Search')) { %>
-				<div class="relative">
-					<form method="GET" action="/search/users" class="flex items-center space-x-2">
+				<div class="relative w-full sm:w-auto">
+					<form method="GET" action="/search/users" class="flex items-center gap-2 w-full sm:w-auto">
 						<input 
 							type="text" 
 							name="q"
 							placeholder="Search users..." 
-							class="bg-gray-700 text-white px-3 py-1 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none w-48"
+							class="bg-gray-700 text-white px-3 py-1 rounded-md border border-gray-600 focus:border-blue-400 focus:outline-none w-full sm:w-48"
 							autocomplete="off"
 							minlength="2"
 							required/>
@@ -51,13 +51,13 @@
 			<% } %>
 			<!-- Profile icon -->
 			<%- include("dropdown.ejs") %>
-			<span class="text-gray-300 hidden sm:inline">Hello, <strong>
+			<span class="text-gray-300 hidden md:inline">Hello, <strong>
 					<%= user.username %>
 				</strong>
 			</span>
 		<% } else { %>
 			<a href="/auth/login"
-				class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold">Log
+				class="bg-blue-600 hover:bg-blue-700 active:bg-blue-900 px-4 py-2 rounded transition font-semibold text-center w-full sm:w-auto">Log
 				in</a>
 		<% } %>
 	</div>

@@ -16,31 +16,31 @@
   <%- include('components/navbar.ejs') %>
 
     <!-- Main Content -->
-    <main class="flex flex-col items-center justify-center grow px-4 py-12 max-w-3xl mx-auto text-center">
+    <main class="flex flex-col items-center justify-center grow px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto text-center w-full">
 
-      <header class="mb-10">
-        <h1 class="text-5xl font-extrabold mb-4">Pong</h1>
-        <p class="text-gray-400 max-w-lg mx-auto">
+      <header class="mb-8 sm:mb-10 px-2">
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 sm:mb-4">Pong</h1>
+        <p class="text-gray-400 max-w-lg mx-auto text-sm sm:text-base">
           Enjoy the classic Pong game and compete to be the best!
         </p>
       </header>
 
       <% if (!user) { %>
-        <p class="text-red-400 mb-10">You must <a href="/auth/login" class="underline hover:text-red-600">log in</a>
+        <p class="text-red-400 mb-8 sm:mb-10 text-sm sm:text-base">You must <a href="/auth/login" class="underline hover:text-red-600">log in</a>
           to play.</p>
       <% } %>
 
       <!-- Ranking -->
-            <section class="w-full bg-gray-800 rounded-lg p-6 shadow-md">
-              <h2 class="text-2xl font-bold mb-4">Top 5 Ranking</h2>
-              <ol class="list-decimal list-inside space-y-2 text-gray-300">
+            <!-- <section class="w-full bg-gray-800 rounded-lg p-4 sm:p-6 shadow-md"> -->
+              <!-- <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">Top 5 Ranking</h2>
+               <ol class="list-decimal list-inside space-y-2 text-gray-300 text-sm sm:text-base text-left sm:text-center">
                 <li>Player1 — 150 points</li>
                 <li>Player2 — 130 points</li>
                 <li>Player3 — 120 points</li>
                 <li>Player4 — 110 points</li>
                 <li>Player5 — 100 points</li>
               </ol>
-            </section>
+            </section> -->
     </main>
   <%- include('components/footer.ejs') %>
 </body>
