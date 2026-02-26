@@ -30,13 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initializeRoomSystem() {
   //Get current user info from account.js
   try {
-    const response = await fetch('/account/info');
+    const response = await fetch('/account');
     if (response.ok) {
       const data = await response.json();
       currentUserId = data.email;
     }
   } catch (error) {
-    console.error('Failed to get user info:', error);
+    //console.error('Failed to get user info:', error);
   }
 
   await checkCurrentRoom();

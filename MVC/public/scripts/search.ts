@@ -1,9 +1,8 @@
-const form: HTMLFormElement | null = document.getElementById('friendRequestForm') as HTMLFormElement;
-if (!form) {
-	throw new Error("A form with an action of '/friends/friendRequest/:username' is required");
-}
 
-form.addEventListener("submit", addInputAndSubmit);
+const form: HTMLFormElement | null = document.getElementById('friendRequestForm') as HTMLFormElement;
+if (form) {
+	form.addEventListener("submit", addInputAndSubmit);
+}
 
 
 
