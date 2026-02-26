@@ -249,6 +249,64 @@ html, body{
 	.controls-info {
 		text-align: center;
 	}
+
+	/* Responsive score display on mobile */
+	#scoreDisplay {
+		padding: 0 20px;
+		top: 16px;
+	}
+
+	#scoreOne,
+	#scoreTwo {
+		font-size: 1.2rem;
+	}
+
+	#game-message {
+		font-size: 1.2rem;
+		padding: 1rem 1.5rem;
+	}
+
+	.back-button {
+		font-size: 0.6rem;
+		padding: 0.4rem 0.7rem;
+	}
+}
+
+/* Mobile touch control buttons */
+.mobile-ctrl-group {
+	position: fixed;
+	bottom: 50px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	z-index: 500;
+}
+
+.mobile-ctrl-left  { left: 20px; }
+.mobile-ctrl-right { right: 20px; }
+
+.mobile-ctrl-btn {
+	width: 76px;
+	height: 76px;
+	font-size: 30px;
+	background: rgba(0, 0, 0, 0.55);
+	border: 2px solid rgba(0, 255, 136, 0.6);
+	border-radius: 14px;
+	color: #00ff88;
+	cursor: pointer;
+	touch-action: manipulation;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.mobile-ctrl-btn:active {
+	background: rgba(0, 255, 136, 0.25);
+	border-color: #00ff88;
+	box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
 }
 
 /* Pause Counter */

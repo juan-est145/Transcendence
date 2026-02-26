@@ -11,6 +11,7 @@ import { hideEndGameScreen } from './scene/end-game';
 export class LocalPongGame {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
+  private camera: BABYLON.FreeCamera;
   private paddleOne: BABYLON.Mesh;
   private paddleTwo: BABYLON.Mesh;
   private ball: BABYLON.Mesh;
@@ -50,6 +51,7 @@ export class LocalPongGame {
     //Create the scene and game objects.
     const sceneData = createScene(this.engine);
     this.scene = sceneData.scene;
+    this.camera = sceneData.camera as BABYLON.FreeCamera;
     this.paddleOne = sceneData.paddleOne;
     this.paddleTwo = sceneData.paddleTwo;
     this.ball = sceneData.ball;
@@ -62,10 +64,62 @@ export class LocalPongGame {
     this.lastPaddleTwoZ = this.paddleTwo.position.z;
 
     this.setupInputHandlers();
+    this.adjustCameraFov();
+    this.setupMobileControls();
 
     window.addEventListener('resize', () => {
       this.engine.resize();
+      this.adjustCameraFov();
     });
+  }
+
+  /**
+   * Adjust camera vertical FOV so the full game field stays visible in any screen orientation.
+   * On portrait mobile the calculated FOV will be larger than the desktop default.
+   */
+  private adjustCameraFov(): void {
+    const aspect = this.engine.getRenderWidth() / this.engine.getRenderHeight();
+    // Ensure the horizontal FOV always covers ±5 units at a depth of 5 (walls at x=±5).
+    // With FOVMODE_VERTICAL_FIXED: hfov = 2*atan(tan(vfov/2)*aspect)
+    // Required: hfov >= 2*atan(1) = π/2  →  vfov >= 2*atan(1/aspect)
+    const requiredVFov = 2 * Math.atan(1.0 / aspect);
+    this.camera.fov = Math.max(1.0, requiredVFov);
+  }
+
+  /**
+   * Show on-screen touch buttons for both players when running on a touch/mobile device.
+   */
+  private setupMobileControls(): void {
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const isMobile = isTouch || window.innerWidth < 768;
+    if (!isMobile) return;
+
+    const mobileControls = document.getElementById('mobile-controls');
+    const p1Controls = document.getElementById('p1-mobile-controls');
+    const p2Controls = document.getElementById('p2-mobile-controls');
+
+    if (mobileControls) mobileControls.style.display = 'block';
+    if (p1Controls) p1Controls.style.display = 'flex';
+    if (p2Controls) p2Controls.style.display = 'flex';
+
+    // Player 1 (left paddle)
+    this.attachTouchBtn('p1-up-btn',   () => { this.paddleOneDir =  1; }, () => { this.paddleOneDir = 0; });
+    this.attachTouchBtn('p1-down-btn', () => { this.paddleOneDir = -1; }, () => { this.paddleOneDir = 0; });
+    // Player 2 (right paddle)
+    this.attachTouchBtn('p2-up-btn',   () => { this.paddleTwoDir =  1; }, () => { this.paddleTwoDir = 0; });
+    this.attachTouchBtn('p2-down-btn', () => { this.paddleTwoDir = -1; }, () => { this.paddleTwoDir = 0; });
+  }
+
+  /** Attach touch + mouse events to a control button. */
+  private attachTouchBtn(id: string, onPress: () => void, onRelease: () => void): void {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('touchstart',  (e) => { e.preventDefault(); onPress(); },   { passive: false });
+    btn.addEventListener('touchend',    (e) => { e.preventDefault(); onRelease(); }, { passive: false });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); onRelease(); }, { passive: false });
+    btn.addEventListener('mousedown',   (e) => { e.preventDefault(); onPress(); });
+    btn.addEventListener('mouseup',     (e) => { e.preventDefault(); onRelease(); });
+    btn.addEventListener('mouseleave',  (e) => { e.preventDefault(); onRelease(); });
   }
 
   /**
@@ -354,6 +408,14 @@ export class LocalPongGame {
       gameMessageElement.textContent = '';
       gameMessageElement.style.display = 'none';
     }
+
+    // Hide mobile controls
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls) mobileControls.style.display = 'none';
+    const p1Controls = document.getElementById('p1-mobile-controls');
+    if (p1Controls) p1Controls.style.display = 'none';
+    const p2Controls = document.getElementById('p2-mobile-controls');
+    if (p2Controls) p2Controls.style.display = 'none';
     
     this.gameEnded = false;
     this.isPaused = false;

@@ -12,6 +12,7 @@ import { hideEndGameScreen } from './scene/end-game';
 export class RemotePongGame {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
+  private camera: BABYLON.FreeCamera;
   private paddleOne: BABYLON.Mesh;
   private paddleTwo: BABYLON.Mesh;
   private ball: BABYLON.Mesh;
@@ -43,6 +44,7 @@ export class RemotePongGame {
     //Create the scene and game objects
     const sceneData = createScene(this.engine);
     this.scene = sceneData.scene;
+    this.camera = sceneData.camera as BABYLON.FreeCamera;
     this.paddleOne = sceneData.paddleOne;
     this.paddleTwo = sceneData.paddleTwo;
     this.ball = sceneData.ball;
@@ -57,9 +59,13 @@ export class RemotePongGame {
       this.initializeDOMElements();
     }
     
+    this.adjustCameraFov();
+    this.setupMobileControls();
+
     //Handle window resize events
     window.addEventListener('resize', () => {
       this.engine.resize();
+      this.adjustCameraFov();
     });
   }
 
@@ -181,7 +187,75 @@ export class RemotePongGame {
       if (this.playerInfoElement) {
         this.playerInfoElement.textContent = `You are Player ${position === 'left' ? '1' : '2'}`;
       }
+      this.activateMobileControls();
     });
+  }
+
+  /**
+   * Adjust camera vertical FOV so the full game field stays visible in any screen orientation.
+   */
+  private adjustCameraFov(): void {
+    const aspect = this.engine.getRenderWidth() / this.engine.getRenderHeight();
+    // Ensure horizontal FOV covers ±5 units at depth 5 (walls at x=±5).
+    // vfov = 2*atan(1/aspect) guarantees a horizontal FOV of π/2 (90°).
+    const requiredVFov = 2 * Math.atan(1.0 / aspect);
+    this.camera.fov = Math.max(1.0, requiredVFov);
+  }
+
+  /**
+   * Prepare the mobile controls container on touch devices.
+   * The actual side controls are activated later via activateMobileControls() once the
+   * server has assigned the player position.
+   */
+  private setupMobileControls(): void {
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const isMobile = isTouch || window.innerWidth < 768;
+    if (!isMobile) return;
+
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls) mobileControls.style.display = 'block';
+  }
+
+  /**
+   * Show the correct side's touch controls once the server assigns this client's position.
+   */
+  private activateMobileControls(): void {
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const isMobile = isTouch || window.innerWidth < 768;
+    if (!isMobile || !this.playerPosition) return;
+
+    const p1Controls = document.getElementById('p1-mobile-controls');
+    const p2Controls = document.getElementById('p2-mobile-controls');
+
+    if (this.playerPosition === 'left') {
+      if (p1Controls) p1Controls.style.display = 'flex';
+      if (p2Controls) p2Controls.style.display = 'none';
+    } else {
+      if (p1Controls) p1Controls.style.display = 'none';
+      if (p2Controls) p2Controls.style.display = 'flex';
+    }
+
+    const sendInput = (direction: 'up' | 'down' | 'stop') => {
+      if (this.wsClient.isConnected()) this.wsClient.sendInput(direction);
+    };
+
+    const upBtnId   = this.playerPosition === 'left' ? 'p1-up-btn'   : 'p2-up-btn';
+    const downBtnId = this.playerPosition === 'left' ? 'p1-down-btn' : 'p2-down-btn';
+
+    this.attachTouchBtn(upBtnId,   () => sendInput('up'),   () => sendInput('stop'));
+    this.attachTouchBtn(downBtnId, () => sendInput('down'), () => sendInput('stop'));
+  }
+
+  /** Attach touch + mouse events to a control button. */
+  private attachTouchBtn(id: string, onPress: () => void, onRelease: () => void): void {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('touchstart',  (e) => { e.preventDefault(); onPress(); },   { passive: false });
+    btn.addEventListener('touchend',    (e) => { e.preventDefault(); onRelease(); }, { passive: false });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); onRelease(); }, { passive: false });
+    btn.addEventListener('mousedown',   (e) => { e.preventDefault(); onPress(); });
+    btn.addEventListener('mouseup',     (e) => { e.preventDefault(); onRelease(); });
+    btn.addEventListener('mouseleave',  (e) => { e.preventDefault(); onRelease(); });
   }
 
   //Setup keyboard input handlers for player controls. Sends input events to the server.
@@ -373,6 +447,14 @@ export class RemotePongGame {
     if (this.gameStatusElement) {
       this.gameStatusElement.textContent = '';
     }
+
+    // Hide mobile controls
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls) mobileControls.style.display = 'none';
+    const p1Controls = document.getElementById('p1-mobile-controls');
+    if (p1Controls) p1Controls.style.display = 'none';
+    const p2Controls = document.getElementById('p2-mobile-controls');
+    if (p2Controls) p2Controls.style.display = 'none';
   }
 
   public destroy(): void {

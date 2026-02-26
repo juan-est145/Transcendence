@@ -111,6 +111,7 @@ export function createScene (engine: BABYLON.Engine) {
 
 	return {
 		scene,
+		camera,
 		paddleOne,
 		paddleTwo,
 		ball
