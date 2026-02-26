@@ -53,6 +53,20 @@
         <div class="pause-text">PAUSED</div>
         <div class="pause-time"><span id="pause-time-remaining">15</span>s</div>
       </div>
+
+      <!-- Mobile touch controls (shown only on touch/mobile devices via JS) -->
+      <div id="mobile-controls" style="display: none; pointer-events: auto;">
+        <!-- Player 1 controls – left side -->
+        <div id="p1-mobile-controls" class="mobile-ctrl-group mobile-ctrl-left" style="display: none;">
+          <button class="mobile-ctrl-btn" id="p1-up-btn" aria-label="Player 1 Up">▲</button>
+          <button class="mobile-ctrl-btn" id="p1-down-btn" aria-label="Player 1 Down">▼</button>
+        </div>
+        <!-- Player 2 controls – right side -->
+        <div id="p2-mobile-controls" class="mobile-ctrl-group mobile-ctrl-right" style="display: none;">
+          <button class="mobile-ctrl-btn" id="p2-up-btn" aria-label="Player 2 Up">▲</button>
+          <button class="mobile-ctrl-btn" id="p2-down-btn" aria-label="Player 2 Down">▼</button>
+        </div>
+      </div>
       
       <button id="backToMenu" class="back-button">Back to Home</button>
     </div>
