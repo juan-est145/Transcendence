@@ -1,18 +1,19 @@
 <div class="relative group/dropdown">
 	<button
-		class="block w-10 h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-400 transition cursor-pointer">
+		type="button"
+		class="block w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-blue-600 hover:border-blue-400 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400">
 			<img src="/account/avatar" alt="Avatar image" class="w-full h-full object-cover bg-gray-700" />
 	</button>
 	<ul
-		class="hidden absolute z-1 right-1.5 group-hover/dropdown:block group-hover/dropdown:bg-blue-600 text-lg group-hover/dropdown:rounded-md py-2">
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
-			<a class="block px-4 py-2" href="/account">Account</a>
+		class="hidden absolute z-10 right-0 mt-2 min-w-36 bg-blue-600 rounded-md py-1 text-sm sm:text-base shadow-lg group-focus-within/dropdown:block">
+		<li class="whitespace-nowrap hover:bg-blue-800 active:bg-blue-900 first:rounded-t-md">
+			<a class="block px-3 sm:px-4 py-2" href="/account">Account</a>
 		</li>
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
-			<a class="block px-4 py-2" href="/settings">Settings</a>
+		<li class="whitespace-nowrap hover:bg-blue-800 active:bg-blue-900">
+			<a class="block px-3 sm:px-4 py-2" href="/settings">Settings</a>
 		</li>
-		<li class="text-nowrap hover:bg-blue-800 active:bg-blue-900 group-hover/dropdown:rounded-md">
-			<a class="block px-4 py-2" href="/auth/log-out">Log out</a>
+		<li class="whitespace-nowrap hover:bg-blue-800 active:bg-blue-900 last:rounded-b-md">
+			<a class="block px-3 sm:px-4 py-2" href="/auth/log-out">Log out</a>
 		</li>
 	</ul>
 </div>
