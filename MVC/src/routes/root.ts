@@ -35,7 +35,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
 		//For page requests, return HTML error pages
 		if (error.statusCode === 401) {
-			if (request.session)
+			if (request.session && !request.session.requires2FA)
 				await request.session.destroy();
 			return reply.code(error.statusCode).viewAsync("errors/401.ejs");
 		}
