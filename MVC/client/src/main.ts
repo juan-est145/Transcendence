@@ -177,9 +177,10 @@ class PongGameManager {
     const isFromTournament = sessionStorage.getItem('tournamentMode');
     
     if (isFromTournament === 'true') {
-      // Tournament mode - let players choose local or remote
+      // Tournament mode - always start remote game (opponent is on a different computer)
       sessionStorage.removeItem('tournamentMode');
       this.showTournamentMenu();
+      this.startRemoteGame();
     } else if (matchId || isFromMatchmaking === 'true') {
       // Clear the matchmaking flag
       sessionStorage.removeItem('matchmakingMode');

@@ -741,6 +741,10 @@ async function pollMatchStatus(tournamentId: string) {
                 clearInterval(matchPollingInterval);
                 matchPollingInterval = null;
             }
+            // Set matchId so RemotePongGame joins the correct tournament game
+            if (match.gameId) {
+                sessionStorage.setItem('matchId', match.gameId);
+            }
             window.location.href = '/pong';
         }
     } catch (error) {

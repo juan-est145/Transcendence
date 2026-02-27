@@ -623,6 +623,19 @@ export class TournamentManager {
 	}
 
 	/**
+	 * Look up a match by its gameId (used by PongGameManager to record results)
+	 */
+	public getMatchByGameId(gameId: string): { tournamentId: string; matchId: string } | null {
+		for (const [tournamentId, tournament] of this.tournaments.entries()) {
+			const match = tournament.matches.find(m => m.gameId === gameId);
+			if (match) {
+				return { tournamentId, matchId: match.id };
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Unmark player as ready in their match
 	 */
 	public setPlayerNotReady(tournamentId: string, matchId: string, playerId: string): boolean {

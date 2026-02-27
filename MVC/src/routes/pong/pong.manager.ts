@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { WebSocket } from '@fastify/websocket';
 import { MatchmakingManager } from './matchmaking.manager';
 import type { RoomManager } from './room.manager';
+import type { TournamentManager } from './tournament.manager';
 
 /**
  * Manages multiple Pong game instances and player connections.
@@ -23,6 +24,8 @@ export class PongGameManager {
   private matchmakingManager: MatchmakingManager | null = null;
   //Reference to RoomManager for room-related game handling
   private roomManager: RoomManager | null = null;
+  //Reference to TournamentManager for bracket advancement
+  private tournamentManager: TournamentManager | null = null;
 
   constructor(private fastify: FastifyInstance) {}
   
@@ -32,6 +35,10 @@ export class PongGameManager {
 
   public setRoomManager(manager: RoomManager): void {
     this.roomManager = manager;
+  }
+
+  public setTournamentManager(manager: TournamentManager): void {
+    this.tournamentManager = manager;
   }
 
   public createGame(gameId: string): PongGame {
@@ -392,6 +399,19 @@ export class PongGameManager {
                 } catch (err) {
                   this.fastify.log.error({ err }, 'Error saving forfeit result to API');
                 }
+
+                //If this was a tournament game, advance the bracket on forfeit
+                if (gameType === 'TOURNAMENT' && this.tournamentManager) {
+                  try {
+                    const matchInfo = this.tournamentManager.getMatchByGameId(gameId);
+                    if (matchInfo) {
+                      this.tournamentManager.recordMatchResult(matchInfo.tournamentId, matchInfo.matchId, winnerEmail);
+                      this.fastify.log.info(`Tournament match ${matchInfo.matchId} forfeit recorded: winner=${winnerEmail}`);
+                    }
+                  } catch (err) {
+                    this.fastify.log.error({ err }, 'Failed to record tournament forfeit result');
+                  }
+                }
               })();
             }
           }
@@ -571,6 +591,19 @@ export class PongGameManager {
                 } catch (err) {
                   this.fastify.log.error({ err }, 'Failed to update room after game finish');
                 }
+              }
+            }
+
+            //If this was a tournament game, advance the bracket
+            if (gameType === 'TOURNAMENT' && this.tournamentManager) {
+              try {
+                const matchInfo = this.tournamentManager.getMatchByGameId(gameId);
+                if (matchInfo) {
+                  this.tournamentManager.recordMatchResult(matchInfo.tournamentId, matchInfo.matchId, winnerEmail);
+                  this.fastify.log.info(`Tournament match ${matchInfo.matchId} result recorded: winner=${winnerEmail}`);
+                }
+              } catch (err) {
+                this.fastify.log.error({ err }, 'Failed to record tournament match result');
               }
             }
           } catch (err) {

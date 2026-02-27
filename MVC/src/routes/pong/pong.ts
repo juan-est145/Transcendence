@@ -16,6 +16,7 @@ export async function pong(fastify: FastifyInstance) {
 	tournamentManager = new TournamentManager(fastify);
 	roomManager = new RoomManager(fastify);
 	gameManager.setRoomManager(roomManager);
+	gameManager.setTournamentManager(tournamentManager);
 
 	setInterval(() => {
 		roomManager.cleanupOldRooms();
