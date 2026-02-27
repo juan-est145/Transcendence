@@ -18,6 +18,7 @@ MINIO_ROOT_PASSWORD=
 MINIO_NODE_USER=
 MINIO_NODE_PASSWORD=
 NODE_EXTRA_CA_CERTS=
+API_URL=
 ENCRYPTION_KEY=
 OAUTH42_CLIENT_ID=
 OAUTH42_CLIENT_SECRET=
@@ -217,7 +218,7 @@ This module was chosen because we wanted to make a game with physics and that it
 
 If we were to play a game with our friends, it seems only logical that we also allow for a more competitive playstyle. This is the main reason why we decided to create this module. It also allowed us to keep track of user statistics.
 
-### Support for additional browserss (Minor: 1 point).
+### Support for additional browsers (Minor: 1 point).
 *Team members: Everyone*
 
 At first, the old subject required us to develop mainly for Firefox, but we luckily also kept chromium in mind, given that these are the mainly used browsers on the internet. The use of tailwindcss also helped us to keep the styles consistent accross various web-browsers. We have done tests with Firefox, Chrome and Brave. 
