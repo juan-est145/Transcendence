@@ -58,14 +58,16 @@ We mostly use Slack for internal communication and Github issues for assigning t
 
 # Technical stack
 ### Front-end
-The frontend uses vanilla javascript with server side generated html through the use of ejs in the backend. The reason we didn't use a frontend framework like React, Angular or Vue is because the previous subject did not allowed us to do so. However, despite that, it is also true that this approach simplifies development, as we do everything from a back-end perspective and the app really does not need interactivity, so the use of a framework is mostly unnecessary.
+The frontend uses vanilla Typescript with server side generated html through the use of ejs in the backend. The reason we didn't use a frontend framework like React, Angular or Vue is because the previous subject did not allowed us to do so. However, despite that, it is also true that this approach simplifies development, as we do everything from a back-end perspective and the app really does not need too much interactivity, so the use of a framework is mostly unnecessary.
 
-For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for bettle type safety and having object definition.
+For styling we used Tailwindcss, which is a very nice option for keeping styles consistent between them and not having bloated css classes that may cause problems down the line. We also use Babylon for the 3D graphics that the game uses and Vite to bundle all the game dependencies and optimize the final bundle. As for the programming language of our choice, we used Typescript for better type safety and having consistent object definition.
 
 ### Back-end
-Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of Typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the minio js sdk for interacting with our s3 storage solution.
+Our backend uses mostly Fastify with Typescript. Again, as with the ejs pages, we were forced to use it by the previous subject. Despite that, the use of Typescript in both our front-end and back-end, simplified a lot the development experience and sped up the project. The node js ecosystem is also huge, so that provided an advantage when we needed external libraries, like the miniojs sdk for interacting with our s3 storage solution.
 
-For storage, we used SQLite for the databse and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
+For storage, we used SQLite for the database and Minio for storing images inside buckets for each user. We found more scalable to use this solution rather than storing images inside the filesystem of the container or inside a database and closer to good practices. For the database, the reason we chose SQLite was mostly because the old subject required it, but despite that, SQLite has helped simplfy setting up a working database, and the fact that is a single file makes it way easier to back it up and share it among other team members.
+
+Lastly, we use Nginx as a reverse proxy to provide accces to the website as an added feature of security. The only port that get's exposed during production mode is this one.
 
 # Database Schema
 
@@ -160,6 +162,12 @@ This webapp is compatible with all 2FA apps and is a setting that can be enabled
 
 ### Avatar upload (juestrel)
 The website allows registered users to upload a photo to be used as an avatar. Gifs are also supported, so you can have an animated profile for yourself.
+
+### Matchmaking and tournaments (jcallejo)
+The webapp has remote gameplay, so it pairs pairs of people for them to play against each other. It also allows the creation of tournaments for organized matches between friends. The online victories and defeats are tracked by the webapp and is reflected on their profiles.
+
+### Profile pages and friends (juestrel)
+The webapp allows for users to search each other and add them as friends. This is useful for checking their friends are online. Also, each player has their own profile page.
 
 # Modules (Total of 17 points)
 ### Use a backend framework (Minor: 1 point)
