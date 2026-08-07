@@ -1,0 +1,14 @@
+{
+  "base": "/",
+  "root": "client",
+  "build": {
+    "assetsDir": "assets",
+    "outDir": "client/dist/client"
+  },
+  "fastify": {
+    "outDirs": {
+      "client": "client/dist/client"
+    },
+    "entryPaths": {}
+  }
+}

@@ -2,31 +2,11 @@ import path from "node:path";
 import { access, mkdir, rename, rm } from "node:fs/promises";
 import viteFastify from '@fastify/vite/plugin'
 
-function relocateViteConfig() {
-	const source = path.resolve(process.cwd(), "client", "vite.config.json");
-	const target = path.resolve(process.cwd(), "client", "dist", "vite.config.json");
-
-	return {
-		name: "relocate-vite-config",
-		async closeBundle() {
-			try {
-				await access(source);
-			} catch {
-				return
-			}
-
-			await mkdir(path.dirname(target), { recursive: true });
-			await rm(target, { force: true });
-			await rename(source, target);
-		},
-	}
-}
 
 export default {
 	root: path.resolve(process.cwd(), "client"),
 	plugins: [
 		viteFastify({ spa: true, useRelativePaths: true }),
-		relocateViteConfig(),
 	],
 	build: {
 		emptyOutDir: true,
